@@ -216,6 +216,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: curiosity
       objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: 39dd5589cff01344bbb819d29cc1b813,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 39dd5589cff01344bbb819d29cc1b813,
         type: 3}
       propertyPath: m_LocalPosition.x

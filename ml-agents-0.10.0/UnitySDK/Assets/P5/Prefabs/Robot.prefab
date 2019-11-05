@@ -1039,7 +1039,7 @@ GameObject:
   - component: {fileID: 8974189952733590805}
   - component: {fileID: 8974189952733590803}
   m_Layer: 0
-  m_Name: robot
+  m_Name: Robot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1121,4 +1121,4 @@ MonoBehaviour:
   criticalSpeed: 5
   stepsBelow: 5
   stepsAbove: 1
-  driveType: 0
+  driveType: 2

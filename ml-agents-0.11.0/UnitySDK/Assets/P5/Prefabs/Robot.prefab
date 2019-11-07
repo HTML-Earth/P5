@@ -1088,6 +1088,36 @@ Transform:
   m_Father: {fileID: 7555091069262933429}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6845579594737650283
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5624098504110841232}
+  m_Layer: 0
+  m_Name: SensorPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5624098504110841232
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6845579594737650283}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4630239631701515125}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8510312020121741670
 GameObject:
   m_ObjectHideFlags: 0
@@ -1101,6 +1131,7 @@ GameObject:
   - component: {fileID: 8974189952733590805}
   - component: {fileID: 8974189952733590803}
   - component: {fileID: 8326510499022826615}
+  - component: {fileID: 2994480333304047144}
   m_Layer: 0
   m_Name: Robot
   m_TagString: Untagged
@@ -1129,6 +1160,7 @@ Transform:
   - {fileID: 1015023218}
   - {fileID: 1799447205}
   - {fileID: 2312370750822274003}
+  - {fileID: 5624098504110841232}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1199,3 +1231,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   arm: {fileID: 2312370750822274003}
   shovel: {fileID: 2405924958219048433}
+  rotationSpeed: 50
+--- !u!114 &2994480333304047144
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8510312020121741670}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 028a121b23a4a8f4988b0b80c627793b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sensorPosition: {fileID: 5624098504110841232}

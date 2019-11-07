@@ -8,7 +8,7 @@ public class ShovelControl : MonoBehaviour
     public Transform arm;
     public Transform shovel;
 
-    float rotationSpeed = 50f;
+    public float rotationSpeed = 50f;
 
     float minArmRotation = 270;
     float maxArmRotation = 360;

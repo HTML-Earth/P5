@@ -26,7 +26,7 @@ public class ShovelControl : MonoBehaviour
             armRotation -= rotAmt;
         
         if (Input.GetKey(KeyCode.Z))
-            shovelRotation -= rotAmt;
+            shovelRotation += rotAmt;
         else if (Input.GetKey(KeyCode.X))
             shovelRotation -= rotAmt;
 

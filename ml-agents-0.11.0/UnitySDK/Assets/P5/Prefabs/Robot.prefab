@@ -1261,7 +1261,7 @@ WheelCollider:
     spring: 23668.588
     damper: 3786.9744
     targetPosition: 0.5
-  m_SuspensionDistance: 0.19620001
+  m_SuspensionDistance: 0.1962
   m_ForceAppPointDistance: 0.85066164
   m_Mass: 20
   m_WheelDampingRate: 0.25
@@ -1381,9 +1381,9 @@ WheelCollider:
   m_Radius: 0.24
   m_SuspensionSpring:
     spring: 23671.42
-    damper: 3787.4275
+    damper: 3787.427
     targetPosition: 0.5
-  m_SuspensionDistance: 0.19620001
+  m_SuspensionDistance: 0.1962
   m_ForceAppPointDistance: 0.85066164
   m_Mass: 20
   m_WheelDampingRate: 0.25
@@ -1502,8 +1502,8 @@ WheelCollider:
   m_Center: {x: 0, y: 0, z: 0}
   m_Radius: 0.24
   m_SuspensionSpring:
-    spring: 25001.416
-    damper: 4000.2266
+    spring: 25001.414
+    damper: 4000.2263
     targetPosition: 0.5
   m_SuspensionDistance: 0.19620001
   m_ForceAppPointDistance: 0.85066164
@@ -2362,7 +2362,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 028a121b23a4a8f4988b0b80c627793b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 16384
   sensorPosition: {fileID: 5624098504110841232}
+  sensorAmount: 30
 --- !u!1 &8697152922277818947
 GameObject:
   m_ObjectHideFlags: 0

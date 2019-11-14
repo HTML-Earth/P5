@@ -1261,7 +1261,7 @@ WheelCollider:
     spring: 23668.588
     damper: 3786.9744
     targetPosition: 0.5
-  m_SuspensionDistance: 0.1962
+  m_SuspensionDistance: 0.19620001
   m_ForceAppPointDistance: 0.85066164
   m_Mass: 20
   m_WheelDampingRate: 0.25
@@ -1319,8 +1319,8 @@ WheelCollider:
   m_Center: {x: 0, y: 0, z: 0}
   m_Radius: 0.24
   m_SuspensionSpring:
-    spring: 26328.586
-    damper: 4212.5737
+    spring: 26328.58
+    damper: 4212.5728
     targetPosition: 0.5
   m_SuspensionDistance: 0.19619998
   m_ForceAppPointDistance: 0.85066164
@@ -1381,9 +1381,9 @@ WheelCollider:
   m_Radius: 0.24
   m_SuspensionSpring:
     spring: 23671.42
-    damper: 3787.427
+    damper: 3787.4275
     targetPosition: 0.5
-  m_SuspensionDistance: 0.1962
+  m_SuspensionDistance: 0.19620001
   m_ForceAppPointDistance: 0.85066164
   m_Mass: 20
   m_WheelDampingRate: 0.25
@@ -1441,8 +1441,8 @@ WheelCollider:
   m_Center: {x: 0, y: 0, z: 0}
   m_Radius: 0.24
   m_SuspensionSpring:
-    spring: 24998.584
-    damper: 3999.7734
+    spring: 24998.582
+    damper: 3999.7732
     targetPosition: 0.5
   m_SuspensionDistance: 0.19620001
   m_ForceAppPointDistance: 0.85066164
@@ -1566,7 +1566,7 @@ WheelCollider:
     spring: 26331.414
     damper: 4213.0264
     targetPosition: 0.5
-  m_SuspensionDistance: 0.19620001
+  m_SuspensionDistance: 0.1962
   m_ForceAppPointDistance: 0.85066164
   m_Mass: 20
   m_WheelDampingRate: 0.25
@@ -2317,6 +2317,7 @@ MonoBehaviour:
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 1
+  debris: {fileID: 0}
 --- !u!114 &1779018748840171066
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2330,14 +2331,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 1
+    vectorObservationSize: 4
     numStackedVectorObservations: 1
-    vectorActionSize: 01000000
+    vectorActionSize: 04000000
     vectorActionDescriptions: []
-    vectorActionSpaceType: 0
+    vectorActionSpaceType: 1
   m_Model: {fileID: 0}
   m_InferenceDevice: 0
-  m_UseHeuristic: 1
+  m_UseHeuristic: 0
   m_BehaviorName: Robot
 --- !u!114 &2994480333304047144
 MonoBehaviour:

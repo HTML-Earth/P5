@@ -1,4 +1,4 @@
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
@@ -11,23 +11,26 @@ env = UnityEnvironment(file_name=None, worker_id=0, seed=1)
 env_info = env.reset(train_mode=True)
 
 # Set the default brain to work with
-default_brain = "3DBall"
+default_brain = "Robot"
 brain = env_info[default_brain]
 
 # Examine the state space for the default brain
-print("Agent state looks like: \n{}".format(brain.vector_observations[0]))
+observations = brain.vector_observations[0]
+print("Agent state looks like: \n{}".format(observations))
 
-# Examine the observation space for the default brain
-for observation in brain.visual_observations:
-    print("Agent observations look like:")
-    if observation.shape[3] == 3:
-        plt.imshow(observation[0,:,:,:])
-    else:
-        plt.imshow(observation[0,:,:,0])
+# Assign initial observation values
+robot_position = [observations[0], observations[1]]
+debris_position = [observations[2], observations[3]]
 
-#action = 1
-#env.step(action, memory=None, text_action=None)
+# Drive the robot until the debris and the robot has the same X value
+while debris_position[0] - robot_position[0] > 0:
+    action = np.array([1, 0, 0, 0])
+    env_info = env.step({default_brain: action}, memory=None, text_action=None)
 
-#env.reset(train_mode=True, config=None)
+    # Make observations
+    observations = env_info[default_brain].vector_observations[0]
+    robot_position = [observations[0], observations[1]]
+    debris_position = [observations[2], observations[3]]
 
+# Close simulation
 env.close()

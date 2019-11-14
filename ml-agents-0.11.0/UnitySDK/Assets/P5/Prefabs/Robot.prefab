@@ -1261,8 +1261,8 @@ WheelCollider:
     spring: 23668.588
     damper: 3786.9744
     targetPosition: 0.5
-  m_SuspensionDistance: 0.19620001
-  m_ForceAppPointDistance: 0.85066164
+  m_SuspensionDistance: 0.1962
+  m_ForceAppPointDistance: 0.8506616
   m_Mass: 20
   m_WheelDampingRate: 0.25
   m_ForwardFriction:
@@ -1322,8 +1322,8 @@ WheelCollider:
     spring: 26328.58
     damper: 4212.5728
     targetPosition: 0.5
-  m_SuspensionDistance: 0.19619998
-  m_ForceAppPointDistance: 0.85066164
+  m_SuspensionDistance: 0.1962
+  m_ForceAppPointDistance: 0.8506616
   m_Mass: 20
   m_WheelDampingRate: 0.25
   m_ForwardFriction:
@@ -1384,7 +1384,7 @@ WheelCollider:
     damper: 3787.4275
     targetPosition: 0.5
   m_SuspensionDistance: 0.19620001
-  m_ForceAppPointDistance: 0.85066164
+  m_ForceAppPointDistance: 0.8506616
   m_Mass: 20
   m_WheelDampingRate: 0.25
   m_ForwardFriction:
@@ -1441,11 +1441,11 @@ WheelCollider:
   m_Center: {x: 0, y: 0, z: 0}
   m_Radius: 0.24
   m_SuspensionSpring:
-    spring: 24998.582
-    damper: 3999.7732
+    spring: 24998.584
+    damper: 3999.7734
     targetPosition: 0.5
   m_SuspensionDistance: 0.19620001
-  m_ForceAppPointDistance: 0.85066164
+  m_ForceAppPointDistance: 0.8506616
   m_Mass: 20
   m_WheelDampingRate: 0.25
   m_ForwardFriction:
@@ -1502,11 +1502,11 @@ WheelCollider:
   m_Center: {x: 0, y: 0, z: 0}
   m_Radius: 0.24
   m_SuspensionSpring:
-    spring: 25001.414
-    damper: 4000.2263
+    spring: 25001.416
+    damper: 4000.2266
     targetPosition: 0.5
   m_SuspensionDistance: 0.19620001
-  m_ForceAppPointDistance: 0.85066164
+  m_ForceAppPointDistance: 0.8506616
   m_Mass: 20
   m_WheelDampingRate: 0.25
   m_ForwardFriction:
@@ -1567,7 +1567,7 @@ WheelCollider:
     damper: 4213.0264
     targetPosition: 0.5
   m_SuspensionDistance: 0.1962
-  m_ForceAppPointDistance: 0.85066164
+  m_ForceAppPointDistance: 0.8506616
   m_Mass: 20
   m_WheelDampingRate: 0.25
   m_ForwardFriction:

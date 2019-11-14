@@ -30,7 +30,11 @@ public class WheelDrive : MonoBehaviour
 	[Tooltip("The vehicle's drive type: rear-wheels drive, front-wheels drive or all-wheels drive.")]
 	public DriveType driveType;
 
-    private WheelCollider[] m_Wheels;
+    WheelCollider[] m_Wheels;
+
+    float currentTorque = 0;
+    float currentAngle = 0;
+    bool handBrakeActive = false;
 
     // Find all the WheelColliders down in the hierarchy.
 	void Start()
@@ -50,6 +54,21 @@ public class WheelDrive : MonoBehaviour
 		}
 	}
 
+	public void SetTorque(float torque)
+	{
+		currentTorque = torque;
+	}
+
+	public void SetAngle(float angle)
+	{
+		currentAngle = angle;
+	}
+
+	public void SetHandBrake(bool handBrake)
+	{
+		handBrakeActive = handBrake;
+	}
+
 	// This is a really simple approach to updating wheels.
 	// We simulate a rear wheel drive car and assume that the car is perfectly symmetric at local zero.
 	// This helps us to figure our which wheels are front ones and which are rear.
@@ -57,10 +76,10 @@ public class WheelDrive : MonoBehaviour
 	{
 		m_Wheels[0].ConfigureVehicleSubsteps(criticalSpeed, stepsBelow, stepsAbove);
 
-		float angle = maxAngle * Input.GetAxis("Horizontal");
-		float torque = maxTorque * Input.GetAxis("Vertical");
+		float torque = maxTorque * currentTorque;
+		float angle = maxAngle * currentAngle;
 
-		float handBrake = Input.GetKey(KeyCode.X) ? brakeTorque : 0;
+		float handBrake = handBrakeActive ? brakeTorque : 0;
 
 		foreach (WheelCollider wheel in m_Wheels)
 		{

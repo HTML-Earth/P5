@@ -16,11 +16,24 @@ public class ShovelControl : MonoBehaviour
     float minShovelRotation = 290;
     float maxShovelRotation = 360;
 
+    float armInput = 0;
+    float shovelInput = 0;
+
     void Awake()
     {
         // Make the x rotation =/= 0
         arm.Rotate(Vector3.right, -1f, Space.Self);
         shovel.Rotate(Vector3.right, -1f, Space.Self);
+    }
+    
+    public void RotateArm(float direction)
+    {
+        armInput = direction;
+    }
+    
+    public void RotateShovel(float direction)
+    {
+        shovelInput = direction;
     }
 
     void Update()

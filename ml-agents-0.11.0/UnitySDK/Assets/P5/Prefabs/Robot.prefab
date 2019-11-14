@@ -2246,10 +2246,12 @@ GameObject:
   m_Component:
   - component: {fileID: 4630239631701515125}
   - component: {fileID: 8510312020121741664}
-  - component: {fileID: 8974189952733590805}
-  - component: {fileID: 8974189952733590803}
-  - component: {fileID: 8326510499022826615}
+  - component: {fileID: 6768497055058356372}
+  - component: {fileID: 1779018748840171066}
   - component: {fileID: 2994480333304047144}
+  - component: {fileID: 8326510499022826615}
+  - component: {fileID: 8974189952733590803}
+  - component: {fileID: 8974189952733590805}
   m_Layer: 0
   m_Name: Robot
   m_TagString: Untagged
@@ -2298,7 +2300,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &8974189952733590805
+--- !u!114 &6768497055058356372
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2307,13 +2309,69 @@ MonoBehaviour:
   m_GameObject: {fileID: 8510312020121741670}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 61682be5314d0440b9e67529196ac1a4, type: 3}
+  m_Script: {fileID: 11500000, guid: bb377f70e7ec6e445815c26d1f29c035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  naturalFrequency: 10
-  dampingRatio: 0.8
-  forceShift: 0.03
-  setSuspensionDistance: 1
+  agentParameters:
+    maxStep: 0
+    resetOnDone: 1
+    onDemandDecision: 0
+    numberOfActionsBetweenDecisions: 1
+--- !u!114 &1779018748840171066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8510312020121741670}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_BrainParameters:
+    vectorObservationSize: 1
+    numStackedVectorObservations: 1
+    vectorActionSize: 01000000
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 0
+  m_Model: {fileID: 0}
+  m_InferenceDevice: 0
+  m_UseHeuristic: 1
+  m_BehaviorName: Robot
+--- !u!114 &2994480333304047144
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8510312020121741670}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 028a121b23a4a8f4988b0b80c627793b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 16384
+  sensorPosition: {fileID: 5624098504110841232}
+  sensorAmount: 30
+  printDebug: 0
+--- !u!114 &8326510499022826615
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8510312020121741670}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 530033d3e6be1194984dce0f77c3bc13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  arm: {fileID: 2312370750822274003}
+  shovel: {fileID: 2405924958219048433}
+  rotationSpeed: 100
 --- !u!114 &8974189952733590803
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2335,7 +2393,7 @@ MonoBehaviour:
   stepsBelow: 5
   stepsAbove: 1
   driveType: 2
---- !u!114 &8326510499022826615
+--- !u!114 &8974189952733590805
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2344,29 +2402,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 8510312020121741670}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 530033d3e6be1194984dce0f77c3bc13, type: 3}
+  m_Script: {fileID: 11500000, guid: 61682be5314d0440b9e67529196ac1a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  arm: {fileID: 2312370750822274003}
-  shovel: {fileID: 2405924958219048433}
-  rotationSpeed: 100
---- !u!114 &2994480333304047144
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8510312020121741670}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 028a121b23a4a8f4988b0b80c627793b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  layerMask:
-    serializedVersion: 2
-    m_Bits: 16384
-  sensorPosition: {fileID: 5624098504110841232}
-  sensorAmount: 30
+  naturalFrequency: 10
+  dampingRatio: 0.8
+  forceShift: 0.03
+  setSuspensionDistance: 1
 --- !u!1 &8697152922277818947
 GameObject:
   m_ObjectHideFlags: 0

@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class RobotAgent : Agent
 {
+    public GameObject debris;
     WheelDrive wheels;
     ShovelControl shovel;
     
@@ -16,7 +17,16 @@ public class RobotAgent : Agent
 
     public override void CollectObservations()
     {
-        AddVectorObs(0);
+        // Robot position
+        AddVectorObs(gameObject.transform.position.x);
+        AddVectorObs(gameObject.transform.position.z);
+
+        // Shovel and arm position
+        //AddVectorObs(gameObject.transform.position.x);
+
+        // Debris position
+        AddVectorObs(debris.transform.position.x);
+        AddVectorObs(debris.transform.position.z);
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)

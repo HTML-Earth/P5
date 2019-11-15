@@ -8,11 +8,13 @@ public class RobotAgent : Agent
     public GameObject debris;
     WheelDrive wheels;
     ShovelControl shovel;
+    RobotSensors sensors;
     
     public override void InitializeAgent()
     {
         wheels = GetComponent<WheelDrive>();
         shovel = GetComponent<ShovelControl>();
+        sensors = GetComponent<RobotSensors>();
     }
 
     public override void CollectObservations()
@@ -28,6 +30,13 @@ public class RobotAgent : Agent
         // Arm and shovel position
         AddVectorObs(shovel.GetArmPos());
         AddVectorObs(shovel.GetShovelPos());
+        
+        // Distance sensor measurements
+        float[] distances = sensors.GetMeasuredDistances();
+        for (int dist = 0; dist < distances.Length; dist++)
+        {
+            AddVectorObs(distances[dist]);
+        }
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)

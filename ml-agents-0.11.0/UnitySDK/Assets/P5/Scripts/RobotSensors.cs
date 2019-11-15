@@ -25,6 +25,32 @@ public class RobotSensors : MonoBehaviour
         anglePerSensor = 360f / sensorAmount;
     }
 
+    void CalculateSensorDirections()
+    {
+        for (int i = 0; i < sensorAmount; i++)
+        {
+            // sensor direction is calculated by rotating the forward vector by (anglePerSensor * i) around the up axis
+            sensorDirections[i] = Quaternion.AngleAxis(anglePerSensor * i, transform.up) * transform.forward;
+        }
+    }
+
+    void FixedUpdate()
+    {
+        UpdateDistances();
+
+        if (printDebug)
+        {
+            StringBuilder debugString = new StringBuilder();
+
+            debugString.Append("DISTANCES:\n");
+            
+            foreach (float distance in measuredDistances)
+                debugString.Append(distance + " ");
+
+            Debug.Log(debugString);
+        }
+    }
+
     void OnDrawGizmos()
     {
         if (!EditorApplication.isPlaying)
@@ -41,33 +67,7 @@ public class RobotSensors : MonoBehaviour
         }
     }
 
-    void FixedUpdate()
-    {
-        GetEnvironmentDistances();
-
-        if (printDebug)
-        {
-            StringBuilder debugString = new StringBuilder();
-
-            debugString.Append("DISTANCES:\n");
-            
-            foreach (float distance in measuredDistances)
-                debugString.Append(distance + " ");
-
-            Debug.Log(debugString);
-        }
-    }
-
-    void CalculateSensorDirections()
-    {
-        for (int i = 0; i < sensorAmount; i++)
-        {
-            // sensor direction is calculated by rotating the forward vector by (anglePerSensor * i) around the up axis
-            sensorDirections[i] = Quaternion.AngleAxis(anglePerSensor * i, transform.up) * transform.forward;
-        }
-    }
-
-    public void GetEnvironmentDistances()
+    void UpdateDistances()
     {
         if (sensorAmount > 0)
         {
@@ -83,5 +83,10 @@ public class RobotSensors : MonoBehaviour
                     measuredDistances[i] = Mathf.Infinity;
             }
         }
+    }
+
+    public float[] GetMeasuredDistances()
+    {
+        return measuredDistances;
     }
 }

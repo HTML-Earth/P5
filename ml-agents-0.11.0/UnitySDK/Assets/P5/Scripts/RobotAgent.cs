@@ -20,13 +20,14 @@ public class RobotAgent : Agent
         // Robot position
         AddVectorObs(gameObject.transform.position.x);
         AddVectorObs(gameObject.transform.position.z);
-
-        // Shovel and arm position
-        //AddVectorObs(gameObject.transform.position.x);
-
+        
         // Debris position
         AddVectorObs(debris.transform.position.x);
         AddVectorObs(debris.transform.position.z);
+        
+        // Arm and shovel position
+        AddVectorObs(shovel.GetArmPos());
+        AddVectorObs(shovel.GetShovelPos());
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)

@@ -19,11 +19,16 @@ public class ShovelControl : MonoBehaviour
     float armInput = 0;
     float shovelInput = 0;
 
+    float armPos;
+    float shovelPos;
+
     void Awake()
     {
         // Make the x rotation =/= 0
         arm.Rotate(Vector3.right, -1f, Space.Self);
         shovel.Rotate(Vector3.right, -1f, Space.Self);
+        
+        UpdateArmAndShovelPos();
     }
     
     public void RotateArm(float direction)
@@ -34,6 +39,23 @@ public class ShovelControl : MonoBehaviour
     public void RotateShovel(float direction)
     {
         shovelInput = direction;
+    }
+
+    void UpdateArmAndShovelPos()
+    {
+        
+        armPos = arm.localRotation.eulerAngles.x - minArmRotation;
+        shovelPos = shovel.localRotation.eulerAngles.x - minShovelRotation;
+    }
+
+    public float GetArmPos()
+    {
+        return armPos;
+    }
+
+    public float GetShovelPos()
+    {
+        return shovelPos;
     }
 
     void Update()
@@ -63,5 +85,7 @@ public class ShovelControl : MonoBehaviour
         //clamp the rotation
         if (currentShovelRotation + shovelRotation > minShovelRotation && currentShovelRotation + shovelRotation < maxShovelRotation)
             shovel.Rotate(Vector3.right, shovelRotation, Space.Self);
+
+        UpdateArmAndShovelPos();
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using UnityEditor;
 using UnityEngine;
 
 public class RobotSensors : MonoBehaviour
@@ -12,44 +13,75 @@ public class RobotSensors : MonoBehaviour
 
     public bool printDebug;
 
-    void FixedUpdate()
+    float anglePerSensor;
+
+    Vector3[] sensorDirections;
+    float[] measuredDistances;
+
+    void Awake()
     {
-        if (!printDebug)
-            return;
-        
-        List<float> distances = GetEnvironmentDistances();
-        StringBuilder debugString = new StringBuilder();
-
-        debugString.Append("DISTANCES:\n");
-        
-        foreach (float distance in distances)
-            debugString.Append(distance + " ");
-
-        Debug.Log(debugString);
+        sensorDirections = new Vector3[sensorAmount];
+        measuredDistances = new float[sensorAmount];
+        anglePerSensor = 360f / sensorAmount;
     }
 
-    public List<float> GetEnvironmentDistances()
+    void OnDrawGizmos()
     {
-        List<float> distances = new List<float>();
+        if (!EditorApplication.isPlaying)
+            return;
 
+        for (int i = 0; i < sensorAmount; i++)
+        {
+            if (measuredDistances[i] < Mathf.Infinity)
+                Gizmos.color = Color.cyan;
+            else
+                Gizmos.color = Color.red;
+            
+            Gizmos.DrawRay(sensorPosition.position, sensorDirections[i].normalized * measuredDistances[i]);
+        }
+    }
+
+    void FixedUpdate()
+    {
+        GetEnvironmentDistances();
+
+        if (printDebug)
+        {
+            StringBuilder debugString = new StringBuilder();
+
+            debugString.Append("DISTANCES:\n");
+            
+            foreach (float distance in measuredDistances)
+                debugString.Append(distance + " ");
+
+            Debug.Log(debugString);
+        }
+    }
+
+    void CalculateSensorDirections()
+    {
+        for (int i = 0; i < sensorAmount; i++)
+        {
+            // sensor direction is calculated by rotating the forward vector by (anglePerSensor * i) around the up axis
+            sensorDirections[i] = Quaternion.AngleAxis(anglePerSensor * i, transform.up) * transform.forward;
+        }
+    }
+
+    public void GetEnvironmentDistances()
+    {
         if (sensorAmount > 0)
         {
-            float anglePerSensor = 360f / sensorAmount;
+            CalculateSensorDirections();
             
             for (int i = 0; i < sensorAmount; i++)
             {
-                // sensor direction is calculated by rotating the forward vector by (anglePerSensor * i) around the up axis
-                Vector3 sensorDirection = Quaternion.AngleAxis(anglePerSensor * i, transform.up) * transform.forward;
-                
-                Ray ray = new Ray(sensorPosition.position, sensorDirection);
+                Ray ray = new Ray(sensorPosition.position, sensorDirections[i]);
                 
                 if (Physics.Raycast(ray, out RaycastHit hitInfo, 9000f, layerMask))
-                    distances.Add(hitInfo.distance);
+                    measuredDistances[i] = hitInfo.distance;
                 else
-                    distances.Add(Mathf.Infinity);
+                    measuredDistances[i] = Mathf.Infinity;
             }
         }
-
-        return distances;
     }
 }

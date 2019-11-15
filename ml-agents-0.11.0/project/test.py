@@ -20,6 +20,7 @@ This note will be updated as the project goes on.
 
 # import matplotlib.pyplot as plt
 import numpy as np
+import time
 
 from mlagents.envs.environment import UnityEnvironment
 
@@ -54,10 +55,13 @@ def update_observations():
 
 
 # Action functions
-# Throttle wheels forward or backwards (1 forwards and -1 backwards
-def move_wheels(throttle):
+# Throttle wheels forward or backwards (1 forwards and -1 backwards)
+# Turn wheels right or left (1 right and -1 left)
+# Rotate arm up or down (1 up and -1 down)
+# Rotate shovel up or down (1 up and -1 down)
+def perform_action(throttle, angle, arm_rotation, shovel_rotation):
     # Assets/P5/Scripts/RobotAgent.cs - AgentAction
-    action = np.array([throttle, 0, 0, 0])
+    action = np.array([throttle, angle, arm_rotation, shovel_rotation])
     return env.step({default_brain: action}, memory=None, text_action=None)
 
 
@@ -73,6 +77,9 @@ def print_positions():
 
 # Main function which will be run after the above code has finished (Setup of connection and definition of functions)
 if __name__ == '__main__':
+    # Start time
+    start_time = time.time()
+
     # Update observations, robot_position and debris position for the default brain
     update_observations()
 
@@ -86,7 +93,7 @@ if __name__ == '__main__':
     # Drive the robot until the debris and the robot has the same X value
     while debris_position[0] - robot_position[0] > 0:
         # Update information about the environment after action/step is performed
-        env_info = move_wheels(1)
+        env_info = perform_action(1, 0, 0, 0)
 
         # Update observations
         update_observations()
@@ -97,3 +104,7 @@ if __name__ == '__main__':
 
     # Close simulation
     env.close()
+
+    # End time
+    end_time = time.time()
+    print("\nTime to reach goal start: " + str(end_time - start_time))

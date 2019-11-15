@@ -46,14 +46,14 @@ public class ShovelControl : MonoBehaviour
         float currentArmRotation = arm.localEulerAngles.x;
         float currentShovelRotation = shovel.localEulerAngles.x;
 
-        if (Input.GetKey(KeyCode.Q))
+        if (armInput > 0)
             armRotation += rotAmt;
-        else if (Input.GetKey(KeyCode.E))
+        else if (armInput < 0)
             armRotation -= rotAmt;
 
-        if (Input.GetKey(KeyCode.Z))
+        if (shovelInput > 0)
             shovelRotation += rotAmt;
-        else if (Input.GetKey(KeyCode.X))
+        else if (shovelInput < 0)
             shovelRotation -= rotAmt;
         
         //clamp the rotation

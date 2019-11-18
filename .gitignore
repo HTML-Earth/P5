@@ -34,3 +34,9 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+
+# User-specific stuff
+*.idea
+
+# Time which always changes
+ml-agents-0.11.0/UnitySDK/csharp_timers.json

@@ -1,4 +1,4 @@
-'''
+"""
 Notes for interaction with Robot Agent:
 
 Observations collected in CollectObservations are as follows:
@@ -16,7 +16,7 @@ Actions performed in AgentAction are as follows:
 RESPECTIVELY
 
 This note will be updated as the project goes on.
-'''
+"""
 
 # import matplotlib.pyplot as plt
 import numpy as np
@@ -57,8 +57,8 @@ def update_observations():
 # Action functions
 # Throttle wheels forward or backwards (1 forwards and -1 backwards)
 # Turn wheels right or left (1 right and -1 left)
-# Rotate arm up or down (1 up and -1 down)
-# Rotate shovel up or down (1 up and -1 down)
+# Rotate arm up or down (1 down and -1 up)
+# Rotate shovel up or down (1 down and -1 up)
 def perform_action(throttle, angle, arm_rotation, shovel_rotation):
     # Assets/P5/Scripts/RobotAgent.cs - AgentAction
     action = np.array([throttle, angle, arm_rotation, shovel_rotation])

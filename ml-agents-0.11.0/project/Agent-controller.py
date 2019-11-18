@@ -24,22 +24,34 @@ import time
 
 from mlagents.envs.environment import UnityEnvironment
 
-
-'''Setup for connection with Python and Unity'''
-# Connect to Unity and get environment
-env = UnityEnvironment(file_name=None, worker_id=0, seed=1)
-
-# Reset the environment
-env_info = env.reset(train_mode=True)
-
-# Set the default brain to work with
-default_brain = "Robot"
-brain = env_info[default_brain]
+# Global environment variables
+env = None
+env_info = None
+default_brain = None
+brain = None
 
 # Global variables for observation of environment
 observations = None
 robot_position = None
 debris_position = None
+
+
+# Setup connection between Unity and Python
+def setup_connection_with_unity():
+    global env
+    global env_info
+    global default_brain
+    global brain
+
+    # Connect to Unity and get environment
+    env = UnityEnvironment(file_name=None, worker_id=0, seed=1)
+
+    # Reset the environment
+    env_info = env.reset(train_mode=True)
+
+    # Set the default brain to work with
+    default_brain = "Robot"
+    brain = env_info[default_brain]
 
 
 # Update observations variable with information about the environment
@@ -77,6 +89,9 @@ def print_positions():
 
 # Main function which will be run after the above code has finished (Setup of connection and definition of functions)
 if __name__ == '__main__':
+    # Setup connection
+    setup_connection_with_unity()
+
     # Start time
     start_time = time.time()
 

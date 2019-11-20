@@ -5,9 +5,11 @@ using UnityEngine;
 
 public class RobotAcademy : Academy
 {
+    private EnvironmentGeneration environmentGeneration;
     public override void InitializeAcademy()
     {
         // Initialize variables
+        environmentGeneration = FindObjectOfType<EnvironmentGeneration>();
     }
 
     public override void AcademyStep()
@@ -18,5 +20,6 @@ public class RobotAcademy : Academy
     public override void AcademyReset()
     {
         // Generate environment
+        environmentGeneration.GenerateEnvironment();
     }
 }

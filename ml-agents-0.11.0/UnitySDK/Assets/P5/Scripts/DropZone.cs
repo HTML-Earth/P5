@@ -12,5 +12,10 @@ public class DropZone : MonoBehaviour
         Handles.color = new Color(1f, 1f, 0f, 0.2f);
         Handles.DrawSolidDisc(transform.position, Vector3.up, radius);
     }
+    
+    public float GetRadius()
+    {
+        return radius;
+    }
 
 }

@@ -9,6 +9,7 @@ public class RobotAgent : Agent
     WheelDrive wheels;
     ShovelControl shovel;
     RobotSensors sensors;
+    DropZone dropZone;
     
     public override void InitializeAgent()
     {
@@ -30,6 +31,11 @@ public class RobotAgent : Agent
         // Arm and shovel position
         AddVectorObs(shovel.GetArmPos());
         AddVectorObs(shovel.GetShovelPos());
+        
+        // Drop-Zone Position
+        AddVectorObs(dropZone.transform.position.x);
+        AddVectorObs(dropZone.transform.position.z);
+        AddVectorObs(dropZone.GetRadius());
         
         // Distance sensor measurements
         float[] distances = sensors.GetMeasuredDistances();

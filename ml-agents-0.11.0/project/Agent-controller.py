@@ -1,23 +1,3 @@
-"""
-Notes for interaction with Robot Agent:
-
-Observations collected in CollectObservations are as follows:
-- Robot position (x)
-- Robot position (z)
-- Debris position (x)
-- Debris position (z)
-RESPECTIVELY
-
-Actions performed in AgentAction are as follows:
-- SetTorque (Accelerate)
-- SetAngle (Wheels)
-- RotateArm
-- RotateShovel
-RESPECTIVELY
-
-This note will be updated as the project goes on.
-"""
-
 # import matplotlib.pyplot as plt
 import numpy as np
 import time
@@ -119,4 +99,4 @@ if __name__ == '__main__':
 
     # End time
     end_time = time.time()
-    print("\nTime to reach goal start: " + str(end_time - start_time))
+    print("\nTime to reach goal: " + str(end_time - start_time))

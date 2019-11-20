@@ -9,6 +9,7 @@ public class DropZone : MonoBehaviour
 
     void OnDrawGizmos()
     {
+        Handles.color = new Color(1f, 1f, 0f, 0.2f);
         Handles.DrawSolidDisc(transform.position, Vector3.up, radius);
     }
 

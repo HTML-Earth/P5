@@ -16,6 +16,8 @@ class Agent:
     observations = None
     robot_position = None
     debris_position = None
+    dropzone_position = None
+    dropzone_radius = None
 
     # Setup connection between Unity and Python
     def setup_connection_with_unity(self):
@@ -30,6 +32,15 @@ class Agent:
         self.brain = self.env_info[self.default_brain]
 
     # Update observations variable with information about the environment
+    def initial_observations(self):
+        self.observations = self.env_info[self.default_brain].vector_observations[0]
+
+        # Assets/P5/Scripts/RobotAgent.cs - CollectObservations
+        self.robot_position = [self.observations[0], self.observations[1]]
+        self.debris_position = [self.observations[2], self.observations[3]]
+        self.dropzone_position = [self.observations[4], self.observations[5]]
+        self.dropzone_radius = self.observations[6]
+
     def update_observations(self):
         self.observations = self.env_info[self.default_brain].vector_observations[0]
 
@@ -73,7 +84,7 @@ if __name__ == '__main__':
     start_time = time.time()
 
     # Update observations, robot_position and debris position for the default brain
-    agent.update_observations()
+    agent.initial_observations()
 
     # Examine the state space for the default brain
     print("Agent state looks like: \n{}".format(agent.observations))

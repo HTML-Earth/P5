@@ -16,6 +16,7 @@ public class RobotAgent : Agent
         wheels = GetComponent<WheelDrive>();
         shovel = GetComponent<ShovelControl>();
         sensors = GetComponent<RobotSensors>();
+        dropZone = FindObjectOfType<DropZone>();
     }
 
     public override void CollectObservations()

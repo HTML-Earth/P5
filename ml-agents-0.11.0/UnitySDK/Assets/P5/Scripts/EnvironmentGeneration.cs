@@ -49,7 +49,7 @@ public class EnvironmentGeneration : MonoBehaviour
             {
                 x = Random.Range(0, 4);
                 z = Random.Range(0, 4);
-            } while ();
+            } while (SetInLists(x, z, xList, zList));
             var rotation = Random.Range(0, 2) * 90f;
             Instantiate(wall, new Vector3(-16f + x * 8, 2.375f, -16f + z * 8), Quaternion.Euler(0f, rotation, 0f));
             xList.Add(x);

@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class EnvironmentGeneration : MonoBehaviour
 {
-    float robot_x;
-    float robot_z;
-    float dropzone_x;
-    float dropzone_z;
+    int robot_x;
+    int robot_z;
+    int dropzone_x;
+    int dropzone_z;
+    
     private List<Transform> debrisList;
 
     public GameObject debrisPrefab;
@@ -17,7 +18,7 @@ public class EnvironmentGeneration : MonoBehaviour
 
     public void GenerateEnvironment()
     {
-        PlaceRobot();
+        //PlaceRobot();
         GenerateDropzone();
         GenerateWalls();
         GenerateDebris();
@@ -77,7 +78,7 @@ public class EnvironmentGeneration : MonoBehaviour
             {
                 debrisX = Random.Range(0, 6);
                 debrisZ = Random.Range(0, 6);
-            } while (SetInLists(debrisX, debrisZ, randomsX, randomsY) == ((debrisX == dropzone_x && debrisZ == dropzone_z) == (debrisX == robot_x && debrisZ == robot_z)) );
+            } while (SetInLists(debrisX, debrisZ, randomsX, randomsY) | ((debrisX == dropzone_x && debrisZ == dropzone_z) | (debrisX == robot_x && debrisZ == robot_z)) );
 
             float x = -20f + debrisX * 8;
             float z = -20f + debrisZ * 8;
@@ -89,7 +90,7 @@ public class EnvironmentGeneration : MonoBehaviour
         }
     }
 
-    //Return true if the number set is not within the given list
+    //Return true if the number set is within the given list
     private bool SetInLists(int num1, int num2, List<int> numList1, List<int> numList2)
     {
         for (int i = 0; i < numList1.Count; i++)
@@ -109,8 +110,8 @@ public class EnvironmentGeneration : MonoBehaviour
             dropzone_z = Random.Range(0, 6);
         } while (robot_x == dropzone_x && robot_z == dropzone_z);
 
-        float x = -20f + Random.Range(0, 6) * 8; // -20 to +20
-        float z = -20f + Random.Range(0, 6) * 8;
+        float x = -20f + dropzone_x * 8; // -20 to +20
+        float z = -20f + dropzone_z * 8;
         dropzone.position = new Vector3(x, 0.2f, z);
     }
 

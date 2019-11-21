@@ -1445,7 +1445,7 @@ MonoBehaviour:
     type: 3}
   dropzone: {fileID: 1546227415}
   robot: {fileID: 2015237486}
-  wall: {fileID: 0}
+  wall: {fileID: 5233649341875591863, guid: 92c7398308261ed48acf89322fc98d00, type: 3}
 --- !u!4 &1876529092
 Transform:
   m_ObjectHideFlags: 0
@@ -1709,25 +1709,50 @@ PrefabInstance:
       propertyPath: m_ForceAppPointDistance
       value: 0.85066164
       objectReference: {fileID: 0}
+    - target: {fileID: 4743365922242820762, guid: 81f47bcef54978a40a80743e3328700e,
+        type: 3}
+      propertyPath: m_SuspensionSpring.spring
+      value: 26328.58
+      objectReference: {fileID: 0}
+    - target: {fileID: 4743365922242820762, guid: 81f47bcef54978a40a80743e3328700e,
+        type: 3}
+      propertyPath: m_SuspensionSpring.damper
+      value: 4212.5728
+      objectReference: {fileID: 0}
+    - target: {fileID: 4743365922242820762, guid: 81f47bcef54978a40a80743e3328700e,
+        type: 3}
+      propertyPath: m_SuspensionDistance
+      value: 0.1962
+      objectReference: {fileID: 0}
     - target: {fileID: 4743365922462476675, guid: 81f47bcef54978a40a80743e3328700e,
         type: 3}
       propertyPath: m_ForceAppPointDistance
       value: 0.85066164
       objectReference: {fileID: 0}
+    - target: {fileID: 4743365922462476675, guid: 81f47bcef54978a40a80743e3328700e,
+        type: 3}
+      propertyPath: m_SuspensionSpring.damper
+      value: 3787.4275
+      objectReference: {fileID: 0}
+    - target: {fileID: 4743365922462476675, guid: 81f47bcef54978a40a80743e3328700e,
+        type: 3}
+      propertyPath: m_SuspensionDistance
+      value: 0.19620001
+      objectReference: {fileID: 0}
     - target: {fileID: 4743365922474834781, guid: 81f47bcef54978a40a80743e3328700e,
         type: 3}
       propertyPath: m_SuspensionSpring.spring
-      value: 24998.582
+      value: 24998.578
       objectReference: {fileID: 0}
     - target: {fileID: 4743365922474834781, guid: 81f47bcef54978a40a80743e3328700e,
         type: 3}
       propertyPath: m_SuspensionSpring.damper
-      value: 3999.7732
+      value: 3999.7727
       objectReference: {fileID: 0}
     - target: {fileID: 4743365922474834781, guid: 81f47bcef54978a40a80743e3328700e,
         type: 3}
       propertyPath: m_SuspensionDistance
-      value: 0.1962
+      value: 0.19620001
       objectReference: {fileID: 0}
     - target: {fileID: 4743365922474834781, guid: 81f47bcef54978a40a80743e3328700e,
         type: 3}
@@ -1738,6 +1763,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_ForceAppPointDistance
       value: 0.85066164
+      objectReference: {fileID: 0}
+    - target: {fileID: 4743365922881444137, guid: 81f47bcef54978a40a80743e3328700e,
+        type: 3}
+      propertyPath: m_SuspensionSpring.spring
+      value: 25001.416
+      objectReference: {fileID: 0}
+    - target: {fileID: 4743365922881444137, guid: 81f47bcef54978a40a80743e3328700e,
+        type: 3}
+      propertyPath: m_SuspensionSpring.damper
+      value: 4000.2266
       objectReference: {fileID: 0}
     - target: {fileID: 4743365923223935313, guid: 81f47bcef54978a40a80743e3328700e,
         type: 3}

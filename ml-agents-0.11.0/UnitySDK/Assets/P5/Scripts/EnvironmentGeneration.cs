@@ -8,7 +8,8 @@ public class EnvironmentGeneration : MonoBehaviour
     float robot_z;
     float dropzone_x;
     float dropzone_z;
-    
+    private List<GameObject> debrisList;
+
     public GameObject debrisPrefab;
     public Transform dropzone;
     public Transform robot;
@@ -27,7 +28,7 @@ public class EnvironmentGeneration : MonoBehaviour
     {
         robot_x = Random.Range(0, 6);
         robot_z = Random.Range(0, 6);
-        
+
         float x = -20f + robot_x * 8;
         float z = -20f + robot_z * 8;
         float randomRotation = Random.Range(0, 4) * 90f;
@@ -58,6 +59,45 @@ public class EnvironmentGeneration : MonoBehaviour
 
     private void GenerateDebris()
     {
+        int debrisAmount = 6;
+        int debrisX;
+        int debrisY;
+        var randomsX = new List<int>();
+        var randomsY = new List<int>();
+        debrisList = new List<GameObject>();
+        
+        for (int i = 0; i < debrisAmount; i++)
+        {
+            //Random rotation numbers
+            var rotateX = Random.Range(0, 2) * 90;
+            var rotateY = Random.Range(0, 2) * 90;
+            
+            //Random position numbers
+            do
+            {
+                debrisX = Random.Range(0, 6);
+                debrisY = Random.Range(0, 6);
+            } while (SetInLists(debrisX, debrisY, randomsX, randomsY));
+
+            float x = -20f + debrisX * 8;
+            float z = -20f + debrisY * 8;
+            GameObject debrisOBJ = Instantiate(debrisPrefab, new Vector3(x, 0.5f, z), Quaternion.Euler(rotateX, rotateY, 0f));
+            debrisList.Add(debrisOBJ);
+            
+            randomsX.Add(debrisX);
+            randomsY.Add(debrisY);
+        }
+    }
+
+    //Return true if the number set is not within the given list
+    private bool SetInLists(int num1, int num2, List<int> numList1, List<int> numList2)
+    {
+        for (int i = 0; i < numList1.Count; i++)
+        {
+            if (num1.Equals(numList1[i]) && num2.Equals(numList2[i]))
+                return true;
+        }
+        return false;
     }
 
     // Dropzone position
@@ -72,5 +112,10 @@ public class EnvironmentGeneration : MonoBehaviour
         float x = -20f + Random.Range(0, 6) * 8; // -20 to +20
         float z = -20f + Random.Range(0, 6) * 8;
         dropzone.position = new Vector3(x, 0.2f, z);
+    }
+
+    public List<GameObject> GetDebris()
+    {
+        return debrisList;
     }
 }

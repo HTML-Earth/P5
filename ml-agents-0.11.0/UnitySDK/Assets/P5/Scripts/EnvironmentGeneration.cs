@@ -8,7 +8,7 @@ public class EnvironmentGeneration : MonoBehaviour
     float robot_z;
     float dropzone_x;
     float dropzone_z;
-    private List<GameObject> debrisList;
+    private List<Transform> debrisList;
 
     public GameObject debrisPrefab;
     public Transform dropzone;
@@ -64,7 +64,7 @@ public class EnvironmentGeneration : MonoBehaviour
         int debrisY;
         var randomsX = new List<int>();
         var randomsY = new List<int>();
-        debrisList = new List<GameObject>();
+        debrisList = new List<Transform>();
         
         for (int i = 0; i < debrisAmount; i++)
         {
@@ -82,7 +82,7 @@ public class EnvironmentGeneration : MonoBehaviour
             float x = -20f + debrisX * 8;
             float z = -20f + debrisY * 8;
             GameObject debrisOBJ = Instantiate(debrisPrefab, new Vector3(x, 0.5f, z), Quaternion.Euler(rotateX, rotateY, 0f));
-            debrisList.Add(debrisOBJ);
+            debrisList.Add(debrisOBJ.transform);
             
             randomsX.Add(debrisX);
             randomsY.Add(debrisY);
@@ -114,7 +114,7 @@ public class EnvironmentGeneration : MonoBehaviour
         dropzone.position = new Vector3(x, 0.2f, z);
     }
 
-    public List<GameObject> GetDebris()
+    public List<Transform> GetDebris()
     {
         return debrisList;
     }

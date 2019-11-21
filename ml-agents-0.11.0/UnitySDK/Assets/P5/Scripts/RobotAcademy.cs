@@ -5,11 +5,14 @@ using UnityEngine;
 
 public class RobotAcademy : Academy
 {
-    private EnvironmentGeneration environmentGeneration;
+    EnvironmentGeneration environmentGeneration;
+    List<Transform> debrisInEnvironment;
+    
     public override void InitializeAcademy()
     {
         // Initialize variables
         environmentGeneration = FindObjectOfType<EnvironmentGeneration>();
+        debrisInEnvironment = new List<Transform>();
     }
 
     public override void AcademyStep()
@@ -21,5 +24,11 @@ public class RobotAcademy : Academy
     {
         // Generate environment
         environmentGeneration.GenerateEnvironment();
+        debrisInEnvironment = environmentGeneration.GetDebris();
+    }
+
+    public List<Transform> GetDebris()
+    {
+        return debrisInEnvironment;
     }
 }

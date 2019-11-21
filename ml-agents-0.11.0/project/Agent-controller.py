@@ -15,6 +15,8 @@ class Agent:
     # Observation of environment variables
     observations = None
     robot_position = None
+    arm_position = None
+    shovel_position = None
     debris_position = None
     dropzone_position = None
     dropzone_radius = None
@@ -37,16 +39,24 @@ class Agent:
 
         # Assets/P5/Scripts/RobotAgent.cs - CollectObservations
         self.robot_position = [self.observations[0], self.observations[1]]
-        self.debris_position = [self.observations[2], self.observations[3]]
+        self.arm_position = self.observations[2]
+        self.shovel_position = self.observations[3]
         self.dropzone_position = [self.observations[4], self.observations[5]]
         self.dropzone_radius = self.observations[6]
+
+        # distance sensors (7-36)
+
+        # visible debris (37)
+
+        # debris positions (38-56)
+        self.debris_position = [self.observations[38], self.observations[40]]
 
     def update_observations(self):
         self.observations = self.env_info[self.default_brain].vector_observations[0]
 
         # Assets/P5/Scripts/RobotAgent.cs - CollectObservations
         self.robot_position = [self.observations[0], self.observations[1]]
-        self.debris_position = [self.observations[2], self.observations[3]]
+        self.debris_position = [self.observations[38], self.observations[40]]
 
     # Action functions
     # Throttle wheels forward or backwards (1 forwards and -1 backwards)

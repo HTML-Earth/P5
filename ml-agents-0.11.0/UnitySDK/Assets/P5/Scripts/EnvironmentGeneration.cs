@@ -61,7 +61,7 @@ public class EnvironmentGeneration : MonoBehaviour
     {
         int debrisAmount = 6;
         int debrisX;
-        int debrisY;
+        int debrisZ;
         var randomsX = new List<int>();
         var randomsY = new List<int>();
         debrisList = new List<Transform>();
@@ -76,16 +76,16 @@ public class EnvironmentGeneration : MonoBehaviour
             do
             {
                 debrisX = Random.Range(0, 6);
-                debrisY = Random.Range(0, 6);
-            } while (SetInLists(debrisX, debrisY, randomsX, randomsY));
+                debrisZ = Random.Range(0, 6);
+            } while (SetInLists(debrisX, debrisZ, randomsX, randomsY) == ((debrisX == dropzone_x && debrisZ == dropzone_z) == (debrisX == robot_x && debrisZ == robot_z)) );
 
             float x = -20f + debrisX * 8;
-            float z = -20f + debrisY * 8;
+            float z = -20f + debrisZ * 8;
             GameObject debrisOBJ = Instantiate(debrisPrefab, new Vector3(x, 0.5f, z), Quaternion.Euler(rotateX, rotateY, 0f));
             debrisList.Add(debrisOBJ.transform);
             
             randomsX.Add(debrisX);
-            randomsY.Add(debrisY);
+            randomsY.Add(debrisZ);
         }
     }
 

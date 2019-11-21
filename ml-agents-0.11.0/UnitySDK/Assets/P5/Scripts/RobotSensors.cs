@@ -17,6 +17,9 @@ public class RobotSensors : MonoBehaviour
 
     Vector3[] sensorDirections;
     float[] measuredDistances;
+    
+    Color rayColor = new Color(0,1,1, 0.2f);
+    Color rayColorMiss = new Color(1,0,0, 0.2f);
 
     void Awake()
     {
@@ -59,9 +62,9 @@ public class RobotSensors : MonoBehaviour
         for (int i = 0; i < sensorAmount; i++)
         {
             if (measuredDistances[i] < Mathf.Infinity)
-                Gizmos.color = Color.cyan;
+                Gizmos.color = rayColor;
             else
-                Gizmos.color = Color.red;
+                Gizmos.color = rayColorMiss;
             
             Gizmos.DrawRay(sensorPosition.position, sensorDirections[i].normalized * measuredDistances[i]);
         }

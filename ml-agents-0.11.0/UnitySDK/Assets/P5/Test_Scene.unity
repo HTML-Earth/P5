@@ -1637,7 +1637,7 @@ PrefabInstance:
     - target: {fileID: 8510312020121741670, guid: 81f47bcef54978a40a80743e3328700e,
         type: 3}
       propertyPath: m_Name
-      value: robot
+      value: Robot-model
       objectReference: {fileID: 0}
     - target: {fileID: 4630239631701515125, guid: 81f47bcef54978a40a80743e3328700e,
         type: 3}
@@ -1717,17 +1717,17 @@ PrefabInstance:
     - target: {fileID: 4743365922474834781, guid: 81f47bcef54978a40a80743e3328700e,
         type: 3}
       propertyPath: m_SuspensionSpring.spring
-      value: 24998.582
+      value: 24998.578
       objectReference: {fileID: 0}
     - target: {fileID: 4743365922474834781, guid: 81f47bcef54978a40a80743e3328700e,
         type: 3}
       propertyPath: m_SuspensionSpring.damper
-      value: 3999.7732
+      value: 3999.7727
       objectReference: {fileID: 0}
     - target: {fileID: 4743365922474834781, guid: 81f47bcef54978a40a80743e3328700e,
         type: 3}
       propertyPath: m_SuspensionDistance
-      value: 0.1962
+      value: 0.19620001
       objectReference: {fileID: 0}
     - target: {fileID: 4743365922474834781, guid: 81f47bcef54978a40a80743e3328700e,
         type: 3}

@@ -1,4 +1,3 @@
-# import matplotlib.pyplot as plt
 import numpy as np
 import time
 
@@ -31,9 +30,9 @@ class Agent:
         self.default_brain = "Robot"
         self.brain = self.env_info[self.default_brain]
 
-    # Update observations variable with information about the environment
+    # Initial observations about the environment
     def initial_observations(self):
-        self.observations = self.env_info[self.default_brain].vector_observations[0]
+        self.observations = self.brain.vector_observations[0]
 
         # Assets/P5/Scripts/RobotAgent.cs - CollectObservations
         self.robot_position = [self.observations[0], self.observations[1]]
@@ -41,8 +40,9 @@ class Agent:
         self.dropzone_position = [self.observations[4], self.observations[5]]
         self.dropzone_radius = self.observations[6]
 
+    # Update observations variable with information about the environment without dropzone
     def update_observations(self):
-        self.observations = self.env_info[self.default_brain].vector_observations[0]
+        self.observations = self.brain.vector_observations[0]
 
         # Assets/P5/Scripts/RobotAgent.cs - CollectObservations
         self.robot_position = [self.observations[0], self.observations[1]]

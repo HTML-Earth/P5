@@ -11,6 +11,7 @@ public class RobotAgent : Agent
     WheelDrive wheels;
     ShovelControl shovel;
     RobotSensors sensors;
+    RobotVision vision;
     DropZone dropZone;
     
     Color debrisHighlight = new Color(0,1,1);
@@ -21,6 +22,7 @@ public class RobotAgent : Agent
         academy = FindObjectOfType<RobotAcademy>();
         wheels = GetComponent<WheelDrive>();
         shovel = GetComponent<ShovelControl>();
+        vision = GetComponent<RobotVision>();
         sensors = GetComponent<RobotSensors>();
         dropZone = FindObjectOfType<DropZone>();
     }
@@ -46,14 +48,20 @@ public class RobotAgent : Agent
         {
             AddVectorObs(distances[dist]);
         }
+        
+        //Update debris vision
+        vision.UpdateVision();
 
         // Debris visibility
         AddVectorObs(64); //TODO: replace with bit-shifting (64 means all 6 debris are visible)
         
         // Debris positions
-        foreach (Transform debris in academy.GetDebris())
+        Vector3[] knownPositions = vision.GetKnownPositions();
+        for (int i = 0; i < knownPositions.Length; i++)
         {
-            AddVectorObs(debris.position);
+            AddVectorObs(knownPositions[i].x);
+            AddVectorObs(knownPositions[i].y);
+            AddVectorObs(knownPositions[i].z);
         }
     }
 
@@ -88,11 +96,18 @@ public class RobotAgent : Agent
     {
         if (!EditorApplication.isPlaying)
             return;
-        
-        foreach (Transform debris in academy.GetDebris())
+
+        Vector3[] knownPositions = vision.GetKnownPositions();
+        bool[] visibility = vision.GetVisibiilty();
+
+        for (int i = 0; i < knownPositions.Length; i++)
         {
-            Handles.color = debrisHighlight;
-            Handles.DrawWireDisc(debris.position, Vector3.up, 0.5f);
+            if (visibility[i])
+                Handles.color = debrisHighlight;
+            else
+                Handles.color = debrisHighlightMissing;
+
+            Handles.DrawWireDisc(knownPositions[i], Vector3.up, 0.5f);
         }
     }
 }

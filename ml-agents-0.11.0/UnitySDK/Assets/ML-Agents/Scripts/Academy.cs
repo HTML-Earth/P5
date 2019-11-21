@@ -281,7 +281,7 @@ namespace MLAgents
                 Communicator = new RpcCommunicator(
                     new CommunicatorInitParameters
                     {
-                        port = 5005
+                        port = 5004
                     });
 #endif
             }

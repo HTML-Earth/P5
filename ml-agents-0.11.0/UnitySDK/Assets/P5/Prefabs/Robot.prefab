@@ -196,7 +196,7 @@ GameObject:
   - component: {fileID: 1015023220}
   - component: {fileID: 1015023219}
   m_Layer: 0
-  m_Name: Cam
+  m_Name: BehindCam
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -209,13 +209,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1015023217}
-  m_LocalRotation: {x: 0.20437375, y: -0, z: -0, w: 0.978893}
-  m_LocalPosition: {x: 0, y: 1.9667053, z: -3.559}
+  m_LocalRotation: {x: 0.12186928, y: 0, z: 0, w: 0.9925462}
+  m_LocalPosition: {x: 0, y: 1.43, z: -2.59}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4630239631701515125}
   m_RootOrder: 7
-  m_LocalEulerAnglesHint: {x: 23.586, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 14, y: 0, z: 0}
 --- !u!20 &1015023220
 Camera:
   m_ObjectHideFlags: 0
@@ -241,7 +241,7 @@ Camera:
     height: 0.33
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 80
   orthographic: 0
   orthographic size: 5
   m_Depth: 1
@@ -555,7 +555,7 @@ GameObject:
   - component: {fileID: 1799447207}
   - component: {fileID: 1799447206}
   m_Layer: 0
-  m_Name: Cam (1)
+  m_Name: ShovelCam
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -568,13 +568,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1799447204}
-  m_LocalRotation: {x: 0.14451535, y: -0.6921759, z: 0.14451277, w: 0.6921878}
-  m_LocalPosition: {x: 3.06, y: 1.2, z: 0.19}
+  m_LocalRotation: {x: 0, y: -0.7071006, z: 0, w: 0.70711297}
+  m_LocalPosition: {x: 2.413, y: 0.096, z: 1.754}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4630239631701515125}
   m_RootOrder: 8
-  m_LocalEulerAnglesHint: {x: 23.586, y: -89.999, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -89.999, z: 0}
 --- !u!20 &1799447207
 Camera:
   m_ObjectHideFlags: 0

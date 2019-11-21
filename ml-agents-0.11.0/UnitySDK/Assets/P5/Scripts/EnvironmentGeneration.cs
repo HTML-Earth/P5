@@ -18,7 +18,7 @@ public class EnvironmentGeneration : MonoBehaviour
 
     public void GenerateEnvironment()
     {
-        //PlaceRobot();
+        PlaceRobot();
         GenerateDropzone();
         GenerateWalls();
         GenerateDebris();

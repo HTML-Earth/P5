@@ -39,7 +39,7 @@ public class EnvironmentGeneration : MonoBehaviour
 
     private void GenerateWalls()
     {
-        int amount = Random.Range(4, 9);
+        int amount = Random.Range(8, 15);
         int x;
         int z;
         List<int> xList = new List<int>();

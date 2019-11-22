@@ -25,7 +25,7 @@ public class Wall : MonoBehaviour
     {
         length = Random.Range(minLength, maxLength);
 
-        transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, length);
+        transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, 8);
     }
 
 }

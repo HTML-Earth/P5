@@ -20,6 +20,8 @@ public class RobotAgent : Agent
     float penalty_debrisLeftZone = -100f;
 
     List<bool> previousDebrisInZone;
+
+    List<RobotVision.DebrisInfo> debrisInfos;
     
     readonly Color debrisHighlight = new Color(0,1,1);
     readonly Color debrisHighlightMissing = new Color(1,0,0);
@@ -61,14 +63,13 @@ public class RobotAgent : Agent
         }
         
         // Debris positions
-        vision.UpdateVision();
+        debrisInfos = vision.UpdateVision();
         
-        Vector3[] knownPositions = vision.GetKnownPositions();
-        for (int i = 0; i < knownPositions.Length; i++)
+        foreach (RobotVision.DebrisInfo debrisInfo in debrisInfos)
         {
-            AddVectorObs(knownPositions[i].x);
-            AddVectorObs(knownPositions[i].y);
-            AddVectorObs(knownPositions[i].z);
+            AddVectorObs(debrisInfo.lastKnownPosition.x);
+            AddVectorObs(debrisInfo.lastKnownPosition.y);
+            AddVectorObs(debrisInfo.lastKnownPosition.z);
         }
     }
     
@@ -126,13 +127,10 @@ public class RobotAgent : Agent
         if (!EditorApplication.isPlaying)
             return;
 
-        Vector3[] knownPositions = vision.GetKnownPositions();
-        bool[] visibility = vision.GetVisibiilty();
-
-        for (int i = 0; i < knownPositions.Length; i++)
+        foreach (RobotVision.DebrisInfo debrisInfo in debrisInfos)
         {
-            Handles.color = visibility[i] ? debrisHighlight : debrisHighlightMissing;
-            Handles.DrawWireDisc(knownPositions[i], Vector3.up, 0.5f);
+            Handles.color = debrisInfo.isVisible ? debrisHighlight : debrisHighlightMissing;
+            Handles.DrawWireDisc(debrisInfo.lastKnownPosition, Vector3.up, 0.5f);
         }
     }
 }

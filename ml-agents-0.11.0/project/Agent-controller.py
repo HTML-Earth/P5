@@ -13,12 +13,16 @@ class Agent:
 
     # Observation of environment variables
     observations = None
+
     robot_position = None
     arm_position = None
     shovel_position = None
-    debris_position = None
+
     dropzone_position = None
     dropzone_radius = None
+
+    debris_visibility = None
+    debris_position = None
 
     # Setup connection between Unity and Python
     def setup_connection_with_unity(self):
@@ -42,11 +46,10 @@ class Agent:
         self.shovel_position = self.observations[3]
         self.dropzone_position = [self.observations[4], self.observations[5]]
         self.dropzone_radius = self.observations[6]
+
         # distance sensors (7-36)
 
-        # visible debris (37)
-
-        # debris positions (38-56)
+        # debris positions (37-55)
         self.debris_position = [self.observations[38], self.observations[40]]
 
     # Update observations variable with information about the environment without dropzone
@@ -101,6 +104,9 @@ if __name__ == '__main__':
     # Print initial positions
     print("\nInitial: Positions of observations:")
     agent.print_positions()
+
+    # Print debris visibility
+    agent.print_visibility()
 
     # Drive the robot until the debris and the robot has the same X value
     while agent.debris_position[0] - agent.robot_position[0] > 0:

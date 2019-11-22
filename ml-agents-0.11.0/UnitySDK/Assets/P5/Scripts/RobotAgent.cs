@@ -49,11 +49,8 @@ public class RobotAgent : Agent
             AddVectorObs(distances[dist]);
         }
         
-        //Update debris vision
-        vision.UpdateVision();
-
         // Debris visibility
-        AddVectorObs(64); //TODO: replace with bit-shifting (64 means all 6 debris are visible)
+        vision.UpdateVision();
         
         // Debris positions
         Vector3[] knownPositions = vision.GetKnownPositions();

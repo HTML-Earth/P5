@@ -2410,7 +2410,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 56
+    vectorObservationSize: 55
     numStackedVectorObservations: 1
     vectorActionSize: 04000000
     vectorActionDescriptions: []
@@ -2453,6 +2453,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 16384
   sensorPosition: {fileID: 5624098504110841232}
+  visionAngle: 120
 --- !u!114 &8326510499022826615
 MonoBehaviour:
   m_ObjectHideFlags: 0

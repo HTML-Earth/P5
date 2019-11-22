@@ -14,8 +14,8 @@ public class RobotAgent : Agent
     RobotVision vision;
     DropZone dropZone;
     
-    Color debrisHighlight = new Color(0,1,1);
-    Color debrisHighlightMissing = new Color(1,0,0);
+    readonly Color debrisHighlight = new Color(0,1,1);
+    readonly Color debrisHighlightMissing = new Color(1,0,0);
     
     public override void InitializeAgent()
     {
@@ -30,16 +30,18 @@ public class RobotAgent : Agent
     public override void CollectObservations()
     {
         // Robot position (0, 1)
-        AddVectorObs(gameObject.transform.position.x);
-        AddVectorObs(gameObject.transform.position.z);
+        Vector3 currentPosition = transform.position;
+        AddVectorObs(currentPosition.x);
+        AddVectorObs(currentPosition.z);
 
         // Arm and shovel position (2, 3)
         AddVectorObs(shovel.GetArmPos());
         AddVectorObs(shovel.GetShovelPos());
         
         // Drop-Zone Position and radius (4, 5, 6)
-        AddVectorObs(dropZone.transform.position.x);
-        AddVectorObs(dropZone.transform.position.z);
+        Vector3 dropZonePosition = dropZone.transform.position;
+        AddVectorObs(dropZonePosition.x);
+        AddVectorObs(dropZonePosition.z);
         AddVectorObs(dropZone.GetRadius());
         
         // Distance sensor measurements
@@ -49,13 +51,9 @@ public class RobotAgent : Agent
             AddVectorObs(distances[dist]);
         }
         
-        //Update debris vision
-        vision.UpdateVision();
-
-        // Debris visibility
-        AddVectorObs(64); //TODO: replace with bit-shifting (64 means all 6 debris are visible)
-        
         // Debris positions
+        vision.UpdateVision();
+        
         Vector3[] knownPositions = vision.GetKnownPositions();
         for (int i = 0; i < knownPositions.Length; i++)
         {
@@ -102,11 +100,7 @@ public class RobotAgent : Agent
 
         for (int i = 0; i < knownPositions.Length; i++)
         {
-            if (visibility[i])
-                Handles.color = debrisHighlight;
-            else
-                Handles.color = debrisHighlightMissing;
-
+            Handles.color = visibility[i] ? debrisHighlight : debrisHighlightMissing;
             Handles.DrawWireDisc(knownPositions[i], Vector3.up, 0.5f);
         }
     }

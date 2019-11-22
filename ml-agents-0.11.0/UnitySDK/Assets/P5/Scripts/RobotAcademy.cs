@@ -8,6 +8,7 @@ public class RobotAcademy : Academy
     EnvironmentGeneration environmentGeneration;
     DropZone dropZone;
     List<Transform> debrisInEnvironment;
+    List<bool> debrisInZone;
     
     public override void InitializeAcademy()
     {
@@ -15,11 +16,7 @@ public class RobotAcademy : Academy
         environmentGeneration = FindObjectOfType<EnvironmentGeneration>();
         dropZone = FindObjectOfType<DropZone>();
         debrisInEnvironment = new List<Transform>();
-    }
-
-    public override void AcademyStep()
-    {
-        // Check if goal is met?
+        debrisInZone = new List<bool>();
     }
 
     public override void AcademyReset()
@@ -28,10 +25,27 @@ public class RobotAcademy : Academy
         environmentGeneration.GenerateEnvironment();
         debrisInEnvironment = environmentGeneration.GetDebris();
         dropZone.SetDebrisList(debrisInEnvironment);
+        foreach (Transform debris in debrisInEnvironment)
+        {
+            debrisInZone.Add(dropZone.IsInZone(debris.position));
+        }
+    }
+
+    public override void AcademyStep()
+    {
+        for (int debris = 0; debris < debrisInEnvironment.Count; debris++)
+        {
+            debrisInZone[debris] = dropZone.IsInZone(debrisInEnvironment[debris].position);
+        }
     }
 
     public List<Transform> GetDebris()
     {
         return debrisInEnvironment;
+    }
+
+    public List<bool> GetDebrisInZone()
+    {
+        return debrisInZone;
     }
 }

@@ -13,6 +13,13 @@ public class RobotAgent : Agent
     RobotSensors sensors;
     RobotVision vision;
     DropZone dropZone;
+
+    float reward_debrisEnteredZone = 10f;
+    float reward_allDebrisEnteredZone = 1000f;
+    
+    float penalty_debrisLeftZone = -100f;
+
+    List<bool> previousDebrisInZone;
     
     readonly Color debrisHighlight = new Color(0,1,1);
     readonly Color debrisHighlightMissing = new Color(1,0,0);
@@ -25,6 +32,8 @@ public class RobotAgent : Agent
         vision = GetComponent<RobotVision>();
         sensors = GetComponent<RobotSensors>();
         dropZone = FindObjectOfType<DropZone>();
+
+        previousDebrisInZone = academy.GetDebrisInZone();
     }
 
     public override void CollectObservations()
@@ -67,9 +76,23 @@ public class RobotAgent : Agent
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
-        // Check if goal is met or failed
+        List<bool> currentDebrisInZone = academy.GetDebrisInZone();
+        
+        for (int i = 0; i < previousDebrisInZone.Count; i++)
+        {
+            if (!previousDebrisInZone[i] && currentDebrisInZone[i])
+                AddReward(reward_debrisEnteredZone);
+
+            if (previousDebrisInZone[i] && !currentDebrisInZone[i])
+                AddReward(penalty_debrisLeftZone);
+        }
+
+        // Check if goal is met
         if (dropZone.IsAllDebrisInZone())
+        {
+            AddReward(reward_allDebrisEnteredZone);
             Done();
+        }
 
         // Perform actions
         

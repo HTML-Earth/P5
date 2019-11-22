@@ -9,6 +9,8 @@ public class RobotVision : MonoBehaviour
     public LayerMask layerMask;
     public Transform sensorPosition;
 
+    public float visionAngle = 120f;
+
     RobotAcademy academy;
 
     Transform[] debrisArray;
@@ -49,14 +51,23 @@ public class RobotVision : MonoBehaviour
         for (int debris = 0; debris < debrisArray.Length; debris++)
         {
             Vector3 currentDebrisPosition = debrisArray[debris].position;
-            
-            Ray ray = new Ray(currentSensorPosition, currentDebrisPosition - currentSensorPosition);
 
-            if (Physics.Raycast(ray, out RaycastHit hitInfo,
-                Vector3.Distance(currentSensorPosition, currentDebrisPosition), layerMask))
-                visibility[debris] = false;
+            Vector3 directionToDebris = currentDebrisPosition - currentSensorPosition;
+
+            if (Vector3.Angle(sensorPosition.forward, directionToDebris.normalized) < visionAngle * 0.5f)
+            {
+                Ray ray = new Ray(currentSensorPosition, directionToDebris);
+
+                if (Physics.Raycast(ray, out RaycastHit hitInfo,
+                    Vector3.Distance(currentSensorPosition, currentDebrisPosition), layerMask))
+                    visibility[debris] = false;
+                else
+                    visibility[debris] = true;
+            }
             else
-                visibility[debris] = true;
+            {
+                visibility[debris] = false;
+            }
         }
     }
 

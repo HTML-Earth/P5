@@ -62,9 +62,17 @@ public class RobotAgent : Agent
             AddVectorObs(knownPositions[i].z);
         }
     }
+    
+    
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
+        // Check if goal is met or failed
+        if (dropZone.IsAllDebrisInZone())
+            Done();
+
+        // Perform actions
+        
         wheels.SetTorque(vectorAction[0]);
         wheels.SetAngle(vectorAction[1]);
         

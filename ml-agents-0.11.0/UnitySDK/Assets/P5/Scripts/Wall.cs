@@ -6,7 +6,6 @@ using Random = UnityEngine.Random;
 
 public class Wall : MonoBehaviour
 {
-    public float length;
     /*
      * the minimum and maximum value of length
      * is found by the size of the entire
@@ -23,7 +22,7 @@ public class Wall : MonoBehaviour
     
     private void RandomWallSize()
     {
-        length = Random.Range(minLength, maxLength);
+        float length = Random.Range(minLength, maxLength);
 
         transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, 8);
     }

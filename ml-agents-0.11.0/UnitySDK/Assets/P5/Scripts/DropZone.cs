@@ -12,10 +12,9 @@ public class DropZone : MonoBehaviour
 
     bool allDebrisInZone;
 
-    void OnDrawGizmos()
+    void Awake()
     {
-        Handles.color = new Color(1f, 1f, 0f, 0.2f);
-        Handles.DrawSolidDisc(transform.position, Vector3.up, radius);
+        transform.Find("circle_area").localScale = new Vector3(radius, radius, radius);
     }
 
     void FixedUpdate()

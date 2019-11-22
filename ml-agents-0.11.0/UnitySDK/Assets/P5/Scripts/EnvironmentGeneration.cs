@@ -112,7 +112,7 @@ public class EnvironmentGeneration : MonoBehaviour
 
         float x = -20f + dropzone_x * 8; // -20 to +20
         float z = -20f + dropzone_z * 8;
-        dropzone.position = new Vector3(x, 0.2f, z);
+        dropzone.position = new Vector3(x, -0.24f, z);
     }
 
     public List<Transform> GetDebris()

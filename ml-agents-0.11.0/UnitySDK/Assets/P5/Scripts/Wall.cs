@@ -6,25 +6,20 @@ using Random = UnityEngine.Random;
 
 public class Wall : MonoBehaviour
 {
-    public float width, length, depth;
-    public int maxWidth = 10;
-    public int maxLength = 10;
-    public int maxDepth = 1;
-    public float maxScale = 0.75f;
+    public float length;
+    public float minLength = 4.0f;
+    public float maxLength = 8.0f;
     
-    // Start is called before the first frame update
     void Start()
     {
         RandomWallSize();
     }
-
+    
     private void RandomWallSize()
     {
-        width = Random.Range(1, maxWidth) * Random.Range(0, maxScale);
-        length = Random.Range(1, maxLength) * Random.Range(0, maxScale);
-        depth = Random.Range(1, maxDepth) /** Random.Range(0, maxScale)*/;
-        
-        transform.localScale = new Vector3(width, length, depth);        
+        length = Random.Range(minLength, maxLength);
+
+        transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y, length);
     }
 
 }

@@ -49,10 +49,9 @@ public class RobotAgent : Agent
             AddVectorObs(distances[dist]);
         }
         
-        // Debris visibility
+        // Debris positions
         vision.UpdateVision();
         
-        // Debris positions
         Vector3[] knownPositions = vision.GetKnownPositions();
         for (int i = 0; i < knownPositions.Length; i++)
         {

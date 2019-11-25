@@ -14,7 +14,7 @@ public class ShovelControl : MonoBehaviour
     float maxArmRotation = 360;
     
     float minShovelRotation = 290;
-    float maxShovelRotation = 360;
+    float maxShovelRotation = 360-47;
 
     float armInput = 0;
     float shovelInput = 0;
@@ -67,6 +67,19 @@ public class ShovelControl : MonoBehaviour
 
         float currentArmRotation = arm.localEulerAngles.x;
         float currentShovelRotation = shovel.localEulerAngles.x;
+
+        // shovel-restrictions
+        if (currentArmRotation < minArmRotation + 5)
+            maxShovelRotation = 360;
+
+        if (currentShovelRotation > 360 - 47)
+            maxArmRotation = 330;
+        else
+            maxArmRotation = 360;
+        
+        if (currentArmRotation > 330)
+            maxShovelRotation = 360 - 47;
+        
 
         if (armInput > 0)
             armRotation += rotAmt;

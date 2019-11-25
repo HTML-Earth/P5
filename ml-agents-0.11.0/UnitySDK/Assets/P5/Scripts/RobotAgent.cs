@@ -14,6 +14,8 @@ public class RobotAgent : Agent
     RobotVision vision;
     DropZone dropZone;
 
+    float timeElapsed;
+
     float reward_debrisEnteredZone = 10f;
     float reward_allDebrisEnteredZone = 1000f;
     
@@ -36,6 +38,8 @@ public class RobotAgent : Agent
         dropZone = FindObjectOfType<DropZone>();
 
         previousDebrisInZone = academy.GetDebrisInZone();
+
+        timeElapsed = 0;
     }
 
     public override void CollectObservations()
@@ -71,6 +75,7 @@ public class RobotAgent : Agent
             AddVectorObs(debrisInfo.lastKnownPosition.y);
             AddVectorObs(debrisInfo.lastKnownPosition.z);
         }
+        AddVectorObs(timeElapsed);
     }
     
     
@@ -132,5 +137,9 @@ public class RobotAgent : Agent
             Handles.color = debrisInfo.isVisible ? debrisHighlight : debrisHighlightMissing;
             Handles.DrawWireDisc(debrisInfo.lastKnownPosition, Vector3.up, 0.5f);
         }
+    }
+
+    void Update() {
+        timeElapsed += Time.deltaTime;
     }
 }

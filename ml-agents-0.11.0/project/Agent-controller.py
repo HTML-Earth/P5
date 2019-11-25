@@ -21,6 +21,8 @@ class Agent:
     debris_visibility = None
     debris_position = None
 
+    timeElapsed = None
+
     # Setup connection between Unity and Python
     def setup_connection_with_unity(self):
         # Connect to Unity and get environment
@@ -53,6 +55,7 @@ class Agent:
 
         self.robot_position = [self.observations[0], self.observations[1]]
         self.debris_position = [self.observations[38], self.observations[40]]
+        self.timeElapsed = self.observations[55]
 
     # Action functions
     def perform_action(self, throttle, angle, arm_rotation, shovel_rotation):
@@ -78,11 +81,8 @@ if __name__ == '__main__':
     # Examine the state space for the default brain
     print("Agent state looks like: \n{}".format(agent.observations))
 
-    # Print debris visibility
-    # agent.print_visibility()
-
     # Drive the robot until the debris and the robot has the same X value
-    while True:
+    while agent.robot_position[1] > 9:
         # Update information about the environment after action/step is performed
         agent.env_info = agent.perform_action(1, 0, 0, 0)
 
@@ -90,4 +90,5 @@ if __name__ == '__main__':
         agent.update_observations()
 
     # Close simulation
-    # agent.close_simulation()
+    agent.close_simulation()
+    print(agent.timeElapsed)

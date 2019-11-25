@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class DropZone : MonoBehaviour
 {
-    public float radius = 5f;
+    public float radius = 4f;
 
     List<Transform> debris;
 

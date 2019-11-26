@@ -10,8 +10,8 @@ public class Debris : MonoBehaviour
      *  this value tells 
      *  this value can be scaled between 0 to 1
      */
-    
-    public float variant_range = 0.6f;  
+
+    public float variant_range = 0.6f;
     
     private void Start()
     {
@@ -28,11 +28,13 @@ public class Debris : MonoBehaviour
         
         float minLength = transform.localScale.z; 
         float maxLength = minLength + variant_range;
-        
+
         // the unit for length, width and height is meter
         float width = Random.Range(minWidth, maxWidth);
         float height = Random.Range(minHeight, maxHeight);
         float length = Random.Range(minLength, maxLength);
+        
+        gameObject.GetComponent<Rigidbody>().mass = (width + height + length) * 3;
 
         transform.localScale = new Vector3(width, height, length);
     }

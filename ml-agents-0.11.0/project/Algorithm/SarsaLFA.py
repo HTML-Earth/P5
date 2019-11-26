@@ -1,3 +1,5 @@
+# Q_w(s,a) = w_0 + w_1 F_1(s,a) +  ... + w_n F_n(s,a)
+#
 # SARSA_LFA(F, gamma, eta)
 #   Inputs
 #       F = <F_1, ... , F_n>: a set of features. Define F_0(s,a) = 1.
@@ -19,3 +21,5 @@
 #       s := s'
 #       a := a'
 #   until termination
+#
+#

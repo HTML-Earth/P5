@@ -16,28 +16,19 @@ public class DropZone : MonoBehaviour
     {
         transform.Find("circle_area").localScale = new Vector3(radius, radius, radius);
     }
-
-    void FixedUpdate()
-    {
-        CheckDebrisInZone();
-    }
-
-    public float GetRadius()
-    {
-        return radius;
-    }
-
-    public bool IsInZone(Vector3 point)
-    {
-        return Vector3.Distance(transform.position, point) <= radius;
-    }
-
+    
     public void SetDebrisList(List<Transform> debris)
     {
         this.debris = debris;
         allDebrisInZone = false;
     }
 
+    void FixedUpdate()
+    {
+        CheckDebrisInZone();
+    }
+    
+    // Updates allDebrisInZone value
     void CheckDebrisInZone()
     {
         if (debris == null)
@@ -49,11 +40,22 @@ public class DropZone : MonoBehaviour
             if (!IsInZone(d.transform.position))
                 allDebrisInZone = false;
         }
-    }
+    }    
 
     public bool IsAllDebrisInZone()
     {
         return allDebrisInZone;
     }
+    
+    // Returns true if the given point is in the zone
+    public bool IsInZone(Vector3 point)
+    {
+        return Vector3.Distance(transform.position, point) <= radius;
+    }
 
+    public float GetRadius()
+    {
+        return radius;
+    }
+    
 }

@@ -21,7 +21,7 @@ public class RobotAgent : Agent
     
     float penalty_debrisLeftZone = -100f;
 
-    List<bool> previousDebrisInZone;
+    bool goalReached = false;
 
     List<RobotVision.DebrisInfo> debrisInfos;
     
@@ -37,9 +37,11 @@ public class RobotAgent : Agent
         sensors = GetComponent<RobotSensors>();
         dropZone = FindObjectOfType<DropZone>();
 
-        previousDebrisInZone = academy.GetDebrisInZone();
-
         timeElapsed = 0;
+    }
+    
+    void FixedUpdate() {
+        timeElapsed += Time.fixedDeltaTime;
     }
 
     public override void CollectObservations()
@@ -75,33 +77,40 @@ public class RobotAgent : Agent
             AddVectorObs(debrisInfo.lastKnownPosition.y);
             AddVectorObs(debrisInfo.lastKnownPosition.z);
         }
+        
+        // Simulation time
         AddVectorObs(timeElapsed);
     }
-    
-    
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
-        List<bool> currentDebrisInZone = academy.GetDebrisInZone();
-        
+        // Check if debris has left/entered the zone
+        List<bool> previousDebrisInZone = academy.GetPreviousDebrisInZone();
+        List<bool> currentDebrisInZone = academy.GetCurrentDebrisInZone();
+
         for (int i = 0; i < previousDebrisInZone.Count; i++)
         {
-            if (!previousDebrisInZone[i] && currentDebrisInZone[i])
-                AddReward(reward_debrisEnteredZone);
-
-            if (previousDebrisInZone[i] && !currentDebrisInZone[i])
-                AddReward(penalty_debrisLeftZone);
+            if (previousDebrisInZone[i])
+            {
+                if (!currentDebrisInZone[i])
+                    AddReward(penalty_debrisLeftZone, "debris left zone");
+            }
+            else
+            {
+                if (currentDebrisInZone[i])
+                    AddReward(reward_debrisEnteredZone, "debris entered zone");
+            }
         }
 
         // Check if goal is met
-        if (dropZone.IsAllDebrisInZone())
+        if (!goalReached && dropZone.IsAllDebrisInZone())
         {
-            AddReward(reward_allDebrisEnteredZone);
+            goalReached = true;
+            AddReward(reward_allDebrisEnteredZone, "all debris in zone");
             Done();
         }
 
         // Perform actions
-        
         wheels.SetTorque(vectorAction[0]);
         wheels.SetAngle(vectorAction[1]);
         
@@ -114,6 +123,14 @@ public class RobotAgent : Agent
         base.AgentReset();
     }
 
+    // Wrapper function for AddReward that prints the reward/penalty and custom message in console
+    void AddReward(float reward, string message)
+    {
+        Debug.Log(((reward < 0) ? "Penalty: " : "Reward: ") + reward + " (" + message + ")");
+        AddReward(reward);
+    }
+
+    // Used to control the agent manually
     public override float[] Heuristic()
     {
         float[] heuristicValues = new float[4];
@@ -127,19 +144,17 @@ public class RobotAgent : Agent
         return heuristicValues;
     }
 
+    // Used to draw debug info on screen
     void OnDrawGizmos()
     {
         if (!EditorApplication.isPlaying)
             return;
 
+        // Draws rings around the last known debris positions
         foreach (RobotVision.DebrisInfo debrisInfo in debrisInfos)
         {
             Handles.color = debrisInfo.isVisible ? debrisHighlight : debrisHighlightMissing;
             Handles.DrawWireDisc(debrisInfo.lastKnownPosition, Vector3.up, 0.5f);
         }
-    }
-
-    void Update() {
-        timeElapsed += Time.deltaTime;
     }
 }

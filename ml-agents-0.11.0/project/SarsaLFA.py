@@ -1,5 +1,5 @@
 import random
-import Agent-controller as Agent
+import AgentController as Agent
 
 
 # Q_w(s,a) = w_0 + w_1 F_1(s,a) +  ... + w_n F_n(s,a)
@@ -31,45 +31,71 @@ import Agent-controller as Agent
 class Sarsa:
 
     def __init__(self, gamma=0.9, eta=0.1):
+        # Q function
+        self.q = {}
+
+        # Feature function
+        self.feature = {}
+
         self.gamma = gamma
         self.eta = eta
-        self.actions = "noget_smart()"
 
-    def getQ(self, state, action):
-        return "q"
+        # All possible actions for the Agent (81 possible actions)
+        self.actions = [(i, j, k, l) for i in range(-1, 2) for j in range(-1, 2) for k in range(-1, 2) for l in range(-1, 2)]
+
+    def get_q_value(self, state, action):
+        # Return value for given state and action
+        # 0.0 is default if there exist no value for given state and action
+        return self.q.get((state, action), 0.0)
+
+    def get_feature_value(self, state, action):
+        return 0
 
     def choose_action(self, state, action):
         if random.random() < self.eta:
-            action = (random.randint(-1,1), random.randint(-1,1), random.randint(-1,1), random.randint(-1,1))
+            action = (random.randint(-1, 1), random.randint(-1, 1), random.randint(-1, 1), random.randint(-1, 1))
         else:
-            q = [self.getQ(state, a) for a in self.actions]
-            maxQ = max(q)
-            count = q.count(maxQ)
+            q = [self.get_q_value(state, a) for a in self.actions]
+            max_q = max(q)
+            count = q.count(max_q)
             if count > 1:
-                best = [i for i in range(len(self.actions)) if q[i] == maxQ]
+                best = [i for i in range(len(self.actions)) if q[i] == max_q]
                 i = random.choice(best)
             else:
-                i = q.index(maxQ)
+                i = q.index(max_q)
 
             action = self.actions[i]
         return action
 
-    def sarsa_lfa (self, agent, feature_tuple, gamma, eta):
-        weights = None
-        q = {}
+    def sarsa_lfa (self, agent, feature_tuple):
+        # Arbitrarily initalize weights which will be updated later
+        weights = []
+        for i in range(len(feature_tuple)):
+            weights.append(random.randint(0, 5))
 
+        # Update observations to make sure current state is correct
         agent.update_observations()
+
+        # Observe current state s
         cur_state = agent.observations
+        # Select action a
         cur_action = (1, 0, 0, 0)
 
         while True:
+            # Perform action and observe state s'
             new_state = agent.perform_action(cur_action)
-            reward = agent.previous_rewards
+            # Observe reward r
+            reward = agent.rewards
+            # Select action a' (using a policy based on the Q-function
             new_action = self.choose_action(cur_state, cur_action)
-            delta = reward + gamma * self.getQ(new_state, new_action) - self.getQ(cur_state, cur_action)
-            for i in range (len(feature_tuple)):
-                weights[i] = weights[i] + eta * delta * feature_tuple[i].get(cur_state, cur_action)
 
+            # TODO Explain what delta is
+            delta = reward + self.gamma * self.get_q_value(new_state, new_action) - self.get_q_value(cur_state, cur_action)
+
+            # Update each weight for each feature
+            for i in range(len(feature_tuple)):
+                weights[i] = weights[i] + self.eta * delta * feature_tuple[i].get(cur_state, cur_action)
+
+            # Update state and action so these will be performed
             cur_state = new_state
             cur_action = new_action
-            

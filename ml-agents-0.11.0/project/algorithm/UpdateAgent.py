@@ -2,8 +2,7 @@ import numpy as np
 import time
 
 from mlagents.envs.environment import UnityEnvironment
-
-from Algorithm.Model import SarsaModel
+from algorithm.Model import SarsaModel
 
 
 class Agent:
@@ -26,13 +25,12 @@ class Agent:
     debris_visibility = None
     debris_position = None
 
-    # Algorithm variables
+    # algorithm variables
     score = None
     lastAction = None
     lastState = None
     ai = None
     at_debris = False
-
 
     def __init__(self):
         self.ai = SarsaModel([1, 2, 3, 4])
@@ -100,9 +98,9 @@ class Agent:
               "\nz: " + str(self.observations[3]))
 
     def update(self):
-        reward = self.calcReward()
-        state = self.calcState()
-        action = self.ai.chooseAction(state)
+        reward = self.calc_reward()
+        state = self.calc_state()
+        action = self.ai.choose_action(state)
         if self.lastAction is not None:
             self.ai.learn(
                 self.lastState, self.lastAction, reward, state, action)
@@ -115,13 +113,13 @@ class Agent:
             self.env.reset()
             self.lastAction = None
         else:
-            #TODO Change hardcode action
+            # TODO Change hardcode action
             self.perform_action(1, 0.5, 0, 0)
 
-    def calcState(self):
+    def calc_state(self):
         return self.robot_position
 
-    def calcReward(self):
+    def calc_reward(self):
         here = self.robot_position
         if here == self.dropzone_position:
             self.score += 1
@@ -134,8 +132,6 @@ class Agent:
 if __name__ == '__main__':
     # Agent object
     agent = Agent()
-
-
 
     # Setup connection
     agent.setup_connection_with_unity()
@@ -154,27 +150,27 @@ if __name__ == '__main__':
     agent.print_positions()
 
     # Print debris visibility
-    #agent.print_visibility()
+    # agent.print_visibility()
 
     while True:
         print("\n Updating...")
         agent.update()
 
-    # Drive the robot until the debris and the robot has the same X value
-   # while agent.debris_position[0] - agent.robot_position[0] > 0:
-   #     # Update information about the environment after action/step is performed
-   #     agent.env_info = agent.perform_action(1, 0, 0, 0)
-
-        # Update observations
-   #     agent.update_observations()
-
-    # Print ended positions
-    print("\nEnded: Positions of observations:")
-    agent.print_positions()
-
-    # Close simulation
-    agent.close_simulation()
-
-    # End time
-    end_time = time.time()
-    print("\nTime to reach goal: " + str(end_time - start_time))
+    # # Drive the robot until the debris and the robot has the same X value
+    # while agent.debris_position[0] - agent.robot_position[0] > 0:
+    #     # Update information about the environment after action/step is performed
+    #     agent.env_info = agent.perform_action(1, 0, 0, 0)
+    #
+    #     # Update observations
+    #     agent.update_observations()
+    #
+    # # Print ended positions
+    # print("\nEnded: Positions of observations:")
+    # agent.print_positions()
+    #
+    # # Close simulation
+    # agent.close_simulation()
+    #
+    # # End time
+    # end_time = time.time()
+    # print("\nTime to reach goal: " + str(end_time - start_time))

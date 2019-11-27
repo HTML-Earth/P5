@@ -1,6 +1,4 @@
 import random
-import AgentController as Agent
-
 
 # Q_w(s,a) = w_0 + w_1 F_1(s,a) +  ... + w_n F_n(s,a)
 #
@@ -25,8 +23,7 @@ import AgentController as Agent
 #       s := s'
 #       a := a'
 #   until termination
-#
-#
+
 
 class Sarsa:
 
@@ -67,8 +64,10 @@ class Sarsa:
             action = self.actions[i]
         return action
 
-    def sarsa_lfa (self, agent, feature_tuple):
+    def sarsa_lfa(self, agent, feature_tuple):
         # Arbitrarily initalize weights which will be updated later
+        # TODO Assume that there is an extra feature F0(s,a) whose value is always 1,
+        #  so that w0 is not a special case.
         weights = []
         for i in range(len(feature_tuple)):
             weights.append(random.randint(0, 5))

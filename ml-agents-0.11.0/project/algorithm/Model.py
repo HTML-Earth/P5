@@ -10,32 +10,32 @@ class SarsaModel:
         self.gamma = gamma
         self.actions = actions
 
-    def getQ(self, state, action):
+    def get_q(self, state, action):
         return self.q.get((state, action), 0.0)
 
-    def learnQ(self, state, action, reward, value):
+    def learn_q(self, state, action, reward, value):
         oldv = self.q.get((state, action), None)
         if oldv is None:
             self.q[(state, action)] = reward 
         else:
             self.q[(state, action)] = oldv + self.alpha * (value - oldv)
 
-    def chooseAction(self, state):
+    def choose_action(self, state):
         if random.random() < self.epsilon:
             action = random.choice(self.actions)
         else:
-            q = [self.getQ(state, a) for a in self.actions]
-            maxQ = max(q)
-            count = q.count(maxQ)
+            q = [self.get_q(state, a) for a in self.actions]
+            max_q = max(q)
+            count = q.count(max_q)
             if count > 1:
-                best = [i for i in range(len(self.actions)) if q[i] == maxQ]
+                best = [i for i in range(len(self.actions)) if q[i] == max_q]
                 i = random.choice(best)
             else:
-                i = q.index(maxQ)
+                i = q.index(max_q)
 
             action = self.actions[i]
         return action
 
     def learn(self, state1, action1, reward, state2, action2):
-        qnext = self.getQ(state2, action2)
-        self.learnQ(state1, action1, reward, reward + self.gamma * qnext)
+        qnext = self.get_q(state2, action2)
+        self.learn_q(state1, action1, reward, reward + self.gamma * qnext)

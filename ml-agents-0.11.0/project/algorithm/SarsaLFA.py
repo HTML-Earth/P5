@@ -46,7 +46,37 @@ class Sarsa:
         return self.q.get((state, action), 0.0)
 
     def get_feature_value(self, state, action):
-        return 0
+        observations = state
+        velocity_z = observations[5] # z means the velocity when moving forward and backward.
+        sensors_front = [observations[11], observations[12], observations[40]]
+        sensors_behind = [-observations[26], -observations[25], -observations[27]]
+        debris1 = [observations[41], observations[42], observations[43]]
+        debris2 = [observations[44], observations[45], observations[46]]
+        debris3 = [observations[47], observations[48], observations[49]]
+        debris4 = [observations[50], observations[51], observations[52]]
+        debris5 = [observations[53], observations[54], observations[55]]
+        debris6 = [observations[56], observations[57], observations[58]]
+        debris_locations = [debris1, debris2, debris3, debris4, debris5, debris6]
+        featureValues = []
+
+        # Check if robot is throttling into wall
+        if sensors_front < [velocity_z]:
+            featureValues.append(1)
+        else:
+            featureValues.append(0)
+
+        # Check if robot is reversing into wall
+        if sensors_behind > [velocity_z]:
+            featureValues.append(1)
+        else:
+            featureValues.append(0)
+
+        # getting closer to debris
+        #for debris_location in debris_locations:
+         #   if
+
+
+        return featureValues
 
     def choose_action(self, state, action):
         if random.random() < self.eta:

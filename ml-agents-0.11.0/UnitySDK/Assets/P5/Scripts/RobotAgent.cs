@@ -57,9 +57,10 @@ public class RobotAgent : Agent
         AddVectorObs(transform.rotation.eulerAngles.y);
         
         // Robot velocity (3, 4, 5)
-        AddVectorObs(rigidbody.velocity.x);
-        AddVectorObs(rigidbody.velocity.y);
-        AddVectorObs(rigidbody.velocity.z);
+        Vector3 localVelocity = rigidbody.transform.InverseTransformDirection(rigidbody.velocity);
+        AddVectorObs(localVelocity.x);
+        AddVectorObs(localVelocity.y);
+        AddVectorObs(localVelocity.z);
 
         // Arm and shovel position (6, 7)
         AddVectorObs(shovel.GetArmPos());

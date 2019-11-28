@@ -8,6 +8,7 @@ using UnityEngine;
 public class RobotAgent : Agent
 {
     RobotAcademy academy;
+    Rigidbody rigidbody;
     WheelDrive wheels;
     ShovelControl shovel;
     RobotSensors sensors;
@@ -31,6 +32,7 @@ public class RobotAgent : Agent
     public override void InitializeAgent()
     {
         academy = FindObjectOfType<RobotAcademy>();
+        rigidbody = GetComponent<Rigidbody>();
         wheels = GetComponent<WheelDrive>();
         shovel = GetComponent<ShovelControl>();
         vision = GetComponent<RobotVision>();
@@ -50,25 +52,33 @@ public class RobotAgent : Agent
         Vector3 currentPosition = transform.position;
         AddVectorObs(currentPosition.x);
         AddVectorObs(currentPosition.z);
+        
+        // Robot rotation (2)
+        AddVectorObs(transform.rotation.eulerAngles.y);
+        
+        // Robot velocity (3, 4, 5)
+        AddVectorObs(rigidbody.velocity.x);
+        AddVectorObs(rigidbody.velocity.y);
+        AddVectorObs(rigidbody.velocity.z);
 
-        // Arm and shovel position (2, 3)
+        // Arm and shovel position (6, 7)
         AddVectorObs(shovel.GetArmPos());
         AddVectorObs(shovel.GetShovelPos());
         
-        // Drop-Zone Position and radius (4, 5, 6)
+        // Drop-Zone Position and radius (8, 9, 10)
         Vector3 dropZonePosition = dropZone.transform.position;
         AddVectorObs(dropZonePosition.x);
         AddVectorObs(dropZonePosition.z);
         AddVectorObs(dropZone.GetRadius());
-        
-        // Distance sensor measurements
+
+        // Distance sensor measurements (11 - 40)
         float[] distances = sensors.GetMeasuredDistances();
         for (int dist = 0; dist < distances.Length; dist++)
         {
             AddVectorObs(distances[dist]);
         }
         
-        // Debris positions
+        // Debris positions (41 - 58)
         debrisInfos = vision.UpdateVision();
         
         foreach (RobotVision.DebrisInfo debrisInfo in debrisInfos)
@@ -78,7 +88,7 @@ public class RobotAgent : Agent
             AddVectorObs(debrisInfo.lastKnownPosition.z);
         }
         
-        // Simulation time
+        // Simulation time (59)
         AddVectorObs(timeElapsed);
     }
 

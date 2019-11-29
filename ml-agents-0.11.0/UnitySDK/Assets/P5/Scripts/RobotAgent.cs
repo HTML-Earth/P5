@@ -91,6 +91,19 @@ public class RobotAgent : Agent
         
         // Simulation time (59)
         AddVectorObs(timeElapsed);
+        
+        // features:
+        
+        //Check if robot is within dropZone (60)
+        bool isInDropZone = dropZone.IsInZone(transform.position);
+        AddVectorObs(isInDropZone);
+        
+        //Check if robot is getting closer to debris (61 -> 66)
+        foreach (var debrisInfo in debrisInfos)
+        {
+            bool gettingCloserToDebris = debrisInfo.distanceFromRobot < debrisInfo.lastDistanceFromRobot;
+            AddVectorObs(gettingCloserToDebris);
+        }
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)

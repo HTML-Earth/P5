@@ -1,4 +1,4 @@
-|Observations| = 60
+|Observations| = 67
 
 0 Robot position X
 1 Robot position Z
@@ -43,3 +43,7 @@
 58 Debris 6 position Z
 
 59 Simulation time
+
+60 Check if within dropZone
+
+61 - 66 Check if agent is getting closer to debris

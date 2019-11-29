@@ -12,6 +12,8 @@ public class RobotVision : MonoBehaviour
         public Transform transform;
         public Vector3 lastKnownPosition;
         public bool isVisible;
+        public float distanceFromRobot;
+        public float lastDistanceFromRobot;
     }
     
     public LayerMask layerMask;
@@ -45,6 +47,8 @@ public class RobotVision : MonoBehaviour
             info.transform = t;
             info.lastKnownPosition = Vector3.positiveInfinity;
             info.isVisible = false;
+            info.distanceFromRobot = Vector3.Distance(t.position, transform.position);
+            info.lastDistanceFromRobot = info.distanceFromRobot;
 
             debrisInfos.Add(info);
         }
@@ -70,6 +74,12 @@ public class RobotVision : MonoBehaviour
 
             // Vector from Sensor-position to current Debris-position
             Vector3 directionToDebris = currentDebrisPosition - currentSensorPosition;
+
+            // Last Debris distance
+            currentDebrisInfo.lastDistanceFromRobot = currentDebrisInfo.distanceFromRobot;
+            
+            // Debris distance from robot
+            currentDebrisInfo.distanceFromRobot = Vector3.Distance(currentDebrisPosition, transform.position);
 
             // Calculate angle between forward direction and direction to Debris
             // If it is less than 60 degrees -> continue, else -> not visible

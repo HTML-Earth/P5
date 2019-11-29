@@ -50,13 +50,7 @@ class Sarsa:
         velocity_z = observations[5] # z means the velocity when moving forward and backward.
         sensors_front = [observations[11], observations[12], observations[40]]
         sensors_behind = [-observations[26], -observations[25], -observations[27]]
-        debris1 = [observations[41], observations[42], observations[43]]
-        debris2 = [observations[44], observations[45], observations[46]]
-        debris3 = [observations[47], observations[48], observations[49]]
-        debris4 = [observations[50], observations[51], observations[52]]
-        debris5 = [observations[53], observations[54], observations[55]]
-        debris6 = [observations[56], observations[57], observations[58]]
-        debris_locations = [debris1, debris2, debris3, debris4, debris5, debris6]
+
         featureValues = []
 
         # Check if robot is throttling into wall
@@ -75,6 +69,18 @@ class Sarsa:
         #for debris_location in debris_locations:
          #   if
 
+        # Check if robot is within the dropzone
+        if observations[60]:
+            featureValues.append(1)
+        else:
+            featureValues.append(0)
+
+        # Check if robot is getting closer to debris
+        for i in range(61, 67):
+            if observations[i]:
+                featureValues.append(1)
+            else:
+                featureValues.append(0)
 
         return featureValues
 

@@ -133,6 +133,17 @@ public class RobotAgent : Agent
             AddReward(reward_allDebrisEnteredZone, "all debris in zone");
             Done("goal reached (all debris in zone)");
         }
+        
+        // Check if robot has fallen
+        if (Vector3.Dot(transform.up, Vector3.up) < 0.1f)
+        {
+            Done("robot has fallen (probably)");
+        }
+        
+        // Check if robot is out of bounds
+        Vector3 robotPosition = transform.position;
+        if (robotPosition.x > 25f || robotPosition.x < -25f || robotPosition.z > 25f || robotPosition.z < -25f || robotPosition.y < -5f)
+            Done("robot is out of bounds");
 
         // Perform actions
         wheels.SetTorque(vectorAction[0]);

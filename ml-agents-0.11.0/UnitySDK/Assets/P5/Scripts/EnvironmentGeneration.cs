@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class EnvironmentGeneration : MonoBehaviour
 {
@@ -9,19 +11,34 @@ public class EnvironmentGeneration : MonoBehaviour
     int dropzone_x;
     int dropzone_z;
     
+    List<GameObject> environmentObjects = new List<GameObject>();
+    
     private List<Transform> debrisList;
-
+    
     public GameObject debrisPrefab;
     public Transform dropzone;
     public Transform robot;
     public GameObject wall;
+    
 
     public void GenerateEnvironment()
     {
+        if (environmentObjects.Count > 0)
+        {
+            foreach (GameObject environmentObject in environmentObjects)
+            {
+                Destroy(environmentObject);
+            }
+            
+            environmentObjects.Clear();
+        }
+
         PlaceRobot();
         GenerateDropzone();
         GenerateWalls();
         GenerateDebris();
+        
+        
     }
 
     // Robot start position and rotation
@@ -52,7 +69,10 @@ public class EnvironmentGeneration : MonoBehaviour
                 z = Random.Range(0, 5);
             } while (SetInLists(x, z, xList, zList));
             var rotation = Random.Range(0, 2) * 90f;
-            Instantiate(wall, new Vector3(-16f + x * 8, 2.375f, -16f + z * 8), Quaternion.Euler(0f, rotation, 0f));
+            GameObject obstacle_wall = Instantiate(wall, new Vector3(-16f + x * 8, 2.375f, -16f + z * 8), Quaternion.Euler(0f, rotation, 0f));
+            
+            environmentObjects.Add(obstacle_wall);
+            
             xList.Add(x);
             zList.Add(z);
         }
@@ -84,6 +104,8 @@ public class EnvironmentGeneration : MonoBehaviour
             float z = -20f + debrisZ * 8;
             GameObject debrisOBJ = Instantiate(debrisPrefab, new Vector3(x, 0.5f, z), Quaternion.Euler(rotateX, rotateY, 0f));
             debrisList.Add(debrisOBJ.transform);
+            
+            environmentObjects.Add(debrisOBJ);
             
             randomsX.Add(debrisX);
             randomsY.Add(debrisZ);
@@ -119,4 +141,5 @@ public class EnvironmentGeneration : MonoBehaviour
     {
         return debrisList;
     }
+
 }

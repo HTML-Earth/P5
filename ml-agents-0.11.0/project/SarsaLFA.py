@@ -1,4 +1,5 @@
 import random
+import os
 
 # Q_w(s,a) = w_0 + w_1 F_1(s,a) +  ... + w_n F_n(s,a)
 #
@@ -35,6 +36,9 @@ class Sarsa:
 
         self.gamma = gamma
         self.eta = eta
+
+        self.file = None
+        self.path_to_file = None
 
         self.accumulated_rewards = 0
 
@@ -103,7 +107,20 @@ class Sarsa:
             action = self.actions[i]
         return action
 
-    def train_agent(self, agent):
+    def train_agent(self, agent, training_mode):
+        this_folder = os.path.dirname(os.path.abspath(__file__)) + "/training-files/"
+
+        if training_mode is 1:
+            list_of_dir = os.listdir('training-files/')
+            if len(list_of_dir) == 0:
+                self.path_to_file = os.path.join(this_folder, '1_training.txt')
+                self.file = open(self.path_to_file, "x")
+            else:
+                amount_of_files = len(list_of_dir)
+                self.path_to_file = os.path.join(this_folder, str(amount_of_files + 1) + '_training.txt')
+                self.file = open(self.path_to_file, "x")
+            self.file.close()
+
         # Update observations to make sure current state is correct
         agent.update_observations()
 
@@ -129,13 +146,8 @@ class Sarsa:
             # Observe reward r
             reward = new_environment_info.rewards[0]
 
-            self.accumulated_rewards += reward
             # Select action a' (using a policy based on the Q-function
             new_action = self.choose_action(cur_state, cur_action)
-
-            print("Chosen action: " + str(new_action))
-            print("Reward: " + str(reward))
-            print("Accumulated rewards: " + str(self.accumulated_rewards))
 
             # TODO Explain what delta is
             delta = reward + self.gamma * self.get_q_value(new_state, new_action) - self.get_q_value(cur_state, cur_action)
@@ -151,12 +163,19 @@ class Sarsa:
             cur_state = new_state
             cur_action = new_action
 
-            print("Weights: \n" + str(weights))
+            self.accumulated_rewards += reward
+            print("Accumulated rewards: " + str(self.accumulated_rewards))
             print("Feature values: \n" + str(self.feature_values))
+            print("Weights: \n" + str(weights))
             print("Q-function: \n" + str(self.q))
             print("-----------------------------")
 
             if new_environment_info.local_done[0]:
+                self.file = open(self.path_to_file, "w")
+                self.file.write(str(weights))
+                self.file.write(str(self.q))
+                self.file.close()
+
                 agent.reset_simulation()
 
     def inference_run(self, agent):

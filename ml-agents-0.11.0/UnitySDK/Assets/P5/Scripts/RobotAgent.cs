@@ -37,7 +37,7 @@ public class RobotAgent : Agent
     // Variables used to check for rewards
     bool goalReached = false;
     // Hard initialized to 6*false, a false for each debris
-    private List<bool> listIsDebrisLocated = new List<bool>() {false, false, false, false, false, false};
+    private List<bool> listIsDebrisLocated;
 
     List<RobotVision.DebrisInfo> debrisInfos;
     
@@ -53,6 +53,12 @@ public class RobotAgent : Agent
         vision = GetComponent<RobotVision>();
         sensors = GetComponent<RobotSensors>();
         dropZone = FindObjectOfType<DropZone>();
+        listIsDebrisLocated = new List<bool>();
+        
+        foreach (var debrisInfo in debrisInfos)
+        {
+            listIsDebrisLocated.Add(false);
+        }
 
         timeElapsed = 0;
     }

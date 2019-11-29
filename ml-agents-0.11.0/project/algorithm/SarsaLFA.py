@@ -65,10 +65,6 @@ class Sarsa:
         else:
             featureValues.append(0)
 
-        # getting closer to debris
-        #for debris_location in debris_locations:
-         #   if
-
         # Check if robot is within the dropzone
         if observations[60]:
             featureValues.append(1)
@@ -82,6 +78,11 @@ class Sarsa:
             else:
                 featureValues.append(0)
 
+    # Check if ready to pickup debris
+        if observations.append(6) == 330 and observations.append(7) == 360 - 47:
+            featureValues.append(1)
+        else:
+            featureValues.append(0)
         return featureValues
 
     def choose_action(self, state, action):

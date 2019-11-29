@@ -17,12 +17,27 @@ public class RobotAgent : Agent
 
     float timeElapsed;
 
+    // Positive rewards
     float reward_debrisEnteredZone = 10f;
     float reward_allDebrisEnteredZone = 1000f;
+    private float reward_debrisFound = 1f;
+    // TODO: Implement these
+    // private float reward_debrisInShovel = 5f;
+    // private float reward_moveTowardsDebris = 0.1f;
+    // private float reward_debrisInShovelAndMoveTowardsZone = 0.2f;
     
+    // Negative rewards
     float penalty_debrisLeftZone = -100f;
+    // TODO: Implement these
+    // private float penalty_hitWall = -5f;
+    // private float penalty_timePassed = -0.5f;
+    // private float penalty_debrisRunOver = -5f;
+    
 
+    // Variables used to check for rewards
     bool goalReached = false;
+    // Hard initialized to 6*false, a false for each debris
+    private List<bool> listIsDebrisLocated = new List<bool>() {false, false, false, false, false, false};
 
     List<RobotVision.DebrisInfo> debrisInfos;
     
@@ -133,7 +148,7 @@ public class RobotAgent : Agent
             AddReward(reward_allDebrisEnteredZone, "all debris in zone");
             Done();
         }
-
+        
         // Perform actions
         wheels.SetTorque(vectorAction[0]);
         wheels.SetAngle(vectorAction[1]);

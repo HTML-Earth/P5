@@ -53,12 +53,8 @@ public class RobotAgent : Agent
         vision = GetComponent<RobotVision>();
         sensors = GetComponent<RobotSensors>();
         dropZone = FindObjectOfType<DropZone>();
-        listIsDebrisLocated = new List<bool>();
-        
-        foreach (var debrisInfo in debrisInfos)
-        {
-            listIsDebrisLocated.Add(false);
-        }
+        // Hard initialized to 6*false, one for each debris
+        listIsDebrisLocated = new List<bool>() {false, false, false, false, false, false};
 
         timeElapsed = 0;
     }

@@ -278,11 +278,7 @@ namespace MLAgents
             catch
             {
 #if UNITY_EDITOR
-                Communicator = new RpcCommunicator(
-                    new CommunicatorInitParameters
-                    {
-                        port = 5005
-                    });
+                InitializeCommunicator();
 #endif
             }
 
@@ -399,6 +395,15 @@ namespace MLAgents
             Time.timeScale = config.timeScale;
             Time.captureFramerate = 60;
             Application.targetFrameRate = config.targetFrameRate;
+        }
+
+        public virtual void InitializeCommunicator()
+        {
+            Communicator = new RpcCommunicator(
+                new CommunicatorInitParameters
+                {
+                    port = 5005
+                });
         }
 
         /// <summary>

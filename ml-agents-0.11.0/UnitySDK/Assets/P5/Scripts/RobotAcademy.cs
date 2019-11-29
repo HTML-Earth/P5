@@ -11,8 +11,27 @@ public class RobotAcademy : Academy
     List<bool> previousDebrisInZone;
     List<bool> currentDebrisInZone;
     
+    public enum CommunicatorPort
+    {
+        DefaultTraining = 5004,
+        OurPythonScript = 5005
+    }
+
+    public CommunicatorPort communicatorPort = CommunicatorPort.OurPythonScript;
+    
+    public override void InitializeCommunicator()
+    {
+        Communicator = new RpcCommunicator(
+            new CommunicatorInitParameters
+            {
+                port = (int)communicatorPort
+            });
+    }
+    
     public override void InitializeAcademy()
     {
+        Debug.LogWarning("Communicating on port:" + (int)communicatorPort + " (" + communicatorPort + ")");
+        
         // Initialize variables
         environmentGeneration = FindObjectOfType<EnvironmentGeneration>();
         dropZone = FindObjectOfType<DropZone>();

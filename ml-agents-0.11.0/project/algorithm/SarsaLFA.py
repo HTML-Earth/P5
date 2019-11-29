@@ -75,7 +75,11 @@ class Sarsa:
         #for debris_location in debris_locations:
          #   if
 
-
+    # Check if ready to pickup debris
+        if observations.append(6) == 330 and observations.append(7) == 360 - 47:
+            featureValues.append(1)
+        else:
+            featureValues.append(0)
         return featureValues
 
     def choose_action(self, state, action):

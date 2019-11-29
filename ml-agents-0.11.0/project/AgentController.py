@@ -31,7 +31,7 @@ class Agent:
     # Setup connection between Unity and Python
     def setup_connection_with_unity(self):
         # Connect to Unity and get environment
-        self.env = UnityEnvironment(file_name=None, worker_id=0, seed=404)
+        self.env = UnityEnvironment(file_name=None, worker_id=0, seed=3)
 
         # Reset the environment
         self.env_info = self.env.reset(train_mode=True)
@@ -70,9 +70,15 @@ class Agent:
     def get_reward(self):
         return self.env_info[self.default_brain].rewards
 
+    def get_brain_info(self):
+        return self.env_info[self.default_brain]
+
     # Closes simulation
     def close_simulation(self):
         self.env.close()
+
+    def reset_simulation(self):
+        self.env.reset()
 
 
 # Main function which will be run after the above code has finished (Setup of connection and definition of functions)
@@ -85,7 +91,7 @@ if __name__ == '__main__':
     # Examine the state space for the default brain
     print("Agent state looks like: \n{}".format(agent.observations))
 
-    sarsa.sarsa_lfa(agent)
+    sarsa.train_agent(agent)
 
     # Close simulation
     agent.close_simulation()

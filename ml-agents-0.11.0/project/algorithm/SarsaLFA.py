@@ -31,10 +31,12 @@ class Sarsa:
         # Q function
         self.q = {}
         # Feature function
-        self.feature_values = [0 for i in range(0, 10)]
+        self.feature_values = [0] * 10
 
         self.gamma = gamma
         self.eta = eta
+
+        self.accumulated_rewards = 0
 
         # All possible actions for the Agent (81 possible actions)
         self.actions = [(i, j, k, l) for i in range(-1, 2) for j in range(-1, 2) for k in range(-1, 2) for l in range(-1, 2)]
@@ -101,7 +103,7 @@ class Sarsa:
             action = self.actions[i]
         return action
 
-    def sarsa_lfa(self, agent):
+    def train_agent(self, agent):
         # Update observations to make sure current state is correct
         agent.update_observations()
 
@@ -120,15 +122,20 @@ class Sarsa:
             weights.append(random.randint(0, 5))
 
         while True:
-            # Perform action and observe state s'
-            new_state = agent.perform_action(*cur_action).get('Robot').vector_observations[0]
+            # Perform action
+            new_environment_info = agent.perform_action(*cur_action).get('Robot')
+            # Observe state s'
+            new_state = new_environment_info.vector_observations[0]
             # Observe reward r
-            reward = agent.get_reward()[0]
+            reward = new_environment_info.rewards[0]
+
+            self.accumulated_rewards += reward
             # Select action a' (using a policy based on the Q-function
             new_action = self.choose_action(cur_state, cur_action)
 
-            print("Chosen action: {:4s}" + str(new_action))
+            print("Chosen action: " + str(new_action))
             print("Reward: " + str(reward))
+            print("Accumulated rewards: " + str(self.accumulated_rewards))
 
             # TODO Explain what delta is
             delta = reward + self.gamma * self.get_q_value(new_state, new_action) - self.get_q_value(cur_state, cur_action)
@@ -143,3 +150,38 @@ class Sarsa:
             # Update state and action so these will be performed
             cur_state = new_state
             cur_action = new_action
+
+            print("Weights: \n" + str(weights))
+            print("Feature values: \n" + str(self.feature_values))
+            print("Q-function: \n" + str(self.q))
+            print("-----------------------------")
+
+            if new_environment_info.local_done[0]:
+                agent.reset_simulation()
+
+    def inference_run(self, agent):
+        agent.update_observations()
+
+        cur_state = agent.observations
+        cur_action = (1, 0, 0, 0)
+
+        self.get_feature_value(cur_state, cur_action)
+
+        # TODO Initialize to saved weights
+        weights = []
+        # TODO Initialize to saved q-values
+        self.q = {}
+
+        while True:
+            new_environment_info = agent.perform_action(*cur_action).get('Robot')
+            new_state = new_environment_info.vector_observations[0]
+            new_action = self.choose_action(cur_state, cur_action)
+
+            # Update features
+            self.get_feature_value(cur_state, cur_action)
+
+            cur_state = new_state
+            cur_action = new_action
+
+            if new_environment_info.local_done[0]:
+                agent.reset_simulation()

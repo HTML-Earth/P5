@@ -1,5 +1,6 @@
 import numpy as np
 from mlagents.envs.environment import UnityEnvironment
+from algorithm import SarsaLFA
 
 
 class Agent:
@@ -30,7 +31,7 @@ class Agent:
     # Setup connection between Unity and Python
     def setup_connection_with_unity(self):
         # Connect to Unity and get environment
-        self.env = UnityEnvironment(file_name=None, worker_id=0, seed=1)
+        self.env = UnityEnvironment(file_name=None, worker_id=0, seed=404)
 
         # Reset the environment
         self.env_info = self.env.reset(train_mode=True)
@@ -66,6 +67,9 @@ class Agent:
         action = np.array([throttle, angle, arm_rotation, shovel_rotation])
         return self.env.step({self.default_brain: action})
 
+    def get_reward(self):
+        return self.env_info[self.default_brain].rewards
+
     # Closes simulation
     def close_simulation(self):
         self.env.close()
@@ -75,17 +79,13 @@ class Agent:
 if __name__ == '__main__':
     # Agent object
     agent = Agent()
+    # Algorithm object
+    sarsa = SarsaLFA.Sarsa()
 
     # Examine the state space for the default brain
     print("Agent state looks like: \n{}".format(agent.observations))
 
-    # Drive the robot until the debris and the robot has the same X value
-    while agent.robot_position[1] > 9:
-        # Update information about the environment after action/step is performed
-        agent.env_info = agent.perform_action(1, 0, 0, 0)
-
-        # Update observations
-        agent.update_observations()
+    sarsa.sarsa_lfa(agent)
 
     # Close simulation
     agent.close_simulation()

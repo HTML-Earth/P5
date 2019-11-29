@@ -19,11 +19,11 @@ All of these are suggestions.
 ## Features:
 ### Done:
 - Robot driving into walls
+- Robot performing 'lift-debris' with debris in shovel
+- Robot getting closer to debris
 
 ### Not done:
 - Robot with debris getting closer to dropzone
-- Robot getting closer to debris
-- Robot performing 'lift-debris' with debris in shovel
 - Debris inside dropzone 
     - To tell it that the reward is connected to this feature
 
@@ -33,8 +33,8 @@ All of these are suggestions.
 ### Positive rewards
 - Debris in dropzone
 - Locate debris
-- Debris in shovel and going to dropzone
 - Debris in shovel 
+- Debris in shovel and going to dropzone
 - Drive towards debris
 
 ### Negative rewards
@@ -44,6 +44,7 @@ All of these are suggestions.
 - Drop debris outside of dropzone
 - Debris rolls out of dropzone
     - High enough penalty so it's not worth to put it back in and repeat
+- Debris fell out of shovel and not in dropzone
 
 ## Other simulation implementation
 - Reset simulation if robot is flipped

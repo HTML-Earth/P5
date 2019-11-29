@@ -61,6 +61,9 @@ public class RobotVision : MonoBehaviour
         if (debrisInfos == null)
             InitializeDebrisArray();
         
+        if (debrisInfos[0].transform == null)
+            InitializeDebrisArray();
+        
         Vector3 currentSensorPosition = sensorPosition.position;
         
         // For every debris -> check if it is visible

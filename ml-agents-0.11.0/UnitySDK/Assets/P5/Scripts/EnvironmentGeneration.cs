@@ -43,8 +43,6 @@ public class EnvironmentGeneration : MonoBehaviour
         GenerateDropzone();
         GenerateWalls();
         GenerateDebris();
-        
-        robotVision.InitializeDebrisArray();
     }
 
     // Robot start position and rotation

@@ -106,9 +106,11 @@ public class EnvironmentGeneration : MonoBehaviour
 
             float x = -20f + debrisX * 8;
             float z = -20f + debrisZ * 8;
-            GameObject debrisOBJ = Instantiate(debrisPrefab, new Vector3(x, 0.5f, z), Quaternion.Euler(rotateX, rotateY, 0f));
-            debrisList.Add(debrisOBJ.transform);
             
+            GameObject debrisOBJ = Instantiate(debrisPrefab, new Vector3(x, 0.5f, z), Quaternion.Euler(rotateX, rotateY, 0f));
+            debrisOBJ.GetComponent<Debris>().SetDebrisIndex(i);
+            
+            debrisList.Add(debrisOBJ.transform);
             environmentObjects.Add(debrisOBJ);
             
             randomsX.Add(debrisX);

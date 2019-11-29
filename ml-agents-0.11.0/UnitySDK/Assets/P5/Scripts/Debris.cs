@@ -12,6 +12,8 @@ public class Debris : MonoBehaviour
      */
 
     public float variant_range = 0.6f;
+
+    int debrisIndex;
     
     private void Start()
     {
@@ -37,5 +39,15 @@ public class Debris : MonoBehaviour
         gameObject.GetComponent<Rigidbody>().mass = (width + height + length) * 3;
 
         transform.localScale = new Vector3(width, height, length);
+    }
+
+    public void SetDebrisIndex(int index)
+    {
+        debrisIndex = index;
+    }
+
+    public int GetDebrisIndex()
+    {
+        return debrisIndex;
     }
 }

@@ -14,10 +14,17 @@ public class RobotAgent : Agent
     RobotSensors sensors;
     RobotVision vision;
     DropZone dropZone;
+    
+    [SerializeField]
+    DebrisDetector debrisDetector;
+    
+    List<bool> currentDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
+    List<bool> previousDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
 
     float timeElapsed;
 
     // Positive rewards
+    float reward_debrisEnteredShovel = 1f;
     float reward_debrisEnteredZone = 10f;
     float reward_allDebrisEnteredZone = 1000f;
     private float reward_debrisFound = 1f;
@@ -27,6 +34,7 @@ public class RobotAgent : Agent
     // private float reward_debrisInShovelAndMoveTowardsZone = 0.2f;
     
     // Negative rewards
+    float penalty_debrisLeftShovel = -2f;
     float penalty_debrisLeftZone = -100f;
     // TODO: Implement these
     // private float penalty_hitWall = -5f;
@@ -53,6 +61,8 @@ public class RobotAgent : Agent
         vision = GetComponent<RobotVision>();
         sensors = GetComponent<RobotSensors>();
         dropZone = FindObjectOfType<DropZone>();
+        
+        debrisDetector.InitializeDetector();
         // Hard initialized to 6*false, one for each debris
         listIsDebrisLocated = new List<bool>() {false, false, false, false, false, false};
 
@@ -125,6 +135,28 @@ public class RobotAgent : Agent
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
+        // Check if debris has left/entered shovel
+        for (int i = 0; i < currentDebrisInShovel.Count; i++)
+        {
+            previousDebrisInShovel[i] = currentDebrisInShovel[i];
+        }
+        
+        currentDebrisInShovel = debrisDetector.GetDebrisInShovel();
+
+        for (int i = 0; i < currentDebrisInShovel.Count; i++)
+        {
+            if (previousDebrisInShovel[i])
+            {
+                if (!currentDebrisInShovel[i] && !dropZone.IsInZone(debrisInfos[i].transform.position))
+                    AddReward(penalty_debrisLeftShovel, "debris left shovel outside DropZone");
+            }
+            else
+            {
+                if (currentDebrisInShovel[i])
+                    AddReward(reward_debrisEnteredShovel, "debris entered shovel");
+            }
+        }
+
         // Check if debris has left/entered the zone
         List<bool> previousDebrisInZone = academy.GetPreviousDebrisInZone();
         List<bool> currentDebrisInZone = academy.GetCurrentDebrisInZone();

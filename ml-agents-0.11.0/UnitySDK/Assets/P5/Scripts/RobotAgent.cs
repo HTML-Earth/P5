@@ -146,9 +146,20 @@ public class RobotAgent : Agent
         {
             goalReached = true;
             AddReward(reward_allDebrisEnteredZone, "all debris in zone");
-            Done();
+            Done("goal reached (all debris in zone)");
         }
         
+        // Check if robot has fallen
+        if (Vector3.Dot(transform.up, Vector3.up) < 0.1f)
+        {
+            Done("robot has fallen (probably)");
+        }
+        
+        // Check if robot is out of bounds
+        Vector3 robotPosition = transform.position;
+        if (robotPosition.x > 25f || robotPosition.x < -25f || robotPosition.z > 25f || robotPosition.z < -25f || robotPosition.y < -5f)
+            Done("robot is out of bounds");
+
         // Perform actions
         wheels.SetTorque(vectorAction[0]);
         wheels.SetAngle(vectorAction[1]);
@@ -160,6 +171,13 @@ public class RobotAgent : Agent
     public override void AgentReset()
     {
         base.AgentReset();
+    }
+    
+    // Wrapper function for Done that prints a custom done message in console
+    void Done(string reason)
+    {
+        Debug.Log("Done! reason: " + reason);
+        Done();
     }
 
     // Wrapper function for AddReward that prints the reward/penalty and custom message in console

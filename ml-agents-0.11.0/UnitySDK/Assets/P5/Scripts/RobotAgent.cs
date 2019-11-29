@@ -30,7 +30,7 @@ public class RobotAgent : Agent
     private float reward_debrisFound = 1f;
     // TODO: Implement these
     // private float reward_debrisInShovel = 5f;
-    // private float reward_moveTowardsDebris = 0.1f;
+    private float reward_moveTowardsDebris = 0.1f;
     // private float reward_debrisInShovelAndMoveTowardsZone = 0.2f;
     
     // Negative rewards
@@ -181,6 +181,17 @@ public class RobotAgent : Agent
             goalReached = true;
             AddReward(reward_allDebrisEnteredZone, "all debris in zone");
             Done("goal reached (all debris in zone)");
+        }
+        
+        // Check if agent moves towards debris
+        for (int i = 0; i < debrisInfos.Count; i++)
+        {
+            // print(debrisInfos[i].distanceFromRobot + "vs" + debrisInfos[i].lastDistanceFromRobot);
+            // TODO: Mangler at tage højde for hvad der er i skovlen
+            if (!dropZone.IsInZone(debrisInfos[i].transform.position) && debrisInfos[i].distanceFromRobot < debrisInfos[i].lastDistanceFromRobot)
+            {
+                AddReward(reward_moveTowardsDebris, "Moved towards debris");
+            }
         }
         
         // Check for each debris if it is visible and has not been seen before

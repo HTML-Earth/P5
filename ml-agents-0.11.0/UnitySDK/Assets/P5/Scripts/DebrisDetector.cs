@@ -21,7 +21,6 @@ public class DebrisDetector : MonoBehaviour
         Debris debris = other.transform.parent.GetComponent<Debris>();
         if (debris != null)
         {
-            Debug.Log("debris is here");
             debrisInShovel[debris.GetDebrisIndex()] = true;
         }
     }

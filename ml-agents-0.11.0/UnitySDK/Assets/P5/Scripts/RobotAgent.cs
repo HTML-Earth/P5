@@ -131,7 +131,7 @@ public class RobotAgent : Agent
         {
             goalReached = true;
             AddReward(reward_allDebrisEnteredZone, "all debris in zone");
-            Done();
+            Done("goal reached (all debris in zone)");
         }
 
         // Perform actions
@@ -145,6 +145,13 @@ public class RobotAgent : Agent
     public override void AgentReset()
     {
         base.AgentReset();
+    }
+    
+    // Wrapper function for Done that prints a custom done message in console
+    void Done(string reason)
+    {
+        Debug.Log("Done! reason: " + reason);
+        Done();
     }
 
     // Wrapper function for AddReward that prints the reward/penalty and custom message in console

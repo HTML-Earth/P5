@@ -149,6 +149,16 @@ public class RobotAgent : Agent
             Done("goal reached (all debris in zone)");
         }
         
+        // Check for each debris if it is visible and has not been seen before
+        for (int debrisNum = 0; debrisNum < debrisInfos.Count; debrisNum++)
+        {
+            if (debrisInfos[debrisNum].isVisible && !listIsDebrisLocated[debrisNum])
+            {
+                AddReward(reward_debrisFound, "Debris was located");
+                listIsDebrisLocated[debrisNum] = true;
+            }
+        }
+        
         // Check if robot has fallen
         if (Vector3.Dot(transform.up, Vector3.up) < 0.1f)
         {

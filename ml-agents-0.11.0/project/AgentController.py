@@ -23,6 +23,10 @@ class Agent:
 
     timeElapsed = None
 
+    def __init__(self):
+        self.setup_connection_with_unity()
+        self.initial_observations()
+
     # Setup connection between Unity and Python
     def setup_connection_with_unity(self):
         # Connect to Unity and get environment
@@ -71,12 +75,6 @@ class Agent:
 if __name__ == '__main__':
     # Agent object
     agent = Agent()
-
-    # Setup connection
-    agent.setup_connection_with_unity()
-
-    # Update observations, robot_position and debris position for the default brain
-    agent.initial_observations()
 
     # Examine the state space for the default brain
     print("Agent state looks like: \n{}".format(agent.observations))

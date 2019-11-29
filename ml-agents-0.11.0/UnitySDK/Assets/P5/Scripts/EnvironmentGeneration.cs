@@ -19,7 +19,13 @@ public class EnvironmentGeneration : MonoBehaviour
     public Transform dropzone;
     public Transform robot;
     public GameObject wall;
-    
+
+    RobotVision robotVision;
+
+    void Awake()
+    {
+        robotVision = robot.gameObject.GetComponent<RobotVision>();
+    }
 
     public void GenerateEnvironment()
     {
@@ -38,7 +44,7 @@ public class EnvironmentGeneration : MonoBehaviour
         GenerateWalls();
         GenerateDebris();
         
-        
+        robotVision.InitializeDebrisArray();
     }
 
     // Robot start position and rotation

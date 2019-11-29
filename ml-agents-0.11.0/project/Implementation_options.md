@@ -31,8 +31,9 @@ All of these are suggestions.
 
 ## Rewards:
 ### Positive rewards
-- Debris in dropzone
-- Locate debris
+- Debris in dropzone (Implemented)
+- Locate debris (Implemented)
+- Debris in shovel and going to dropzone
 - Debris in shovel 
 - Debris in shovel and going to dropzone
 - Drive towards debris
@@ -42,7 +43,7 @@ All of these are suggestions.
 - Drive into walls
 - Drive over debris
 - Drop debris outside of dropzone
-- Debris rolls out of dropzone
+- Debris rolls out of dropzone (Implemented)
     - High enough penalty so it's not worth to put it back in and repeat
 - Debris fell out of shovel and not in dropzone
 

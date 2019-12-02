@@ -53,6 +53,9 @@ public class RobotAgent : Agent
     
     readonly Color debrisHighlight = new Color(0,1,1);
     readonly Color debrisHighlightMissing = new Color(1,0,0);
+
+    // Current state of action vector
+    float[] actionVector;
     
     public override void InitializeAgent()
     {
@@ -164,6 +167,9 @@ public class RobotAgent : Agent
         
         shovel.RotateArm(vectorAction[2]);
         shovel.RotateShovel(vectorAction[3]);
+        
+        // Store current action vector state for visualization
+        actionVector = vectorAction;
     }
 
     // Reward given for the first time each debris is seen
@@ -324,6 +330,11 @@ public class RobotAgent : Agent
         heuristicValues[3] = (Input.GetKey(KeyCode.Z)) ? 1f : (Input.GetKey(KeyCode.X)) ? -1f : 0f;
 
         return heuristicValues;
+    }
+
+    public float[] GetActionVector()
+    {
+        return actionVector;
     }
 
     // Used to draw debug info on screen

@@ -33,6 +33,8 @@ class Sarsa:
         self.q = {}
         # Feature function (Array of 11 0's)
         self.feature_values = [0] * 11
+        # Weights
+        self.weights = []
 
         self.gamma = gamma
         self.eta = eta
@@ -55,10 +57,12 @@ class Sarsa:
         return self.q.get((tuple(state), action), 0.0)
 
     # Update Q-value for given state and action
+    # TODO Q-value (reward) should be: Q_w(s,a) = w_0 + w_1 F_1(s,a) +  ... + w_n F_n(s,a)
     def learn_q(self, state, action, reward):
         self.q[(tuple(state), action)] = reward
 
     # Update Feature values array
+    # TODO Move method to Agent class
     def update_feature_values(self, observations):
         # z means the velocity when moving forward and backward.
         velocity_z = observations[5]
@@ -121,7 +125,7 @@ class Sarsa:
             action = self.actions[i]
         return action
 
-    def train_agent(self, agent):
+    def new_training_agent(self, agent):
         # Create training file
         self.training_file_manager.create_training_file()
 
@@ -140,10 +144,28 @@ class Sarsa:
         # Arbitrarily initalize weights which will be updated later
         # TODO Assume that there is an extra feature F0(s,a) whose value is always 1,
         #  so that w0 is not a special case.
-        weights = []
         for i in range(len(self.feature_values)):
-            weights.append(random.randint(0, 5))
+            self.weights.append(random.randint(0, 5))
 
+        self.train(agent, cur_state, cur_action)
+
+    def continue_training_agent(self, agent, training_file_name):
+        self.training_file_manager.set_training_file(training_file_name)
+
+        self.weights = self.training_file_manager.read_weights()
+        self.q = self.training_file_manager.read_q_function()
+
+        agent.update_observations()
+        observations = agent.observations
+
+        self.update_feature_values(observations)
+
+        cur_state = self.feature_values
+        cur_action = (1, 0, 0, 0)
+
+        self.train(agent, cur_state, cur_action)
+
+    def train(self, agent, cur_state, cur_action):
         while True:
             # Perform action
             new_environment_info = agent.perform_action(*cur_action).get('Robot')
@@ -169,7 +191,7 @@ class Sarsa:
 
             # Update each weight for each feature
             for i in range(len(self.feature_values)):
-                weights[i] = weights[i] + self.eta * delta * self.feature_values[i]
+                self.weights[i] = self.weights[i] + self.eta * delta * self.feature_values[i]
 
             # Update state and action so these will be performed
             cur_state = new_state
@@ -181,10 +203,12 @@ class Sarsa:
             print("-----------------------------")
 
             if new_environment_info.local_done[0]:
-                self.training_file_manager.save_values(weights, self.q)
+                self.training_file_manager.save_values(self.weights, self.q)
                 agent.reset_simulation()
 
-    def inference_run(self, agent):
+    def inference_run(self, agent, training_file_name):
+        self.training_file_manager.set_training_file(training_file_name)
+
         agent.update_observations()
 
         observations = agent.observations
@@ -193,10 +217,8 @@ class Sarsa:
 
         self.update_feature_values(observations)
 
-        # TODO Initialize to saved weights
-        weights = []
-        # TODO Initialize to saved q-values
-        self.q = {}
+        self.weights = self.training_file_manager.read_weights()
+        self.q = self.training_file_manager.read_q_function()
 
         while True:
             new_environment_info = agent.perform_action(*cur_action).get('Robot')
@@ -205,7 +227,7 @@ class Sarsa:
             new_state = self.feature_values
 
             # Update features
-            self.update_feature_values(new_state)
+            self.update_feature_values(new_observations)
 
             cur_state = new_state
             cur_action = new_action

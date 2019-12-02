@@ -1,5 +1,5 @@
 import random
-import os
+from File_manager import TrainingFileManager
 
 # Q_w(s,a) = w_0 + w_1 F_1(s,a) +  ... + w_n F_n(s,a)
 #
@@ -31,28 +31,34 @@ class Sarsa:
     def __init__(self, gamma=0.9, eta=0.3):
         # Q function
         self.q = {}
-        # Feature function
+        # Feature function (Array of 11 0's)
         self.feature_values = [0] * 11
 
         self.gamma = gamma
         self.eta = eta
 
-        self.file = None
-        self.path_to_file = None
-
+        # Total amount of rewards per episode
         self.accumulated_rewards = 0
 
         # All possible actions for the Agent (81 possible actions)
-        self.actions = [(i, j, k, l) for i in range(-1, 2) for j in range(-1, 2) for k in range(-1, 2) for l in range(-1, 2)]
+        self.actions = [(i, j, k, l)
+                        for i in range(-1, 2)
+                        for j in range(-1, 2)
+                        for k in range(-1, 2)
+                        for l in range(-1, 2)]
 
+        self.training_file_manager = TrainingFileManager()
+
+    # Return value for given state and action
+    # 0.0 is default if there exist no value for given state and action
     def get_q_value(self, state, action):
-        # Return value for given state and action
-        # 0.0 is default if there exist no value for given state and action
         return self.q.get((tuple(state), action), 0.0)
 
+    # Update Q-value for given state and action
     def learn_q(self, state, action, reward):
         self.q[(tuple(state), action)] = reward
 
+    # Update Feature values array
     def update_feature_values(self, observations):
         # z means the velocity when moving forward and backward.
         velocity_z = observations[5]
@@ -98,6 +104,7 @@ class Sarsa:
         else:
             self.feature_values[10] = 0
 
+    # Choose action based on policy (highest Q-value or random)
     def choose_action(self, state):
         if random.random() < self.eta:
             action = (random.randint(-1, 1), random.randint(-1, 1), random.randint(-1, 1), random.randint(-1, 1))
@@ -114,19 +121,9 @@ class Sarsa:
             action = self.actions[i]
         return action
 
-    def train_agent(self, agent, training_mode):
-        this_folder = os.path.dirname(os.path.abspath(__file__)) + "/training-files/"
-
-        if training_mode is 1:
-            list_of_dir = os.listdir('training-files/')
-            if len(list_of_dir) == 0:
-                self.path_to_file = os.path.join(this_folder, '1_training.txt')
-                self.file = open(self.path_to_file, "x")
-            else:
-                amount_of_files = len(list_of_dir)
-                self.path_to_file = os.path.join(this_folder, str(amount_of_files + 1) + '_training.txt')
-                self.file = open(self.path_to_file, "x")
-            self.file.close()
+    def train_agent(self, agent):
+        # Create training file
+        self.training_file_manager.create_training_file()
 
         # Update observations to make sure current state is correct
         agent.update_observations()
@@ -184,11 +181,7 @@ class Sarsa:
             print("-----------------------------")
 
             if new_environment_info.local_done[0]:
-                self.file = open(self.path_to_file, "w")
-                self.file.write(str(weights))
-                self.file.write(str(self.q))
-                self.file.close()
-
+                self.training_file_manager.save_values(weights, self.q)
                 agent.reset_simulation()
 
     def inference_run(self, agent):

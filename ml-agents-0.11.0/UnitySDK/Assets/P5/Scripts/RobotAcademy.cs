@@ -10,6 +10,8 @@ public class RobotAcademy : Academy
     List<Transform> debrisInEnvironment;
     List<bool> previousDebrisInZone;
     List<bool> currentDebrisInZone;
+    RobotAgent agent;
+    private float timePenalty = -0.1f;
     
     public enum CommunicatorPort
     {
@@ -38,6 +40,7 @@ public class RobotAcademy : Academy
         debrisInEnvironment = new List<Transform>();
         currentDebrisInZone = new List<bool>();
         previousDebrisInZone = new List<bool>();
+        agent = FindObjectOfType<RobotAgent>();
     }
 
     public override void AcademyReset()
@@ -73,6 +76,9 @@ public class RobotAcademy : Academy
         {
             currentDebrisInZone[debris] = dropZone.IsInZone(debrisInEnvironment[debris].position);
         }
+        
+        // For every step deduct rewards (roughly 5*second at normal speed)
+        agent.AddReward(timePenalty, "Time passed");
     }
 
     public List<Transform> GetDebris()

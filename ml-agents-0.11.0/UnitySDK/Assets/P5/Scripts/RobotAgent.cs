@@ -38,7 +38,6 @@ public class RobotAgent : Agent
     float penalty_debrisLeftZone = -100f;
     // TODO: Implement these
     // private float penalty_hitWall = -5f;
-    // private float penalty_timePassed = -0.5f;
     // private float penalty_debrisRunOver = -5f;
     
 
@@ -236,7 +235,7 @@ public class RobotAgent : Agent
     }
 
     // Wrapper function for AddReward that prints the reward/penalty and custom message in console
-    void AddReward(float reward, string message)
+    public void AddReward(float reward, string message)
     {
         Debug.Log(((reward < 0) ? "Penalty: " : "Reward: ") + reward + " (" + message + ")");
         AddReward(reward);

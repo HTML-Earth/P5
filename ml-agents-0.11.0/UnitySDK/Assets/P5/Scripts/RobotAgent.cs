@@ -170,7 +170,7 @@ public class RobotAgent : Agent
         if (timeElapsed > timeLimit)
         {
             timeElapsed = 0;
-            Done();
+            Done("Time limit reached");
         }
 
         // Perform actions
@@ -204,6 +204,9 @@ public class RobotAgent : Agent
         // Check if agent moves towards debris
         for (int i = 0; i < debrisInfos.Count; i++)
         {
+            if (debrisInfos[i].transform == null)
+                break;
+            
             // Check that debris is not in zone or shovel and that robot got closer
             if (!dropZone.IsInZone(debrisInfos[i].transform.position) && debrisInfos[i].distanceFromRobot < debrisInfos[i].lastDistanceFromRobot && !debrisDetector.GetDebrisInShovel()[i] && listIsDebrisLocated[i])
             {

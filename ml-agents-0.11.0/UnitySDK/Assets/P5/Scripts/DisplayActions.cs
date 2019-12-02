@@ -16,7 +16,7 @@ public class DisplayActions : MonoBehaviour
         robotAgent = FindObjectOfType<RobotAgent>();
     }
 
-    void Update()
+    void FixedUpdate()
     {
         float[] actions = robotAgent.GetActionVector();
 

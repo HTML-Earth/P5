@@ -58,7 +58,7 @@ public class ShovelControl : MonoBehaviour
         return shovelPos;
     }
 
-    void Update()
+    void FixedUpdate()
     {
         float armRotation = 0;
         float shovelRotation = 0;

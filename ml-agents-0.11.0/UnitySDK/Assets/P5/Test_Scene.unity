@@ -1789,50 +1789,5 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4743365921448770212, guid: 81f47bcef54978a40a80743e3328700e,
-        type: 3}
-      propertyPath: m_SuspensionSpring.damper
-      value: 3669.1726
-      objectReference: {fileID: 0}
-    - target: {fileID: 4743365921448770212, guid: 81f47bcef54978a40a80743e3328700e,
-        type: 3}
-      propertyPath: m_SuspensionDistance
-      value: 0.1962
-      objectReference: {fileID: 0}
-    - target: {fileID: 4743365921448770212, guid: 81f47bcef54978a40a80743e3328700e,
-        type: 3}
-      propertyPath: m_SuspensionSpring.spring
-      value: 22932.33
-      objectReference: {fileID: 0}
-    - target: {fileID: 4743365922462476675, guid: 81f47bcef54978a40a80743e3328700e,
-        type: 3}
-      propertyPath: m_SuspensionSpring.damper
-      value: 3670.069
-      objectReference: {fileID: 0}
-    - target: {fileID: 4743365922462476675, guid: 81f47bcef54978a40a80743e3328700e,
-        type: 3}
-      propertyPath: m_SuspensionDistance
-      value: 0.1962
-      objectReference: {fileID: 0}
-    - target: {fileID: 4743365922881444137, guid: 81f47bcef54978a40a80743e3328700e,
-        type: 3}
-      propertyPath: m_SuspensionSpring.spring
-      value: 25002.807
-      objectReference: {fileID: 0}
-    - target: {fileID: 4743365922881444137, guid: 81f47bcef54978a40a80743e3328700e,
-        type: 3}
-      propertyPath: m_SuspensionSpring.damper
-      value: 4000.4492
-      objectReference: {fileID: 0}
-    - target: {fileID: 4743365922881444137, guid: 81f47bcef54978a40a80743e3328700e,
-        type: 3}
-      propertyPath: m_SuspensionDistance
-      value: 0.1962
-      objectReference: {fileID: 0}
-    - target: {fileID: 1779018748840171066, guid: 81f47bcef54978a40a80743e3328700e,
-        type: 3}
-      propertyPath: m_BrainParameters.vectorObservationSize
-      value: 68
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 81f47bcef54978a40a80743e3328700e, type: 3}

@@ -1937,10 +1937,10 @@ WheelCollider:
   m_Center: {x: 0, y: 0, z: 0}
   m_Radius: 0.24
   m_SuspensionSpring:
-    spring: 22932.324
-    damper: 3669.1719
+    spring: 22932.33
+    damper: 3669.1726
     targetPosition: 0.5
-  m_SuspensionDistance: 0.19620001
+  m_SuspensionDistance: 0.1962
   m_ForceAppPointDistance: 0.8467244
   m_Mass: 20
   m_WheelDampingRate: 0.25
@@ -2181,8 +2181,8 @@ WheelCollider:
   m_Center: {x: 0, y: 0, z: 0}
   m_Radius: 0.24
   m_SuspensionSpring:
-    spring: 25002.805
-    damper: 4000.4485
+    spring: 25002.807
+    damper: 4000.4492
     targetPosition: 0.5
   m_SuspensionDistance: 0.1962
   m_ForceAppPointDistance: 0.8467244
@@ -4054,7 +4054,7 @@ MonoBehaviour:
     maxStep: 0
     resetOnDone: 1
     onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 1
+    numberOfActionsBetweenDecisions: 5
   debrisDetector: {fileID: 5361192715005589940}
 --- !u!114 &1779018748840171066
 MonoBehaviour:

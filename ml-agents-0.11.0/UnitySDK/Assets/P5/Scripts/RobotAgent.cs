@@ -134,17 +134,12 @@ public class RobotAgent : Agent
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
+        // Check if goal is met and simulation is done
+        IsGoalMet();
+        
+        // Give rewards or penalties
         RewardDebrisInShovel();
         RewardDebrisInOutZone();
-
-        // Check if goal is met
-        if (!goalReached && dropZone.IsAllDebrisInZone())
-        {
-            goalReached = true;
-            AddReward(reward_allDebrisEnteredZone, "all debris in zone");
-            Done("goal reached (all debris in zone)");
-        }
-        
         RewardMoveTowardsDebris();
         RewardLocateDebris();
         RobotUpright();
@@ -248,6 +243,18 @@ public class RobotAgent : Agent
         Vector3 robotPosition = transform.position;
         if (robotPosition.x > 25f || robotPosition.x < -25f || robotPosition.z > 25f || robotPosition.z < -25f || robotPosition.y < -5f)
             Done("robot is out of bounds");
+    }
+
+    // Check if goal is met, if then Done()
+    private void IsGoalMet()
+    {
+        // Check if goal is met
+        if (!goalReached && dropZone.IsAllDebrisInZone())
+        {
+            goalReached = true;
+            AddReward(reward_allDebrisEnteredZone, "all debris in zone");
+            Done("goal reached (all debris in zone)");
+        }
     }
 
     public override void AgentReset()

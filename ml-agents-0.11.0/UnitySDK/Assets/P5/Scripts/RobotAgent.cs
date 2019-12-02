@@ -27,24 +27,26 @@ public class RobotAgent : Agent
     float reward_debrisEnteredShovel = 1f;
     float reward_debrisEnteredZone = 10f;
     float reward_allDebrisEnteredZone = 1000f;
-    private float reward_debrisFound = 1f;
-    private float reward_moveTowardsDebris = 0.1f;
+    float reward_debrisFound = 1f;
+
+    float reward_moveTowardsDebris = 0.1f;
     // TODO: Implement these
-    // private float reward_debrisInShovelAndMoveTowardsZone = 0.2f;
+    // float reward_debrisInShovelAndMoveTowardsZone = 0.2f;
     
     // Negative rewards
     float penalty_debrisLeftShovel = -2f;
     float penalty_debrisLeftZone = -100f;
 
-    private float penalty_robotRammingWall = -0.5f;
-    private float penalty_time = -0.5f;
+    float penalty_robotRammingWall = -0.5f;
+
+    float penalty_time = -0.5f;
     // TODO: Implement these
-    // private float penalty_debrisRunOver = -5f;
+    // float penalty_debrisRunOver = -5f;
     
 
     // Variables used to check for rewards
     bool goalReached = false;
-    private List<bool> listIsDebrisLocated;
+    List<bool> listIsDebrisLocated;
     Queue<float> wallRammingPenalties;
 
     List<RobotVision.DebrisInfo> debrisInfos;
@@ -165,7 +167,7 @@ public class RobotAgent : Agent
     }
 
     // Reward given for the first time each debris is seen
-    private void RewardLocateDebris()
+    void RewardLocateDebris()
     {
         // Check for each debris if it is visible and has not been seen before
         for (int debrisNum = 0; debrisNum < debrisInfos.Count; debrisNum++)
@@ -179,7 +181,7 @@ public class RobotAgent : Agent
     }
 
     // Reward for each time the agent moves towards debris
-    private void RewardMoveTowardsDebris()
+    void RewardMoveTowardsDebris()
     {
         // Check if agent moves towards debris
         for (int i = 0; i < debrisInfos.Count; i++)
@@ -195,7 +197,7 @@ public class RobotAgent : Agent
     }
 
     // Check if debris has entered or left the dropzone
-    private void RewardDebrisInOutZone()
+    void RewardDebrisInOutZone()
     {
         // Check if debris has left/entered the zone
         List<bool> previousDebrisInZone = academy.GetPreviousDebrisInZone();
@@ -225,7 +227,7 @@ public class RobotAgent : Agent
     }
 
     // Check if debris has entered or left shovel
-    private void RewardDebrisInShovel()
+    void RewardDebrisInShovel()
     {
         // Check if debris has left/entered shovel
         for (int i = 0; i < currentDebrisInShovel.Count; i++)
@@ -251,13 +253,13 @@ public class RobotAgent : Agent
     }
 
     // Constantly deduct rewards
-    private void PenaltyTime()
+    void PenaltyTime()
     {
         AddReward(penalty_time, "Time passed");
     }
 
     // Check if robot has fallen or is outside area
-    private void RobotUpright()
+    void RobotUpright()
     {
         // Check if robot has fallen
         if (Vector3.Dot(transform.up, Vector3.up) < 0.1f)
@@ -272,7 +274,7 @@ public class RobotAgent : Agent
     }
 
     // Check if goal is met, if then Done()
-    private void IsGoalMet()
+    void IsGoalMet()
     {
         // Check if goal is met
         if (!goalReached && dropZone.IsAllDebrisInZone())

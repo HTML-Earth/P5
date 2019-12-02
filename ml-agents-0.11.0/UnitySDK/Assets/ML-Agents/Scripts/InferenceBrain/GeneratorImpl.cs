@@ -13,7 +13,7 @@ namespace MLAgents.InferenceBrain
     /// </summary>
     public class BiDimensionalOutputGenerator : TensorGenerator.IGenerator
     {
-        private readonly ITensorAllocator m_Allocator;
+        readonly ITensorAllocator m_Allocator;
 
         public BiDimensionalOutputGenerator(ITensorAllocator allocator)
         {
@@ -32,7 +32,7 @@ namespace MLAgents.InferenceBrain
     /// </summary>
     public class BatchSizeGenerator : TensorGenerator.IGenerator
     {
-        private readonly ITensorAllocator m_Allocator;
+        readonly ITensorAllocator m_Allocator;
 
         public BatchSizeGenerator(ITensorAllocator allocator)
         {
@@ -55,7 +55,7 @@ namespace MLAgents.InferenceBrain
     /// </summary>
     public class SequenceLengthGenerator : TensorGenerator.IGenerator
     {
-        private readonly ITensorAllocator m_Allocator;
+        readonly ITensorAllocator m_Allocator;
 
         public SequenceLengthGenerator(ITensorAllocator allocator)
         {
@@ -79,7 +79,7 @@ namespace MLAgents.InferenceBrain
     /// </summary>
     public class VectorObservationGenerator : TensorGenerator.IGenerator
     {
-        private readonly ITensorAllocator m_Allocator;
+        readonly ITensorAllocator m_Allocator;
         public VectorObservationGenerator(ITensorAllocator allocator)
         {
             m_Allocator = allocator;
@@ -112,7 +112,7 @@ namespace MLAgents.InferenceBrain
     /// </summary>
     public class RecurrentInputGenerator : TensorGenerator.IGenerator
     {
-        private readonly ITensorAllocator m_Allocator;
+        readonly ITensorAllocator m_Allocator;
 
         public RecurrentInputGenerator(ITensorAllocator allocator)
         {
@@ -150,9 +150,9 @@ namespace MLAgents.InferenceBrain
 
     public class BarracudaRecurrentInputGenerator : TensorGenerator.IGenerator
     {
-        private int m_MemoriesCount;
-        private readonly int m_MemoryIndex;
-        private readonly ITensorAllocator m_Allocator;
+        int m_MemoriesCount;
+        readonly int m_MemoryIndex;
+        readonly ITensorAllocator m_Allocator;
 
         public BarracudaRecurrentInputGenerator(int memoryIndex, ITensorAllocator allocator)
         {
@@ -200,7 +200,7 @@ namespace MLAgents.InferenceBrain
     /// </summary>
     public class PreviousActionInputGenerator : TensorGenerator.IGenerator
     {
-        private readonly ITensorAllocator m_Allocator;
+        readonly ITensorAllocator m_Allocator;
 
         public PreviousActionInputGenerator(ITensorAllocator allocator)
         {
@@ -236,7 +236,7 @@ namespace MLAgents.InferenceBrain
     /// </summary>
     public class ActionMaskInputGenerator : TensorGenerator.IGenerator
     {
-        private readonly ITensorAllocator m_Allocator;
+        readonly ITensorAllocator m_Allocator;
 
         public ActionMaskInputGenerator(ITensorAllocator allocator)
         {
@@ -271,8 +271,8 @@ namespace MLAgents.InferenceBrain
     /// </summary>
     public class RandomNormalInputGenerator : TensorGenerator.IGenerator
     {
-        private readonly RandomNormal m_RandomNormal;
-        private readonly ITensorAllocator m_Allocator;
+        readonly RandomNormal m_RandomNormal;
+        readonly ITensorAllocator m_Allocator;
 
         public RandomNormalInputGenerator(int seed, ITensorAllocator allocator)
         {
@@ -296,9 +296,9 @@ namespace MLAgents.InferenceBrain
     /// </summary>
     public class VisualObservationInputGenerator : TensorGenerator.IGenerator
     {
-        private readonly int m_Index;
-        private readonly bool m_GrayScale;
-        private readonly ITensorAllocator m_Allocator;
+        readonly int m_Index;
+        readonly bool m_GrayScale;
+        readonly ITensorAllocator m_Allocator;
 
         public VisualObservationInputGenerator(
             int index, ITensorAllocator allocator)

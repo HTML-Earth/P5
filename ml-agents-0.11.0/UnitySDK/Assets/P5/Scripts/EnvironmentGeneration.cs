@@ -12,8 +12,8 @@ public class EnvironmentGeneration : MonoBehaviour
     int dropzone_z;
     
     List<GameObject> environmentObjects = new List<GameObject>();
-    
-    private List<Transform> debrisList;
+
+    List<Transform> debrisList;
     
     public GameObject debrisPrefab;
     public Transform dropzone;
@@ -46,7 +46,7 @@ public class EnvironmentGeneration : MonoBehaviour
     }
 
     // Robot start position and rotation
-    private void PlaceRobot()
+    void PlaceRobot()
     {
         robot_x = Random.Range(0, 6);
         robot_z = Random.Range(0, 6);
@@ -58,7 +58,7 @@ public class EnvironmentGeneration : MonoBehaviour
         robot.rotation = Quaternion.Euler(0, randomRotation, 0);
     }
 
-    private void GenerateWalls()
+    void GenerateWalls()
     {
         int amount = Random.Range(8, 15);
         int x;
@@ -82,7 +82,7 @@ public class EnvironmentGeneration : MonoBehaviour
         }
     }
 
-    private void GenerateDebris()
+    void GenerateDebris()
     {
         int debrisAmount = 6;
         int debrisX;
@@ -119,7 +119,7 @@ public class EnvironmentGeneration : MonoBehaviour
     }
 
     //Return true if the number set is within the given list
-    private bool SetInLists(int num1, int num2, List<int> numList1, List<int> numList2)
+    bool SetInLists(int num1, int num2, List<int> numList1, List<int> numList2)
     {
         for (int i = 0; i < numList1.Count; i++)
         {

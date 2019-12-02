@@ -14,13 +14,13 @@ public class Debris : MonoBehaviour
     public float variant_range = 0.6f;
 
     int debrisIndex;
-    
-    private void Start()
+
+    void Start()
     {
         RandomDebris();
     }
-    
-    private void RandomDebris()
+
+    void RandomDebris()
     { 
         float minWidth = transform.localScale.x; 
         float maxWidth = minWidth + variant_range;

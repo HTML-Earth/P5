@@ -6,8 +6,9 @@ using UnityEngine.UI;
 
 public class Timer : MonoBehaviour
 {
-    private TextMeshProUGUI text;
-    private float theTime;
+    TextMeshProUGUI text;
+
+    float theTime;
     // Start is called before the first frame update
     void Start()
     {

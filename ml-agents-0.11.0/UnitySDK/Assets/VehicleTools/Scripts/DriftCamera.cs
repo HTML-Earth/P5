@@ -20,13 +20,13 @@ public class DriftCamera : MonoBehaviour
 
     bool m_ShowingSideView;
 
-    private void FixedUpdate ()
+    void FixedUpdate ()
     {
         if(advancedOptions.updateCameraInFixedUpdate)
             UpdateCamera ();
     }
 
-    private void Update ()
+    void Update ()
     {
         if (Input.GetKeyDown (advancedOptions.switchViewKey))
             m_ShowingSideView = !m_ShowingSideView;
@@ -35,13 +35,13 @@ public class DriftCamera : MonoBehaviour
             UpdateCamera ();
     }
 
-    private void LateUpdate ()
+    void LateUpdate ()
     {
         if(advancedOptions.updateCameraInLateUpdate)
             UpdateCamera ();
     }
 
-    private void UpdateCamera ()
+    void UpdateCamera ()
     {
         if (m_ShowingSideView)
         {

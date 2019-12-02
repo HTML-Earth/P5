@@ -28,7 +28,7 @@ import os
 
 class Sarsa:
 
-    def __init__(self, gamma=0.9, eta=0.6):
+    def __init__(self, gamma=0.9, eta=0.3):
         # Q function
         self.q = {}
         # Feature function
@@ -50,9 +50,10 @@ class Sarsa:
         # 0.0 is default if there exist no value for given state and action
         return self.q.get((tuple(state), action), 0.0)
 
-    def get_feature_value(self, state, action):
-        observations = state
+    def learn_q(self, state, action, reward):
+        self.q[(tuple(state), action)] = reward
 
+    def update_feature_values(self, observations):
         # z means the velocity when moving forward and backward.
         velocity_z = observations[5]
         sensors_front = [observations[11], observations[12], observations[40]]
@@ -97,7 +98,7 @@ class Sarsa:
         else:
             self.feature_values[10] = 0
 
-    def choose_action(self, state, action):
+    def choose_action(self, state):
         if random.random() < self.eta:
             action = (random.randint(-1, 1), random.randint(-1, 1), random.randint(-1, 1), random.randint(-1, 1))
         else:
@@ -129,13 +130,15 @@ class Sarsa:
 
         # Update observations to make sure current state is correct
         agent.update_observations()
+        observations = agent.observations
+
+        # Update features
+        self.update_feature_values(observations)
 
         # Observe current state s
-        cur_state = agent.observations
+        cur_state = self.feature_values
         # Select action a
         cur_action = (1, 0, 0, 0)
-
-        self.get_feature_value(cur_state, cur_action)
 
         # Arbitrarily initalize weights which will be updated later
         # TODO Assume that there is an extra feature F0(s,a) whose value is always 1,
@@ -147,19 +150,25 @@ class Sarsa:
         while True:
             # Perform action
             new_environment_info = agent.perform_action(*cur_action).get('Robot')
+            new_observations = new_environment_info.vector_observations[0]
+
+            # Update features
+            self.update_feature_values(new_observations)
+
             # Observe state s'
-            new_state = new_environment_info.vector_observations[0]
+            new_state = self.feature_values
+
             # Observe reward r
             reward = new_environment_info.rewards[0]
 
             # Select action a' (using a policy based on the Q-function
-            new_action = self.choose_action(cur_state, cur_action)
+            new_action = self.choose_action(cur_state)
+
+            # Insert (state, action) and reward into Q-function
+            self.learn_q(cur_state, cur_action, reward)
 
             # TODO Explain what delta is
             delta = reward + self.gamma * self.get_q_value(new_state, new_action) - self.get_q_value(cur_state, cur_action)
-
-            # Update features
-            self.get_feature_value(cur_state, cur_action)
 
             # Update each weight for each feature
             for i in range(len(self.feature_values)):
@@ -170,10 +179,8 @@ class Sarsa:
             cur_action = new_action
 
             self.accumulated_rewards += reward
-            print("Accumulated rewards: " + str(self.accumulated_rewards))
-            print("Feature values: \n" + str(self.feature_values))
-            print("Weights: \n" + str(weights))
-            print("Q-function: \n" + str(self.q))
+            print("Accumulated rewards: \n" + str(self.accumulated_rewards))
+            print("Reward: \n" + str(reward))
             print("-----------------------------")
 
             if new_environment_info.local_done[0]:
@@ -187,10 +194,11 @@ class Sarsa:
     def inference_run(self, agent):
         agent.update_observations()
 
-        cur_state = agent.observations
+        observations = agent.observations
+        cur_state = self.feature_values
         cur_action = (1, 0, 0, 0)
 
-        self.get_feature_value(cur_state, cur_action)
+        self.update_feature_values(observations)
 
         # TODO Initialize to saved weights
         weights = []
@@ -199,11 +207,12 @@ class Sarsa:
 
         while True:
             new_environment_info = agent.perform_action(*cur_action).get('Robot')
-            new_state = new_environment_info.vector_observations[0]
-            new_action = self.choose_action(cur_state, cur_action)
+            new_observations = new_environment_info.vector_observations[0]
+            new_action = self.choose_action(cur_state)
+            new_state = self.feature_values
 
             # Update features
-            self.get_feature_value(cur_state, cur_action)
+            self.update_feature_values(new_state)
 
             cur_state = new_state
             cur_action = new_action

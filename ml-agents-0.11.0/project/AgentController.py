@@ -1,6 +1,5 @@
 import numpy as np
 from mlagents.envs.environment import UnityEnvironment
-import SarsaLFA
 
 
 class Agent:
@@ -79,24 +78,3 @@ class Agent:
 
     def reset_simulation(self):
         self.env.reset()
-
-
-# Main function which will be run after the above code has finished (Setup of connection and definition of functions)
-if __name__ == '__main__':
-    # Agent object
-    agent = Agent()
-    # Algorithm object
-    sarsa = SarsaLFA.Sarsa()
-
-    # If input is 1, start new training
-    # TODO If input is 2, resume training
-    training_mode = int(input("New training: 1\nExisting training: 2\nInput: "))
-
-    # Examine the state space for the default brain
-    # print("Agent state looks like: \n{}".format(agent.observations))
-
-    sarsa.train_agent(agent, training_mode)
-
-    # Close simulation
-    agent.close_simulation()
-    print(agent.timeElapsed)

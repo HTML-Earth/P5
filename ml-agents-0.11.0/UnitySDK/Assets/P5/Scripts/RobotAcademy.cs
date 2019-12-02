@@ -9,9 +9,7 @@ public class RobotAcademy : Academy
     List<Transform> debrisInEnvironment;
     List<bool> previousDebrisInZone;
     List<bool> currentDebrisInZone;
-    RobotAgent agent;
-    private float timePenalty = -0.1f;
-    
+
     public enum CommunicatorPort
     {
         DefaultTraining = 5004,
@@ -39,7 +37,6 @@ public class RobotAcademy : Academy
         debrisInEnvironment = new List<Transform>();
         currentDebrisInZone = new List<bool>();
         previousDebrisInZone = new List<bool>();
-        agent = FindObjectOfType<RobotAgent>();
     }
 
     public override void AcademyReset()

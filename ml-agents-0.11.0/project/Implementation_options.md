@@ -36,7 +36,7 @@ All of these are suggestions.
 - Debris in shovel and going to dropzone
 - Debris in shovel 
 - Debris in shovel and going to dropzone
-- Drive towards debris
+- Drive towards debris (Implemented)
 
 ### Negative rewards
 - Time passing without debris in shovel

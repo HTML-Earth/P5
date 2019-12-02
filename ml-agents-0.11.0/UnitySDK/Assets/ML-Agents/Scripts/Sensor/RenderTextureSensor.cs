@@ -5,14 +5,14 @@ using UnityEngine;
 
 namespace MLAgents.Sensor
 {
-    class RenderTextureSensor : ISensor
+    internal class RenderTextureSensor : ISensor
     {
-        private RenderTexture m_RenderTexture;
-        private int m_Width;
-        private int m_Height;
-        private bool m_Grayscale;
-        private string m_Name;
-        private int[] m_Shape;
+        RenderTexture m_RenderTexture;
+        int m_Width;
+        int m_Height;
+        bool m_Grayscale;
+        string m_Name;
+        int[] m_Shape;
 
         public RenderTextureSensor(RenderTexture renderTexture, int width, int height, bool grayscale, string name)
         {

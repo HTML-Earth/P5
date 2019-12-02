@@ -6,8 +6,8 @@ public class CarSwitcher : MonoBehaviour
 	public List<GameObject> vehicles;
 	public Transform spawnPoints;
 
-	private DriftCamera m_DriftCamera;
-	private int m_VehicleId;
+	DriftCamera m_DriftCamera;
+	int m_VehicleId;
 
 	void Start () 
     {

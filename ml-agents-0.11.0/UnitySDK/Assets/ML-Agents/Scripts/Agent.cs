@@ -198,8 +198,8 @@ namespace MLAgents
     [RequireComponent(typeof(BehaviorParameters))]
     public abstract class Agent : MonoBehaviour
     {
-        private IPolicy m_Brain;
-        private BehaviorParameters m_PolicyFactory;
+        IPolicy m_Brain;
+        BehaviorParameters m_PolicyFactory;
 
         /// <summary>
         /// Agent parameters specified within the Editor via AgentEditor.
@@ -261,12 +261,12 @@ namespace MLAgents
         int m_Id;
 
         /// Keeps track of the actions that are masked at each step.
-        private ActionMasker m_ActionMasker;
+        ActionMasker m_ActionMasker;
 
         /// <summary>
         /// Demonstration recorder.
         /// </summary>
-        private DemonstrationRecorder m_Recorder;
+        DemonstrationRecorder m_Recorder;
 
         public List<ISensor> m_Sensors;
 

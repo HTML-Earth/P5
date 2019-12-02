@@ -6,20 +6,20 @@ namespace MLAgents.InferenceBrain
 {
     public class ModelRunner : IBatchedDecisionMaker
     {
-        private List<Agent> m_Agents = new List<Agent>();
-        private ITensorAllocator m_TensorAllocator;
-        private TensorGenerator m_TensorGenerator;
-        private TensorApplier m_TensorApplier;
+        List<Agent> m_Agents = new List<Agent>();
+        ITensorAllocator m_TensorAllocator;
+        TensorGenerator m_TensorGenerator;
+        TensorApplier m_TensorApplier;
 
-        private NNModel m_Model;
-        private InferenceDevice m_InferenceDevice;
-        private IWorker m_Engine;
-        private bool m_Verbose = false;
-        private string[] m_OutputNames;
-        private IReadOnlyList<TensorProxy> m_InferenceInputs;
-        private IReadOnlyList<TensorProxy> m_InferenceOutputs;
+        NNModel m_Model;
+        InferenceDevice m_InferenceDevice;
+        IWorker m_Engine;
+        bool m_Verbose = false;
+        string[] m_OutputNames;
+        IReadOnlyList<TensorProxy> m_InferenceInputs;
+        IReadOnlyList<TensorProxy> m_InferenceOutputs;
 
-        private bool m_visualObservationsInitialized = false;
+        bool m_visualObservationsInitialized = false;
 
         /// <summary>
         /// Initializes the Brain with the Model that it will use when selecting actions for
@@ -70,7 +70,7 @@ namespace MLAgents.InferenceBrain
             m_TensorApplier = new TensorApplier(brainParameters, seed, m_TensorAllocator, barracudaModel);
         }
 
-        private static Dictionary<string, Tensor> PrepareBarracudaInputs(IEnumerable<TensorProxy> infInputs)
+        static Dictionary<string, Tensor> PrepareBarracudaInputs(IEnumerable<TensorProxy> infInputs)
         {
             var inputs = new Dictionary<string, Tensor>();
             foreach (var inp in infInputs)
@@ -88,7 +88,7 @@ namespace MLAgents.InferenceBrain
             m_TensorAllocator?.Reset(false);
         }
 
-        private List<TensorProxy> FetchBarracudaOutputs(string[] names)
+        List<TensorProxy> FetchBarracudaOutputs(string[] names)
         {
             var outputs = new List<TensorProxy>();
             foreach (var n in names)

@@ -19,8 +19,8 @@ public class Wall : MonoBehaviour
     {
         RandomWallSize();
     }
-    
-    private void RandomWallSize()
+
+    void RandomWallSize()
     {
         float length = Random.Range(minLength, maxLength);
 

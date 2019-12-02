@@ -18,7 +18,7 @@ public class Timer : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         theTime = robotAgent.GetElapsedTime();
         string minutes = Mathf.Floor((theTime % 3600) / 60).ToString("00");

@@ -33,14 +33,13 @@ All of these are suggestions.
 ### Positive rewards
 - Debris in dropzone (Implemented)
 - Locate debris (Implemented)
-- Debris in shovel and going to dropzone
 - Debris in shovel 
 - Debris in shovel and going to dropzone
 - Drive towards debris (Implemented)
 
 ### Negative rewards
-- Time passing without debris in shovel
-- Drive into walls
+- Time passing without debris in shovel (Implemented without regards to shovel)
+- Drive into walls (Implemented)
 - Drive over debris
 - Drop debris outside of dropzone
 - Debris rolls out of dropzone (Implemented)

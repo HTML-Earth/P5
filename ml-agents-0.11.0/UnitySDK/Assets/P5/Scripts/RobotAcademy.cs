@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using MLAgents;
 using UnityEngine;
 
@@ -76,9 +75,6 @@ public class RobotAcademy : Academy
         {
             currentDebrisInZone[debris] = dropZone.IsInZone(debrisInEnvironment[debris].position);
         }
-        
-        // For every step deduct rewards (roughly 5*second at normal speed)
-        agent.AddReward(timePenalty, "Time passed");
     }
 
     public List<Transform> GetDebris()

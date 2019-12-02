@@ -39,6 +39,7 @@ public class RobotAgent : Agent
 
     private float penalty_robotRammingWall = -0.5f;
     // TODO: Implement these
+    private float penalty_time = -0.5f;
     // private float penalty_hitWall = -5f;
     // private float penalty_debrisRunOver = -5f;
     
@@ -152,8 +153,11 @@ public class RobotAgent : Agent
         RewardDebrisInOutZone();
         RewardMoveTowardsDebris();
         RewardLocateDebris();
+        PenaltyTime();
+        
+        // Make sure robot in inside area and upright
         RobotUpright();
-
+        
 
         // Perform actions
         wheels.SetTorque(vectorAction[0]);
@@ -188,6 +192,8 @@ public class RobotAgent : Agent
             if (!dropZone.IsInZone(debrisInfos[i].transform.position) && debrisInfos[i].distanceFromRobot < debrisInfos[i].lastDistanceFromRobot)
             {
                 AddReward(reward_moveTowardsDebris, "Moved towards debris");
+                // Enable break for points to be given when moving towards atleast 1 debris (otherwise points are given up to reward * amount of debris)
+                break;
             }
         }
     }
@@ -246,6 +252,12 @@ public class RobotAgent : Agent
                     AddReward(reward_debrisEnteredShovel, "debris entered shovel");
             }
         }
+    }
+
+    // Constantly deduct rewards
+    private void PenaltyTime()
+    {
+        AddReward(penalty_time, "Time passed");
     }
 
     // Check if robot has fallen or is outside area

@@ -1477,6 +1477,11 @@ PrefabInstance:
       propertyPath: m_SuspensionDistance
       value: 0.1962
       objectReference: {fileID: 0}
+    - target: {fileID: 1779018748840171066, guid: 81f47bcef54978a40a80743e3328700e,
+        type: 3}
+      propertyPath: m_BrainParameters.vectorObservationSize
+      value: 68
+      objectReference: {fileID: 0}
     - target: {fileID: 4743365922881444137, guid: 81f47bcef54978a40a80743e3328700e,
         type: 3}
       propertyPath: m_SuspensionSpring.spring

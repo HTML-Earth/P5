@@ -47,3 +47,5 @@
 60 Check if within dropZone
 
 61 - 66 Check if agent is getting closer to debris
+
+67 Check if Debris has entered the shovel

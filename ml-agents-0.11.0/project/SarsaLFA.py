@@ -32,7 +32,7 @@ class Sarsa:
         # Q function
         self.q = {}
         # Feature function
-        self.feature_values = [0] * 10
+        self.feature_values = [0] * 11
 
         self.gamma = gamma
         self.eta = eta
@@ -70,7 +70,7 @@ class Sarsa:
         else:
             self.feature_values[1] = 0
 
-        # Check if robot is within the dropzone
+        # Check if robot is within the dropZone
         if observations[60]:
             self.feature_values[2] = 1
         else:
@@ -90,6 +90,12 @@ class Sarsa:
             self.feature_values[index] = 1
         else:
             self.feature_values[index] = 0
+
+        # Check if debris is in shovel
+        if observations[67]:
+            self.feature_values[10] = 1
+        else:
+            self.feature_values[10] = 0
 
     def choose_action(self, state, action):
         if random.random() < self.eta:

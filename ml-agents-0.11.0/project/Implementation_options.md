@@ -33,7 +33,7 @@ All of these are suggestions.
 ### Positive rewards
 - Debris in dropzone (Implemented)
 - Locate debris (Implemented)
-- Debris in shovel 
+- Debris in shovel (Implemented)
 - Debris in shovel and going to dropzone
 - Drive towards debris (Implemented)
 

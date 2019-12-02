@@ -136,6 +136,11 @@ public class RobotAgent : Agent
             bool gettingCloserToDebris = debrisInfo.distanceFromRobot < debrisInfo.lastDistanceFromRobot;
             AddVectorObs(gettingCloserToDebris);
         }
+        
+        //Check if robot has picked up debris (67)
+        List<bool> DebrisInShovel = debrisDetector.GetDebrisInShovel();
+        bool debrisInShovel = DebrisInShovel.Count > 0;
+        AddVectorObs(debrisInShovel);
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)

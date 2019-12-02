@@ -21,6 +21,8 @@ public class RobotAgent : Agent
     List<bool> currentDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
     List<bool> previousDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
 
+    readonly float timeLimit = 120f;
+    
     float timeElapsed;
 
     // Positive rewards
@@ -160,6 +162,12 @@ public class RobotAgent : Agent
         // Make sure robot in inside area and upright
         RobotUpright();
         
+        // Reset if time limit is reached
+        if (timeElapsed > timeLimit)
+        {
+            timeElapsed = 0;
+            Done();
+        }
 
         // Perform actions
         wheels.SetTorque(vectorAction[0]);
@@ -330,6 +338,11 @@ public class RobotAgent : Agent
         heuristicValues[3] = (Input.GetKey(KeyCode.Z)) ? 1f : (Input.GetKey(KeyCode.X)) ? -1f : 0f;
 
         return heuristicValues;
+    }
+
+    public float GetElapsedTime()
+    {
+        return timeElapsed;
     }
 
     public float[] GetActionVector()

@@ -134,6 +134,84 @@ public class RobotAgent : Agent
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
+        RewardDebrisInShovel();
+        RewardDebrisInOutZone();
+
+        // Check if goal is met
+        if (!goalReached && dropZone.IsAllDebrisInZone())
+        {
+            goalReached = true;
+            AddReward(reward_allDebrisEnteredZone, "all debris in zone");
+            Done("goal reached (all debris in zone)");
+        }
+        
+        RewardMoveTowardsDebris();
+        RewardLocateDebris();
+        RobotUpright();
+
+
+        // Perform actions
+        wheels.SetTorque(vectorAction[0]);
+        wheels.SetAngle(vectorAction[1]);
+        
+        shovel.RotateArm(vectorAction[2]);
+        shovel.RotateShovel(vectorAction[3]);
+    }
+
+    // Reward given for the first time each debris is seen
+    private void RewardLocateDebris()
+    {
+        // Check for each debris if it is visible and has not been seen before
+        for (int debrisNum = 0; debrisNum < debrisInfos.Count; debrisNum++)
+        {
+            if (debrisInfos[debrisNum].isVisible && !listIsDebrisLocated[debrisNum])
+            {
+                AddReward(reward_debrisFound, "Debris was located");
+                listIsDebrisLocated[debrisNum] = true;
+            }
+        }
+    }
+
+    // Reward for each time the agent moves towards debris
+    private void RewardMoveTowardsDebris()
+    {
+        // Check if agent moves towards debris
+        for (int i = 0; i < debrisInfos.Count; i++)
+        {
+            // print(debrisInfos[i].distanceFromRobot + "vs" + debrisInfos[i].lastDistanceFromRobot);
+            // TODO: Mangler at tage højde for hvad der er i skovlen
+            if (!dropZone.IsInZone(debrisInfos[i].transform.position) && debrisInfos[i].distanceFromRobot < debrisInfos[i].lastDistanceFromRobot)
+            {
+                AddReward(reward_moveTowardsDebris, "Moved towards debris");
+            }
+        }
+    }
+
+    // Check if debris has entered or left the dropzone
+    private void RewardDebrisInOutZone()
+    {
+        // Check if debris has left/entered the zone
+        List<bool> previousDebrisInZone = academy.GetPreviousDebrisInZone();
+        List<bool> currentDebrisInZone = academy.GetCurrentDebrisInZone();
+
+        for (int i = 0; i < previousDebrisInZone.Count; i++)
+        {
+            if (previousDebrisInZone[i])
+            {
+                if (!currentDebrisInZone[i])
+                    AddReward(penalty_debrisLeftZone, "debris left zone");
+            }
+            else
+            {
+                if (currentDebrisInZone[i])
+                    AddReward(reward_debrisEnteredZone, "debris entered zone");
+            }
+        }
+    }
+
+    // Check if debris has entered or left shovel
+    private void RewardDebrisInShovel()
+    {
         // Check if debris has left/entered shovel
         for (int i = 0; i < currentDebrisInShovel.Count; i++)
         {
@@ -155,54 +233,11 @@ public class RobotAgent : Agent
                     AddReward(reward_debrisEnteredShovel, "debris entered shovel");
             }
         }
+    }
 
-        // Check if debris has left/entered the zone
-        List<bool> previousDebrisInZone = academy.GetPreviousDebrisInZone();
-        List<bool> currentDebrisInZone = academy.GetCurrentDebrisInZone();
-
-        for (int i = 0; i < previousDebrisInZone.Count; i++)
-        {
-            if (previousDebrisInZone[i])
-            {
-                if (!currentDebrisInZone[i])
-                    AddReward(penalty_debrisLeftZone, "debris left zone");
-            }
-            else
-            {
-                if (currentDebrisInZone[i])
-                    AddReward(reward_debrisEnteredZone, "debris entered zone");
-            }
-        }
-
-        // Check if goal is met
-        if (!goalReached && dropZone.IsAllDebrisInZone())
-        {
-            goalReached = true;
-            AddReward(reward_allDebrisEnteredZone, "all debris in zone");
-            Done("goal reached (all debris in zone)");
-        }
-        
-        // Check if agent moves towards debris
-        for (int i = 0; i < debrisInfos.Count; i++)
-        {
-            // print(debrisInfos[i].distanceFromRobot + "vs" + debrisInfos[i].lastDistanceFromRobot);
-            // TODO: Mangler at tage højde for hvad der er i skovlen
-            if (!dropZone.IsInZone(debrisInfos[i].transform.position) && debrisInfos[i].distanceFromRobot < debrisInfos[i].lastDistanceFromRobot)
-            {
-                AddReward(reward_moveTowardsDebris, "Moved towards debris");
-            }
-        }
-        
-        // Check for each debris if it is visible and has not been seen before
-        for (int debrisNum = 0; debrisNum < debrisInfos.Count; debrisNum++)
-        {
-            if (debrisInfos[debrisNum].isVisible && !listIsDebrisLocated[debrisNum])
-            {
-                AddReward(reward_debrisFound, "Debris was located");
-                listIsDebrisLocated[debrisNum] = true;
-            }
-        }
-        
+    // Check if robot has fallen or is outside area
+    private void RobotUpright()
+    {
         // Check if robot has fallen
         if (Vector3.Dot(transform.up, Vector3.up) < 0.1f)
         {
@@ -213,13 +248,6 @@ public class RobotAgent : Agent
         Vector3 robotPosition = transform.position;
         if (robotPosition.x > 25f || robotPosition.x < -25f || robotPosition.z > 25f || robotPosition.z < -25f || robotPosition.y < -5f)
             Done("robot is out of bounds");
-
-        // Perform actions
-        wheels.SetTorque(vectorAction[0]);
-        wheels.SetAngle(vectorAction[1]);
-        
-        shovel.RotateArm(vectorAction[2]);
-        shovel.RotateShovel(vectorAction[3]);
     }
 
     public override void AgentReset()

@@ -193,7 +193,7 @@ public class RobotAgent : Agent
         for (int i = 0; i < debrisInfos.Count; i++)
         {
             // Check that debris is not in zone or shovel and that robot got closer
-            if (!dropZone.IsInZone(debrisInfos[i].transform.position) && debrisInfos[i].distanceFromRobot < debrisInfos[i].lastDistanceFromRobot && !debrisDetector.GetDebrisInShovel()[i])
+            if (!dropZone.IsInZone(debrisInfos[i].transform.position) && debrisInfos[i].distanceFromRobot < debrisInfos[i].lastDistanceFromRobot && !debrisDetector.GetDebrisInShovel()[i] && listIsDebrisLocated[i])
             {
                 AddReward(reward_moveTowardsDebris, "Moved towards debris");
                 // Enable break for points to be given when moving towards atleast 1 debris (otherwise points are given up to reward * amount of debris)

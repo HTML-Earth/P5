@@ -36,6 +36,8 @@ public class RobotAgent : Agent
     // Negative rewards
     float penalty_debrisLeftShovel = -2f;
     float penalty_debrisLeftZone = -100f;
+
+    private float penalty_robotRammingWall = -0.5f;
     // TODO: Implement these
     // private float penalty_hitWall = -5f;
     // private float penalty_debrisRunOver = -5f;
@@ -45,6 +47,7 @@ public class RobotAgent : Agent
     bool goalReached = false;
     // Hard initialized to 6*false, a false for each debris
     private List<bool> listIsDebrisLocated;
+    Queue<float> wallRammingPenalties;
 
     List<RobotVision.DebrisInfo> debrisInfos;
     
@@ -64,6 +67,8 @@ public class RobotAgent : Agent
         debrisDetector.InitializeDetector();
         // Hard initialized to 6*false, one for each debris
         listIsDebrisLocated = new List<bool>() {false, false, false, false, false, false};
+        
+        wallRammingPenalties = new Queue<float>();
 
         timeElapsed = 0;
     }
@@ -173,6 +178,13 @@ public class RobotAgent : Agent
                     AddReward(reward_debrisEnteredZone, "debris entered zone");
             }
         }
+        // Check every wallRammingPenalties queue and add
+        while (wallRammingPenalties.Count > 0)
+        {
+            wallRammingPenalties.Dequeue();
+            AddReward(penalty_robotRammingWall,"robot ramming wall");
+
+        }
 
         // Check if goal is met
         if (!goalReached && dropZone.IsAllDebrisInZone())
@@ -202,7 +214,7 @@ public class RobotAgent : Agent
                 listIsDebrisLocated[debrisNum] = true;
             }
         }
-        
+
         // Check if robot has fallen
         if (Vector3.Dot(transform.up, Vector3.up) < 0.1f)
         {
@@ -220,6 +232,14 @@ public class RobotAgent : Agent
         
         shovel.RotateArm(vectorAction[2]);
         shovel.RotateShovel(vectorAction[3]);
+    }
+
+    void OnCollisionEnter(Collision other)
+    {
+        if (other.collider.gameObject.layer == LayerMask.NameToLayer("environment"))
+        {
+            wallRammingPenalties.Enqueue(1);
+        }
     }
 
     public override void AgentReset()

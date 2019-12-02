@@ -69,6 +69,10 @@ public class RobotAgent : Agent
         sensors = GetComponent<RobotSensors>();
         dropZone = FindObjectOfType<DropZone>();
         
+        // Reset robot velocity
+        rigidbody.velocity = Vector3.zero;
+        rigidbody.angularVelocity = Vector3.zero;
+        
         debrisDetector.InitializeDetector();
         // Hard initialized to 6*false, one for each debris
         listIsDebrisLocated = new List<bool>() {false, false, false, false, false, false};

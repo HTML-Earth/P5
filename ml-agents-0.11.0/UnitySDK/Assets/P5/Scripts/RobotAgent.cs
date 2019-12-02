@@ -28,9 +28,8 @@ public class RobotAgent : Agent
     float reward_debrisEnteredZone = 10f;
     float reward_allDebrisEnteredZone = 1000f;
     private float reward_debrisFound = 1f;
-    // TODO: Implement these
-    // private float reward_debrisInShovel = 5f;
     private float reward_moveTowardsDebris = 0.1f;
+    // TODO: Implement these
     // private float reward_debrisInShovelAndMoveTowardsZone = 0.2f;
     
     // Negative rewards
@@ -38,15 +37,13 @@ public class RobotAgent : Agent
     float penalty_debrisLeftZone = -100f;
 
     private float penalty_robotRammingWall = -0.5f;
-    // TODO: Implement these
     private float penalty_time = -0.5f;
-    // private float penalty_hitWall = -5f;
+    // TODO: Implement these
     // private float penalty_debrisRunOver = -5f;
     
 
     // Variables used to check for rewards
     bool goalReached = false;
-    // Hard initialized to 6*false, a false for each debris
     private List<bool> listIsDebrisLocated;
     Queue<float> wallRammingPenalties;
 
@@ -187,9 +184,8 @@ public class RobotAgent : Agent
         // Check if agent moves towards debris
         for (int i = 0; i < debrisInfos.Count; i++)
         {
-            // print(debrisInfos[i].distanceFromRobot + "vs" + debrisInfos[i].lastDistanceFromRobot);
-            // TODO: Mangler at tage højde for hvad der er i skovlen
-            if (!dropZone.IsInZone(debrisInfos[i].transform.position) && debrisInfos[i].distanceFromRobot < debrisInfos[i].lastDistanceFromRobot)
+            // Check that debris is not in zone or shovel and that robot got closer
+            if (!dropZone.IsInZone(debrisInfos[i].transform.position) && debrisInfos[i].distanceFromRobot < debrisInfos[i].lastDistanceFromRobot && !debrisDetector.GetDebrisInShovel()[i])
             {
                 AddReward(reward_moveTowardsDebris, "Moved towards debris");
                 // Enable break for points to be given when moving towards atleast 1 debris (otherwise points are given up to reward * amount of debris)

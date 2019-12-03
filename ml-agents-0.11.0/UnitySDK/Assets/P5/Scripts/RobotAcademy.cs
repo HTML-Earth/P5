@@ -12,6 +12,13 @@ public class RobotAcademy : Academy
     List<bool> previousDebrisInZone;
     List<bool> currentDebrisInZone;
 
+    private int iterations;
+
+    public int get_iterations()
+    {
+        return iterations;
+    }
+
     public enum CommunicatorPort
     {
         DefaultTraining = 5004,
@@ -88,6 +95,8 @@ public class RobotAcademy : Academy
             currentDebrisInZone.Add(dropZone.IsInZone(debris.transform.position));
         }
         previousDebrisInZone = currentDebrisInZone;
+
+        iterations++;
     }
 
     public override void AcademyStep()

@@ -47,6 +47,10 @@ class TrainingFileManager:
     def set_training_file(self, training_file_name):
         self.path_to_file = os.path.join(self.training_file_folder, training_file_name)
 
+        file_index_number = training_file_name[0]
+        self.episode_file_name = str(file_index_number) + "_episode_file.txt"
+        self.time_file_name = str(file_index_number) + "_time_file.txt"
+
     def read_weights(self):
         self.file = open(self.path_to_file, "r")
 
@@ -95,9 +99,10 @@ class TrainingFileManager:
         self.file = open(self.path_to_file, "w")
 
         # Write weights and Q-function to training file
-        self.file.writelines(str(weights) + "\n")
+        weights_formatted = [round(x, 2) for x in weights]
+        self.file.writelines(str(weights_formatted) + "\n")
         for entry in q_function:
-            self.file.write(str(entry) + ":" + str(q_function[entry]) + "\n")
+            self.file.write(str(entry) + ":" + str(round(q_function[entry], 2)) + "\n")
 
         self.file.close()
 
@@ -123,7 +128,7 @@ class TrainingFileManager:
 
     def save_time_rewards(self, time_passed, reward_per_time):
         self.time_file = open(self.time_file_folder + self.time_file_name, "a")
-        self.time_file.write(str(int(time_passed)) + "," + str(reward_per_time) + "\n")
+        self.time_file.write(str(int(time_passed)) + "," + str(round(reward_per_time, 2)) + "\n")
         self.time_file.close()
 
     def create_episode_file(self):
@@ -148,5 +153,5 @@ class TrainingFileManager:
 
     def save_episode_rewards(self, episode, reward_in_episode):
         self.episode_file = open(self.episode_file_folder + self.episode_file_name, "a")
-        self.episode_file.write(str(episode) + "," + str(reward_in_episode) + "\n")
+        self.episode_file.write(str(episode) + "," + str(round(reward_in_episode)) + "\n")
         self.episode_file.close()

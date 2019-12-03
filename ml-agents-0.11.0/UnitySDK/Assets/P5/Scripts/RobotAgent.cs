@@ -24,7 +24,7 @@ public class RobotAgent : Agent
     Vector3 startPosition;
     Quaternion startRotation;
     
-    readonly float timeLimit = 120f;
+    readonly float timeLimit = 30f;
     
     float timeElapsed;
 
@@ -34,17 +34,17 @@ public class RobotAgent : Agent
     float reward_allDebrisEnteredZone = 1f;
     float reward_debrisFound = 0.1f;
 
-    float reward_moveTowardsDebris = 0.01f;
+    float reward_moveTowardsDebris = 0.0f;
     // TODO: Implement these
     // float reward_debrisInShovelAndMoveTowardsZone = 0.2f;
     
     // Negative rewards
     float penalty_debrisLeftShovel = -0.2f;
-    float penalty_debrisLeftZone = -1f;
+    float penalty_debrisLeftZone = 0f;
 
     float penalty_robotRammingWall = -0.5f;
 
-    float penalty_time = -0.01f;
+    float penalty_time = 0f;
     // TODO: Implement these
     // float penalty_debrisRunOver = -5f;
     

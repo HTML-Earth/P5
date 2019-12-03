@@ -1,5 +1,6 @@
 import random
 from File_manager import TrainingFileManager
+import time
 
 # Q_w(s,a) = w_0 + w_1 F_1(s,a) +  ... + w_n F_n(s,a)
 #
@@ -40,7 +41,16 @@ class Sarsa:
         self.eta = eta
 
         # Total amount of rewards per episode
-        self.accumulated_rewards = 0
+        self.reward_in_episode = 0
+
+        # Total amount of rewards per time unit
+        self.reward_per_time = 0
+
+        # Episode number
+        self.episode = 1
+
+        # Time unit
+        self.target_time = 10
 
         # All possible actions for the Agent (81 possible actions)
         self.actions = [(i, j, k, l)
@@ -59,7 +69,11 @@ class Sarsa:
     # Update Q-value for given state and action
     # TODO Q-value (reward) should be: Q_w(s,a) = w_0 + w_1 F_1(s,a) +  ... + w_n F_n(s,a)
     def learn_q(self, state, action, reward):
-        self.q[(tuple(state), action)] = reward
+        total_q_value = 0
+        for i in range(0, len(self.feature_values) - 1):
+            total_q_value = self.weights[i] * self.feature_values[i]
+
+        self.q[(tuple(state), action)] = total_q_value
 
     # Update Feature values array
     # TODO Move method to Agent class
@@ -126,6 +140,10 @@ class Sarsa:
         return action
 
     def new_training_agent(self, agent):
+        # Create reward files
+        self.training_file_manager.create_time_file()
+        self.training_file_manager.create_episode_file()
+
         # Create training file
         self.training_file_manager.create_training_file()
 
@@ -166,6 +184,7 @@ class Sarsa:
         self.train(agent, cur_state, cur_action)
 
     def train(self, agent, cur_state, cur_action):
+        start_time = time.time()
         while True:
             # Perform action
             new_environment_info = agent.perform_action(*cur_action).get('Robot')
@@ -197,12 +216,31 @@ class Sarsa:
             cur_state = new_state
             cur_action = new_action
 
-            self.accumulated_rewards += reward
-            print("Accumulated rewards: \n" + str(self.accumulated_rewards))
-            print("Reward: \n" + str(reward))
-            print("-----------------------------")
+            self.reward_in_episode += reward
 
+            # Set time checkpoint
+            checkpoint = time.time()
+            time_passed = checkpoint - start_time
+
+            # Every 10 seconds
+            if time_passed > self.target_time:
+                # Save time and reward
+                self.training_file_manager.save_time_rewards(time_passed, self.reward_per_time)
+                self.reward_per_time = 0
+
+                # Save Weights and Q-function
+                self.training_file_manager.save_values(self.weights, self.q)
+
+                # Set new target time
+                self.target_time += 10
+
+            # Agent marked as Done
             if new_environment_info.local_done[0]:
+                self.training_file_manager.save_episode_rewards(self.episode, self.reward_in_episode)
+                self.episode += 1
+                self.reward_in_episode = 0
+
+                # Save Weights and Q-function
                 self.training_file_manager.save_values(self.weights, self.q)
                 agent.reset_simulation()
 

@@ -22,6 +22,7 @@ public class RobotAgent : Agent
     List<bool> previousDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
 
     Vector3 startPosition;
+    Quaternion startRotation;
     
     readonly float timeLimit = 120f;
     
@@ -84,6 +85,7 @@ public class RobotAgent : Agent
         wallRammingPenalties = new Queue<float>();
 
         startPosition = transform.position;
+        startRotation = transform.rotation;
 
         timeElapsed = 0;
     }
@@ -93,6 +95,7 @@ public class RobotAgent : Agent
     public void ResetPosition()
     {
         transform.position = startPosition;
+        transform.rotation = startRotation;
         
         // Reset robot velocity
         rb.velocity = Vector3.zero;

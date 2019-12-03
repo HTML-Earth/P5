@@ -41,10 +41,9 @@ All of these are suggestions.
 - Time passing without debris in shovel (Implemented without regards to shovel)
 - Drive into walls (Implemented)
 - Drive over debris
-- Drop debris outside of dropzone
+- Drop debris outside of dropzone (Implemented)
 - Debris rolls out of dropzone (Implemented)
     - High enough penalty so it's not worth to put it back in and repeat
-- Debris fell out of shovel and not in dropzone
 
 ## Other simulation implementation
 - Reset simulation if robot is flipped

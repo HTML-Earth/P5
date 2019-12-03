@@ -1,58 +1,83 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Remoting.Messaging;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class EnvironmentGeneration : MonoBehaviour
 {
-    int robot_x;
-    int robot_z;
-    int dropzone_x;
-    int dropzone_z;
+    int robotX;
+    int robotZ;
+    int dropZoneX;
+    int dropZoneZ;
     
-    List<GameObject> environmentObjects = new List<GameObject>();
+    List<GameObject> spawnedDebris = new List<GameObject>();
+    List<GameObject> spawnedWalls = new List<GameObject>();
 
-    List<Transform> debrisList;
-    
-    public GameObject debrisPrefab;
-    public Transform dropzone;
+    [Header("Environment Generation Settings")]
+    public bool createNewDebris = true;
+    [Range(1,6)]
+    public int debrisAmount = 6;
+
+    public bool createNewWalls = true;
+    [Range(1, 20)] public int wallMinAmount = 8;
+    [Range(1, 20)] public int wallMaxAmount = 15;
+
+    public bool placeRobot = true;
+    public bool placeDropzone = true;
+
+    public Vector2 environmentSize; //TODO: use this for placement
+
+    [Header("References")]
+    public Transform dropZone;
     public Transform robot;
-    public GameObject wall;
 
-    RobotVision robotVision;
-
-    void Awake()
-    {
-        robotVision = robot.gameObject.GetComponent<RobotVision>();
-    }
+    [Header("Prefabs")]
+    public GameObject debrisPrefab;
+    public GameObject wallPrefab;
 
     public void GenerateEnvironment()
     {
-        if (environmentObjects.Count > 0)
+        if (createNewDebris && spawnedDebris.Count > 0)
         {
-            foreach (GameObject environmentObject in environmentObjects)
+            foreach (GameObject debris in spawnedDebris)
             {
-                Destroy(environmentObject);
+                Destroy(debris);
             }
-            
-            environmentObjects.Clear();
+            spawnedDebris.Clear();
         }
 
-        PlaceRobot();
-        GenerateDropzone();
-        GenerateWalls();
-        GenerateDebris();
+        if (createNewWalls && spawnedWalls.Count > 0)
+        {
+            foreach (GameObject wall in spawnedWalls)
+            {
+                Destroy(wall);
+            }
+            spawnedWalls.Clear();
+        }
+        
+        if (placeRobot)
+            PlaceRobot();
+        
+        if (placeDropzone)
+            PlaceDropzone();
+        
+        if (createNewWalls)
+            GenerateWalls();
+        
+        if (createNewDebris)
+            GenerateDebris();
     }
 
     // Robot start position and rotation
     void PlaceRobot()
     {
-        robot_x = Random.Range(0, 6);
-        robot_z = Random.Range(0, 6);
+        robotX = Random.Range(0, 6);
+        robotZ = Random.Range(0, 6);
 
-        float x = -20f + robot_x * 8;
-        float z = -20f + robot_z * 8;
+        float x = -20f + robotX * 8;
+        float z = -20f + robotZ * 8;
         float randomRotation = Random.Range(0, 4) * 90f;
         robot.position = new Vector3(x, 0.9f, z);
         robot.rotation = Quaternion.Euler(0, randomRotation, 0);
@@ -60,7 +85,7 @@ public class EnvironmentGeneration : MonoBehaviour
 
     void GenerateWalls()
     {
-        int amount = Random.Range(8, 15);
+        int amount = Random.Range(wallMinAmount, wallMaxAmount);
         int x;
         int z;
         List<int> xList = new List<int>();
@@ -73,9 +98,9 @@ public class EnvironmentGeneration : MonoBehaviour
                 z = Random.Range(0, 5);
             } while (SetInLists(x, z, xList, zList));
             var rotation = Random.Range(0, 2) * 90f;
-            GameObject obstacle_wall = Instantiate(wall, new Vector3(-16f + x * 8, 1.25f, -16f + z * 8), Quaternion.Euler(0f, rotation, 0f));
+            GameObject obstacleWall = Instantiate(wallPrefab, new Vector3(-16f + x * 8, 1.25f, -16f + z * 8), Quaternion.Euler(0f, rotation, 0f));
             
-            environmentObjects.Add(obstacle_wall);
+            spawnedWalls.Add(obstacleWall);
             
             xList.Add(x);
             zList.Add(z);
@@ -89,7 +114,6 @@ public class EnvironmentGeneration : MonoBehaviour
         int debrisZ;
         var randomsX = new List<int>();
         var randomsY = new List<int>();
-        debrisList = new List<Transform>();
         
         for (int i = 0; i < debrisAmount; i++)
         {
@@ -102,7 +126,7 @@ public class EnvironmentGeneration : MonoBehaviour
             {
                 debrisX = Random.Range(0, 6);
                 debrisZ = Random.Range(0, 6);
-            } while (SetInLists(debrisX, debrisZ, randomsX, randomsY) | ((debrisX == dropzone_x && debrisZ == dropzone_z) | (debrisX == robot_x && debrisZ == robot_z)) );
+            } while (SetInLists(debrisX, debrisZ, randomsX, randomsY) | ((debrisX == dropZoneX && debrisZ == dropZoneZ) | (debrisX == robotX && debrisZ == robotZ)) );
 
             float x = -20f + debrisX * 8;
             float z = -20f + debrisZ * 8;
@@ -110,8 +134,7 @@ public class EnvironmentGeneration : MonoBehaviour
             GameObject debrisOBJ = Instantiate(debrisPrefab, new Vector3(x, 0.5f, z), Quaternion.Euler(rotateX, rotateY, 0f));
             debrisOBJ.GetComponent<Debris>().SetDebrisIndex(i);
             
-            debrisList.Add(debrisOBJ.transform);
-            environmentObjects.Add(debrisOBJ);
+            spawnedDebris.Add(debrisOBJ);
             
             randomsX.Add(debrisX);
             randomsY.Add(debrisZ);
@@ -130,22 +153,16 @@ public class EnvironmentGeneration : MonoBehaviour
     }
 
     // Dropzone position
-    public void GenerateDropzone()
+    public void PlaceDropzone()
     {
         do
         {
-            dropzone_x = Random.Range(0, 6);
-            dropzone_z = Random.Range(0, 6);
-        } while (robot_x == dropzone_x && robot_z == dropzone_z);
+            dropZoneX = Random.Range(0, 6);
+            dropZoneZ = Random.Range(0, 6);
+        } while (robotX == dropZoneX && robotZ == dropZoneZ);
 
-        float x = -20f + dropzone_x * 8; // -20 to +20
-        float z = -20f + dropzone_z * 8;
-        dropzone.position = new Vector3(x, -0.24f, z);
+        float x = -20f + dropZoneX * 8; // -20 to +20
+        float z = -20f + dropZoneZ * 8;
+        dropZone.position = new Vector3(x, -0.24f, z);
     }
-
-    public List<Transform> GetDebris()
-    {
-        return debrisList;
-    }
-
 }

@@ -8,7 +8,7 @@ using UnityEngine;
 public class RobotAgent : Agent
 {
     RobotAcademy academy;
-    Rigidbody rigidbody;
+    Rigidbody rb;
     WheelDrive wheels;
     ShovelControl shovel;
     RobotSensors sensors;
@@ -21,6 +21,8 @@ public class RobotAgent : Agent
     List<bool> currentDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
     List<bool> previousDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
 
+    Vector3 startPosition;
+    
     readonly float timeLimit = 120f;
     
     float timeElapsed;
@@ -52,6 +54,8 @@ public class RobotAgent : Agent
     Queue<float> wallRammingPenalties;
 
     List<RobotVision.DebrisInfo> debrisInfos;
+
+    readonly int debrisCount = 6;
     
     readonly Color debrisHighlight = new Color(0,1,1);
     readonly Color debrisHighlightMissing = new Color(1,0,0);
@@ -62,7 +66,7 @@ public class RobotAgent : Agent
     public override void InitializeAgent()
     {
         academy = FindObjectOfType<RobotAcademy>();
-        rigidbody = GetComponent<Rigidbody>();
+        rb = GetComponent<Rigidbody>();
         wheels = GetComponent<WheelDrive>();
         shovel = GetComponent<ShovelControl>();
         vision = GetComponent<RobotVision>();
@@ -70,8 +74,8 @@ public class RobotAgent : Agent
         dropZone = FindObjectOfType<DropZone>();
         
         // Reset robot velocity
-        rigidbody.velocity = Vector3.zero;
-        rigidbody.angularVelocity = Vector3.zero;
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
         
         debrisDetector.InitializeDetector();
         // Hard initialized to 6*false, one for each debris
@@ -79,7 +83,20 @@ public class RobotAgent : Agent
         
         wallRammingPenalties = new Queue<float>();
 
+        startPosition = transform.position;
+
         timeElapsed = 0;
+    }
+    
+    
+    // Called by academy on reset if random generation is disabled
+    public void ResetPosition()
+    {
+        transform.position = startPosition;
+        
+        // Reset robot velocity
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
     }
     
     void FixedUpdate() {
@@ -97,7 +114,7 @@ public class RobotAgent : Agent
         AddVectorObs(transform.rotation.eulerAngles.y);
         
         // Robot velocity (3, 4, 5)
-        Vector3 localVelocity = rigidbody.transform.InverseTransformDirection(rigidbody.velocity);
+        Vector3 localVelocity = rb.transform.InverseTransformDirection(rb.velocity);
         AddVectorObs(localVelocity.x);
         AddVectorObs(localVelocity.y);
         AddVectorObs(localVelocity.z);
@@ -128,6 +145,14 @@ public class RobotAgent : Agent
             AddVectorObs(debrisInfo.lastKnownPosition.y);
             AddVectorObs(debrisInfo.lastKnownPosition.z);
         }
+
+        // If there are fewer than 6 debris, pad out the observations
+        for (int i = 0; i < debrisCount - debrisInfos.Count; i++)
+        {
+            AddVectorObs(Mathf.Infinity);
+            AddVectorObs(Mathf.Infinity);
+            AddVectorObs(Mathf.Infinity);
+        }
         
         // Simulation time (59)
         AddVectorObs(timeElapsed);
@@ -143,6 +168,12 @@ public class RobotAgent : Agent
         {
             bool gettingCloserToDebris = debrisInfo.distanceFromRobot < debrisInfo.lastDistanceFromRobot;
             AddVectorObs(gettingCloserToDebris);
+        }
+        
+        // If there are fewer than 6 debris, pad out the observations
+        for (int i = 0; i < debrisCount - debrisInfos.Count; i++)
+        {
+            AddVectorObs(false);
         }
         
         //Check if robot has picked up debris (67)

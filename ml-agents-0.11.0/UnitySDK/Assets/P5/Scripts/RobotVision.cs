@@ -35,19 +35,19 @@ public class RobotVision : MonoBehaviour
     public void InitializeDebrisArray()
     {
         // Get list of debris Transforms
-        List<Transform> debrisList = academy.GetDebris();
+        List<Debris> debrisList = academy.GetDebris();
 
         // Initialize list of DebrisInfos
         debrisInfos = new List<DebrisInfo>();
         
         // Add each debris transform and starting values to info list
-        foreach (Transform t in debrisList)
+        foreach (Debris d in debrisList)
         {
             DebrisInfo info = new DebrisInfo();
-            info.transform = t;
+            info.transform = d.transform;
             info.lastKnownPosition = Vector3.positiveInfinity;
             info.isVisible = false;
-            info.distanceFromRobot = Vector3.Distance(t.position, transform.position);
+            info.distanceFromRobot = Vector3.Distance(d.transform.position, transform.position);
             info.lastDistanceFromRobot = info.distanceFromRobot;
 
             debrisInfos.Add(info);
@@ -61,7 +61,7 @@ public class RobotVision : MonoBehaviour
         if (debrisInfos == null)
             InitializeDebrisArray();
         
-        if (debrisInfos[0].transform == null)
+        if (debrisInfos.Count > 0 && debrisInfos[0].transform == null)
             InitializeDebrisArray();
         
         Vector3 currentSensorPosition = sensorPosition.position;

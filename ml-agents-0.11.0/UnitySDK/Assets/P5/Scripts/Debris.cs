@@ -14,9 +14,12 @@ public class Debris : MonoBehaviour
     public float variant_range = 0.6f;
 
     int debrisIndex;
+    
+    Vector3 startPosition;
 
     void Start()
     {
+        startPosition = transform.position;
         RandomDebris();
     }
 
@@ -49,5 +52,10 @@ public class Debris : MonoBehaviour
     public int GetDebrisIndex()
     {
         return debrisIndex;
+    }
+
+    public Vector3 GetStartPosition()
+    {
+        return startPosition;
     }
 }

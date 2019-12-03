@@ -5,8 +5,10 @@ using UnityEngine;
 public class RobotAcademy : Academy
 {
     EnvironmentGeneration environmentGeneration;
+    
     DropZone dropZone;
-    List<Transform> debrisInEnvironment;
+    List<Debris> debrisInEnvironment;
+    
     List<bool> previousDebrisInZone;
     List<bool> currentDebrisInZone;
 
@@ -16,8 +18,10 @@ public class RobotAcademy : Academy
         OurPythonScript = 5005
     }
 
+    [Header("Discombobulated settings")]
     public CommunicatorPort communicatorPort = CommunicatorPort.OurPythonScript;
-    
+    public bool useRandomEnvironment;
+
     public override void InitializeCommunicator()
     {
         Communicator = new RpcCommunicator(
@@ -29,31 +33,59 @@ public class RobotAcademy : Academy
     
     public override void InitializeAcademy()
     {
-        Debug.LogWarning("Communicating on port:" + (int)communicatorPort + " (" + communicatorPort + ")");
+        Debug.LogWarning("Communicator port is set to:" + (int)communicatorPort + " (" + communicatorPort + ")");
         
         // Initialize variables
         environmentGeneration = FindObjectOfType<EnvironmentGeneration>();
         dropZone = FindObjectOfType<DropZone>();
-        debrisInEnvironment = new List<Transform>();
+
+        InitializeDebrisList();
+        
         currentDebrisInZone = new List<bool>();
         previousDebrisInZone = new List<bool>();
     }
 
+    void InitializeDebrisList()
+    {
+        debrisInEnvironment = new List<Debris>();
+        
+        // Add all debris in environment to the list
+        foreach (Debris debris in FindObjectsOfType<Debris>())
+        {
+            debrisInEnvironment.Add(debris);
+        }
+    }
+
     public override void AcademyReset()
     {
-        // Generate environment
-        environmentGeneration.GenerateEnvironment();
-        
-        // Get debris in environment
-        debrisInEnvironment = environmentGeneration.GetDebris();
+        if (useRandomEnvironment)
+        {
+            // Generate environment
+            environmentGeneration.GenerateEnvironment();
+
+            // If environmentGeneration resets debris, reinitialize the list
+            if (environmentGeneration.createNewDebris)
+                InitializeDebrisList();
+        }
+        else // If random generation is disabled
+        {
+            // Reset debris positions
+            foreach (Debris debris in debrisInEnvironment)
+            {
+                debris.transform.position = debris.GetStartPosition();
+            }
+            
+            // Reset robot position
+            FindObjectOfType<RobotAgent>()?.ResetPosition();
+        }
 
         // Update DropZone's debris list
         dropZone.SetDebrisList(debrisInEnvironment);
         
         // Initialize debrisInZone values
-        foreach (Transform debris in debrisInEnvironment)
+        foreach (Debris debris in debrisInEnvironment)
         {
-            currentDebrisInZone.Add(dropZone.IsInZone(debris.position));
+            currentDebrisInZone.Add(dropZone.IsInZone(debris.transform.position));
         }
         previousDebrisInZone = currentDebrisInZone;
     }
@@ -70,11 +102,11 @@ public class RobotAcademy : Academy
         // Update currentDebrisInZone values
         for (int debris = 0; debris < debrisInEnvironment.Count; debris++)
         {
-            currentDebrisInZone[debris] = dropZone.IsInZone(debrisInEnvironment[debris].position);
+            currentDebrisInZone[debris] = dropZone.IsInZone(debrisInEnvironment[debris].transform.position);
         }
     }
 
-    public List<Transform> GetDebris()
+    public List<Debris> GetDebris()
     {
         return debrisInEnvironment;
     }

@@ -8,7 +8,7 @@ public class DropZone : MonoBehaviour
 {
     public float radius = 4f;
 
-    List<Transform> debris;
+    List<Debris> debris;
 
     bool allDebrisInZone;
 
@@ -17,9 +17,9 @@ public class DropZone : MonoBehaviour
         transform.Find("circle_area").localScale = new Vector3(radius, radius, radius);
     }
     
-    public void SetDebrisList(List<Transform> debris)
+    public void SetDebrisList(List<Debris> debrisList)
     {
-        this.debris = debris;
+        this.debris = debrisList;
         allDebrisInZone = false;
     }
 
@@ -35,7 +35,7 @@ public class DropZone : MonoBehaviour
             return;
         
         allDebrisInZone = true;
-        foreach (Transform d in debris)
+        foreach (Debris d in debris)
         {
             if (!IsInZone(d.transform.position))
                 allDebrisInZone = false;

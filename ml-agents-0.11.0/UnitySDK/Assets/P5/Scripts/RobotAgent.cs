@@ -284,25 +284,20 @@ public class RobotAgent : Agent
     // Check if debris has entered or left shovel
     void RewardDebrisInShovel()
     {
-        // Check if debris has left/entered shovel
-        for (int i = 0; i < currentDebrisInShovel.Count; i++)
-        {
-            previousDebrisInShovel[i] = currentDebrisInShovel[i];
-        }
-        
         currentDebrisInShovel = debrisDetector.GetDebrisInShovel();
 
         for (int i = 0; i < currentDebrisInShovel.Count; i++)
         {
-            if (previousDebrisInShovel[i])
+            if (currentDebrisInShovel[i] && !previousDebrisInShovel[i])
             {
-                if (!currentDebrisInShovel[i] && !dropZone.IsInZone(debrisInfos[i].transform.position))
-                    AddReward(penalty_debrisLeftShovel, "debris left shovel outside DropZone");
+                AddReward(reward_debrisEnteredShovel, "debris entered shovel");
+                previousDebrisInShovel[i] = true;
             }
-            else
+            
+            if (previousDebrisInShovel[i] && !currentDebrisInShovel[i] && !dropZone.IsInZone(debrisInfos[i].transform.position))
             {
-                if (currentDebrisInShovel[i])
-                    AddReward(reward_debrisEnteredShovel, "debris entered shovel");
+                AddReward(penalty_debrisLeftShovel, "debris left shovel outside DropZone");
+                previousDebrisInShovel[i] = false;
             }
         }
     }

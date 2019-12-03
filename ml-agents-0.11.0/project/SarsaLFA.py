@@ -217,6 +217,7 @@ class Sarsa:
             cur_action = new_action
 
             self.reward_in_episode += reward
+            self.reward_per_time += reward
 
             # Set time checkpoint
             checkpoint = time.time()

@@ -12,12 +12,7 @@ public class RobotAcademy : Academy
     List<bool> previousDebrisInZone;
     List<bool> currentDebrisInZone;
 
-    private int iterations;
-
-    public int get_iterations()
-    {
-        return iterations;
-    }
+    int iterations;
 
     public enum CommunicatorPort
     {
@@ -113,6 +108,11 @@ public class RobotAcademy : Academy
         {
             currentDebrisInZone[debris] = dropZone.IsInZone(debrisInEnvironment[debris].transform.position);
         }
+    }
+    
+    public int GetIterations()
+    {
+        return iterations;
     }
 
     public List<Debris> GetDebris()

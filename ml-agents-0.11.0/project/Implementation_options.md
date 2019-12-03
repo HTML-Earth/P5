@@ -19,13 +19,18 @@ All of these are suggestions.
 ## Features:
 ### Done:
 - Robot driving into walls
-- Robot performing 'lift-debris' with debris in shovel
+- Robot is within dropZone
 - Robot getting closer to debris
+- Robot is ready to pickup debris
+- Robot has debris in shovel
+
 
 ### Not done:
 - Robot with debris getting closer to dropzone
 - Debris inside dropzone 
     - To tell it that the reward is connected to this feature
+- 
+- Robot performing 'lift-debris' with debris in shovel
 
 ---------------------
 

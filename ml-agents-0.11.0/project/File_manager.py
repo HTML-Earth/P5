@@ -4,11 +4,22 @@ import os
 class TrainingFileManager:
 
     def __init__(self):
+        # Training files
         self.file = None
         self.path_to_file = None
 
+        # Reward files
+        self.time_file = None
+        self.episode_file = None
+
+        # Folder variables
         self.folder_name = "training-files"
-        self.this_folder = os.path.dirname(os.path.abspath(__file__)) + "/training-files/"
+        self.reward_folder_name = "reward-files"
+        self.training_file_folder = os.path.dirname(os.path.abspath(__file__)) + "/training-files/"
+
+        # Reward folder variables
+        self.time_file_folder = os.path.dirname(os.path.abspath(__file__)) + "/time-files/"
+        self.episode_file_folder = os.path.dirname(os.path.abspath(__file__)) + "/episode-files/"
 
     def create_training_file(self):
         # If folder, 'training-files' does not exist, create it
@@ -17,33 +28,22 @@ class TrainingFileManager:
 
         # listdir returns an array of filenames in 'training-files'
         files = os.listdir(self.folder_name)
-        print(files)
 
         # If '1_training.txt' does not exist, create it
-        if not os.path.isfile(self.this_folder + "1_training.txt"):
+        if not os.path.isfile(self.training_file_folder + "1_training.txt"):
             # Insert '1_training.txt' at the end of the path
-            self.path_to_file = os.path.join(self.this_folder, '1_training.txt')
+            self.path_to_file = os.path.join(self.training_file_folder, '1_training.txt')
             self.file = open(self.path_to_file, "x")
         # Create '#_training.txt' where # is based on the amount of files in 'training-files'
         else:
             amount_of_files = len(files)
-            self.path_to_file = os.path.join(self.this_folder, str(amount_of_files + 1) + '_training.txt')
+            self.path_to_file = os.path.join(self.training_file_folder, str(amount_of_files + 1) + '_training.txt')
             self.file = open(self.path_to_file, "x")
 
         self.file.close()
 
-    def save_values(self, weights, q_function):
-        self.file = open(self.path_to_file, "w")
-
-        # Write weights and Q-function to training file
-        self.file.writelines(str(weights) + "\n")
-        for entry in q_function:
-            self.file.write(str(entry) + ":" + str(q_function[entry]) + "\n")
-
-        self.file.close()
-
     def set_training_file(self, training_file_name):
-        self.path_to_file = os.path.join(self.this_folder, training_file_name)
+        self.path_to_file = os.path.join(self.training_file_folder, training_file_name)
 
     def read_weights(self):
         self.file = open(self.path_to_file, "r")
@@ -88,3 +88,67 @@ class TrainingFileManager:
         self.file.close()
 
         return q_function
+
+    def save_values(self, weights, q_function):
+        self.file = open(self.path_to_file, "w")
+
+        # Write weights and Q-function to training file
+        self.file.writelines(str(weights) + "\n")
+        for entry in q_function:
+            self.file.write(str(entry) + ":" + str(q_function[entry]) + "\n")
+
+        self.file.close()
+
+    def create_time_file(self):
+        # If folder, 'reward-file' does not exist, create it
+        if not os.path.isdir(self.time_file_folder):
+            os.mkdir(self.time_file_folder)
+
+        # listdir returns an array of filenames in 'training-files'
+        files = os.listdir(self.time_file_folder)
+
+        # If '1_training.txt' does not exist, create it
+        if not os.path.isfile(self.time_file_folder + "1_time_file.txt"):
+            # Insert '1_training.txt' at the end of the path
+            self.path_to_file = os.path.join(self.time_file_folder, '1_time_file.txt')
+            self.time_file = open(self.path_to_file, "x")
+        # Create '#_training.txt' where # is based on the amount of files in 'training-files'
+        else:
+            amount_of_files = len(files)
+            self.path_to_file = os.path.join(self.time_file_folder, str(amount_of_files + 1) + '_time_file.txt')
+            self.time_file = open(self.path_to_file, "x")
+
+        self.time_file.write("Time,Reward\n")
+        self.time_file.close()
+
+    def save_time_rewards(self, time_passed, reward_per_time):
+        self.time_file = open(self.time_file_folder + "1_time_file.txt", "a")
+        self.time_file.write(str(int(time_passed)) + "," + str(reward_per_time) + "\n")
+        self.time_file.close()
+
+    def create_episode_file(self):
+        # If folder, 'reward-file' does not exist, create it
+        if not os.path.isdir(self.episode_file_folder):
+            os.mkdir(self.episode_file_folder)
+
+        # listdir returns an array of filenames in 'training-files'
+        files = os.listdir(self.episode_file_folder)
+
+        # If '1_training.txt' does not exist, create it
+        if not os.path.isfile(self.episode_file_folder + "1_episode_file.txt"):
+            # Insert '1_training.txt' at the end of the path
+            self.path_to_file = os.path.join(self.episode_file_folder, '1_episode_file.txt')
+            self.episode_file = open(self.path_to_file, "x")
+        # Create '#_training.txt' where # is based on the amount of files in 'training-files'
+        else:
+            amount_of_files = len(files)
+            self.path_to_file = os.path.join(self.episode_file_folder, str(amount_of_files + 1) + '_episode_file.txt')
+            self.episode_file = open(self.path_to_file, "x")
+
+        self.episode_file.write("Episode,Reward\n")
+        self.episode_file.close()
+
+    def save_episode_rewards(self, episode, reward_in_episode):
+        self.episode_file = open(self.episode_file_folder + "1_episode_file.txt", "a")
+        self.episode_file.write(str(episode) + "," + str(reward_in_episode) + "\n")
+        self.episode_file.close()

@@ -1,23 +1,37 @@
 import random
 from AgentController import Agent
+from File_manager import TrainingFileManager
+import time
 
 
 class SarsaLFA:
 
-    def __init__(self, agent, gamma=0.3, eta=4, epsilon=0.9):
-        self.agent = agent
+    def __init__(self, agent_object, gamma=0.5, eta=1, epsilon=0.9):
+        self.agent = agent_object
+        self.training_file_manager = TrainingFileManager()
 
         self.q_function = {}
 
-        self.actions = agent.actions
+        self.actions = self.agent.actions
 
+        # Variables
         self.gamma = gamma
         self.eta = eta
         self.epsilon = epsilon
 
+        # Weights
         self.weights = []
         for i in range(0, len(self.agent.feature_values)):
             self.weights.append(random.randint(-2, 2))
+
+        # Rewards
+        self.reward_per_episode = 0
+        self.reward_per_time = 0
+
+        # Time
+        self.start_time = None
+        self.episode = 1
+        self.target_time = 10
 
     def choose_action(self, state):
         if random.random() < self.epsilon:
@@ -44,9 +58,32 @@ class SarsaLFA:
         self.q_function[(tuple(state), action)] = total_q_value
         return total_q_value
 
+    def new_training_agent(self):
+        # Create reward files
+        self.training_file_manager.create_time_file()
+        self.training_file_manager.create_episode_file()
+
+        # Create training file
+        self.training_file_manager.create_training_file()
+
+        for i in range(len(self.agent.feature_values)):
+            self.weights.append(random.randint(0, 5))
+
+        self.train_agent()
+
+    def continue_training_agent(self, training_file_name):
+        # Set path to training file name
+        self.training_file_manager.set_training_file(training_file_name)
+
+        self.weights = self.training_file_manager.read_weights()
+        self.q_function = self.training_file_manager.read_q_function()
+
+        self.train_agent()
+
     def train_agent(self):
         state = self.agent.get_state()
         action = (1, 0, 0, 0)
+        self.start_time = time.time()
 
         while True:
             self.agent.perform_action(*action)
@@ -72,8 +109,36 @@ class SarsaLFA:
             state = new_state
             action = new_action
 
-            if self.agent.is_done():
-                self.agent.reset_simulation()
+            self.reward_per_episode += reward
+            self.reward_per_time += reward
+
+            self.save()
+
+    def save(self):
+        # Set time checkpoint
+        checkpoint = time.time()
+        time_passed = checkpoint - self.start_time
+
+        # Every 10 seconds
+        if time_passed > self.target_time:
+            # Save time and reward
+            self.training_file_manager.save_time_rewards(time_passed, self.reward_per_time)
+            self.reward_per_time = 0
+
+            # Save Weights and Q-function
+            self.training_file_manager.save_values(self.weights, self.q_function)
+
+            # Set new target time
+            self.target_time += 10
+
+        if self.agent.is_done():
+            self.training_file_manager.save_episode_rewards(self.episode, self.reward_per_episode)
+            self.episode += 1
+            self.reward_per_episode = 0
+
+            # Save Weights and Q-function
+            self.training_file_manager.save_values(self.weights, self.q_function)
+            self.agent.reset_simulation()
 
 
 if __name__ == '__main__':

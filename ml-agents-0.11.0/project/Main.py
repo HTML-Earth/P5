@@ -1,5 +1,5 @@
 from AgentController import Agent
-from SarsaLFA import Sarsa
+from Sarsa import SarsaLFA
 import sys
 
 # python3.6 Main.py -[mode] [training-file]
@@ -42,12 +42,10 @@ if __name__ == '__main__':
     # Agent object
     agent = Agent()
     # Algorithm object
-    sarsa = Sarsa()
+    sarsa = SarsaLFA(agent)
 
     # If training-mode is 1, start new training
     if training_mode == 1:
-        sarsa.new_training_agent(agent)
+        sarsa.new_training_agent()
     elif training_mode == 2:
-        sarsa.continue_training_agent(agent, training_file_name)
-    elif training_mode == 3:
-        sarsa.inference_run(agent, training_file_name)
+        sarsa.continue_training_agent(training_file_name)

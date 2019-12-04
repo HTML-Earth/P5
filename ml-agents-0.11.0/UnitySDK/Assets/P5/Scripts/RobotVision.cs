@@ -84,9 +84,8 @@ public class RobotVision : MonoBehaviour
             // Debris distance from robot
             currentDebrisInfo.distanceFromRobot = Vector3.Distance(currentDebrisPosition, transform.position);
 
-            // Calculate angle between forward direction and direction to Debris
-            // If it is less than 60 degrees -> continue, else -> not visible
-            if (Vector3.Angle(sensorPosition.forward, directionToDebris.normalized) < visionAngle * 0.5f)
+            // If debris is within vision cone
+            if (DirectionIsWithinVision(directionToDebris))
             {
                 Ray ray = new Ray(currentSensorPosition, directionToDebris);
                 float distanceToDebris = Vector3.Distance(currentSensorPosition, currentDebrisPosition);
@@ -104,6 +103,21 @@ public class RobotVision : MonoBehaviour
             else
             {
                 currentDebrisInfo.isVisible = false;
+                
+                // Vector from Sensor-position to last known Debris-position
+                Vector3 directionToLastKnownPos = currentDebrisInfo.lastKnownPosition - currentSensorPosition;
+
+                // If last known position is within vision cone
+                if (DirectionIsWithinVision(directionToLastKnownPos))
+                {
+                    Ray ray = new Ray(currentSensorPosition, directionToDebris);
+                    float distanceToLastKnownPos = Vector3.Distance(currentSensorPosition, currentDebrisInfo.lastKnownPosition);
+                    
+                    // Cast a ray from the Sensor-position to last known position
+                    // If raycast from sensor to point doesn't get blocked, we know the debris is no longer there
+                    if (!Physics.Raycast(ray, out RaycastHit hitInfo, distanceToLastKnownPos, layerMask))
+                        currentDebrisInfo.lastKnownPosition = Vector3.positiveInfinity;
+                }
             }
 
             // Replace struct with modified struct
@@ -112,7 +126,14 @@ public class RobotVision : MonoBehaviour
 
         return debrisInfos;
     }
-    
+
+    bool DirectionIsWithinVision(Vector3 direction)
+    {
+        // Calculate angle between forward direction and given direction
+        // If it is less than 60 degrees true, else false
+        return Vector3.Angle(sensorPosition.forward, direction.normalized) < visionAngle * 0.5f;
+    }
+
     void OnDrawGizmos()
     {
         if (!EditorApplication.isPlaying)

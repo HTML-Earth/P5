@@ -50,7 +50,6 @@ public class RobotAgent : Agent
     
 
     // Variables used to check for rewards
-    bool goalReached = false;
     List<bool> listIsDebrisLocated;
     Queue<float> wallRammingPenalties;
 
@@ -334,9 +333,8 @@ public class RobotAgent : Agent
     void IsGoalMet()
     {
         // Check if goal is met
-        if (!goalReached && dropZone.IsAllDebrisInZone())
+        if (dropZone.IsAllDebrisInZone())
         {
-            goalReached = true;
             AddReward(reward_allDebrisEnteredZone, "all debris in zone");
             academy.ResetDebrisInZone();
             Done("goal reached (all debris in zone)");

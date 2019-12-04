@@ -75,6 +75,7 @@ public class RobotAcademy : Academy
             foreach (Debris debris in debrisInEnvironment)
             {
                 debris.transform.position = debris.GetStartPosition();
+                debris.GetComponent<Rigidbody>().velocity = Vector3.zero;
             }
             
             // Reset robot position

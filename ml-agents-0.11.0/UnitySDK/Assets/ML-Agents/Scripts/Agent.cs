@@ -227,6 +227,9 @@ namespace MLAgents
 
         /// Keeps track of the cumulative reward in this episode.
         float m_CumulativeReward;
+        
+        /// Keeps track of the total reward of all episodes.
+        float m_TotalReward;
 
         /// Whether or not the agent requests an action.
         bool m_RequestAction;
@@ -378,6 +381,7 @@ namespace MLAgents
         /// <param name="reward">The new value of the reward.</param>
         public void SetReward(float reward)
         {
+            m_TotalReward += (reward - m_Reward);
             m_CumulativeReward += (reward - m_Reward);
             m_Reward = reward;
         }
@@ -390,6 +394,7 @@ namespace MLAgents
         {
             m_Reward += increment;
             m_CumulativeReward += increment;
+            m_TotalReward += increment;
         }
 
         /// <summary>
@@ -408,6 +413,15 @@ namespace MLAgents
         public float GetCumulativeReward()
         {
             return m_CumulativeReward;
+        }
+        
+        /// <summary>
+        /// Retrieves the total reward for the Agent.
+        /// </summary>
+        /// <returns>The total reward.</returns>
+        public float GetTotalReward()
+        {
+            return m_TotalReward;
         }
 
         /// <summary>

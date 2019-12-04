@@ -33,10 +33,8 @@ public class RobotAgent : Agent
     float reward_debrisEnteredZone = 0f;
     float reward_allDebrisEnteredZone = 1f;
     float reward_debrisFound = 0.1f;
-
-    float reward_moveTowardsDebris = 0.0f;
-    // TODO: Implement these
-    // float reward_debrisInShovelAndMoveTowardsZone = 0.2f;
+    float reward_moveTowardsDebris = 0.01f;
+    float reward_moveTowardsZoneWithDebris = 0.2f;
     
     // Negative rewards
     float penalty_debrisLeftShovel = 0f;
@@ -54,6 +52,9 @@ public class RobotAgent : Agent
     Queue<float> wallRammingPenalties;
 
     List<RobotVision.DebrisInfo> debrisInfos;
+
+    float previousDistanceFromZone;
+    float currentDistanceFromZone;
 
     readonly int debrisCount = 6;
     
@@ -85,6 +86,11 @@ public class RobotAgent : Agent
         listIsDebrisLocated = new List<bool>() {false, false, false, false, false, false};
         
         wallRammingPenalties = new Queue<float>();
+
+        currentDistanceFromZone = Vector3.Distance(transform.position, dropZone.transform.position);
+        previousDistanceFromZone = currentDistanceFromZone;
+        
+        shovel.ResetRotations();
 
         timeElapsed = 0;
     }
@@ -206,6 +212,7 @@ public class RobotAgent : Agent
         RewardDebrisInShovel();
         RewardDebrisInOutZone();
         RewardMoveTowardsDebris();
+        RewardMoveTowardsZoneWithDebris();
         RewardLocateDebris();
         PenaltyTime();
         PenaltyForHittingWalls();
@@ -248,14 +255,43 @@ public class RobotAgent : Agent
             if (debrisInfos[i].transform == null)
                 break;
             
-            // Check that debris is not in zone or shovel and that robot got closer
-            if (!dropZone.IsInZone(debrisInfos[i].transform.position) && debrisInfos[i].distanceFromRobot < debrisInfos[i].lastDistanceFromRobot && !debrisDetector.GetDebrisInShovel()[i] && listIsDebrisLocated[i])
+            // Check that debris is not in zone or shovel and is located
+            if (!dropZone.IsInZone(debrisInfos[i].transform.position) && !debrisDetector.GetDebrisInShovel()[i] && listIsDebrisLocated[i])
             {
-                AddReward(reward_moveTowardsDebris, "Moved towards debris");
-                // Enable break for points to be given when moving towards atleast 1 debris (otherwise points are given up to reward * amount of debris)
-                break;
+                // Subtract previous distance from current distance
+                float distanceDifference = debrisInfos[i].distanceFromRobot - debrisInfos[i].lastDistanceFromRobot;
+                
+                // Check if robot has gotten closer by at least 0.01m (if difference is negative, it has gotten closer)
+                if (distanceDifference < -0.01f)
+                {
+                    AddReward(reward_moveTowardsDebris, "Moved towards debris");
+                    // Enable break for points to be given when moving towards atleast 1 debris (otherwise points are given up to reward * amount of debris)
+                    break;
+                }
             }
         }
+    }
+    
+    // Reward for each time the agent moves towards the zone with debris
+    void RewardMoveTowardsZoneWithDebris()
+    {
+        previousDistanceFromZone = currentDistanceFromZone;
+        currentDistanceFromZone = Vector3.Distance(transform.position, dropZone.transform.position);
+
+        bool carryingDebris = false;
+        
+        // Check if agent is carrying debris
+        for (int i = 0; i < debrisInfos.Count; i++)
+        {
+            if (currentDebrisInShovel[i])
+            {
+                carryingDebris = true;
+            }
+        }
+
+        float distanceDifference = currentDistanceFromZone - previousDistanceFromZone;
+        if (carryingDebris && distanceDifference < -0.01f)
+            AddReward(reward_moveTowardsZoneWithDebris, "Moved towards zone with debris");
     }
 
     // Check if debris has entered or left the dropzone
@@ -304,7 +340,8 @@ public class RobotAgent : Agent
     // Constantly deduct rewards
     void PenaltyTime()
     {
-        AddReward(penalty_time, "Time passed");
+        //AddReward(penalty_time, "Time passed");
+        AddReward(penalty_time); // no message to avoid spam in console
     }
 
     void PenaltyForHittingWalls()
@@ -411,5 +448,8 @@ public class RobotAgent : Agent
             Handles.color = debrisInfo.isVisible ? debrisHighlight : debrisHighlightMissing;
             Handles.DrawWireDisc(debrisInfo.lastKnownPosition, Vector3.up, 0.5f);
         }
+        
+        Handles.color = Color.red;
+        Handles.DrawLine(transform.position, transform.position + rb.velocity);
     }
 }

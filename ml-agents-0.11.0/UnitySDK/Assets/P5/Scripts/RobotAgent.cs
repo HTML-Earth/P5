@@ -256,12 +256,19 @@ public class RobotAgent : Agent
             if (debrisInfos[i].transform == null)
                 break;
             
-            // Check that debris is not in zone or shovel and that robot got closer
-            if (!dropZone.IsInZone(debrisInfos[i].transform.position) && debrisInfos[i].distanceFromRobot < debrisInfos[i].lastDistanceFromRobot && !debrisDetector.GetDebrisInShovel()[i] && listIsDebrisLocated[i])
+            // Check that debris is not in zone or shovel and is located
+            if (!dropZone.IsInZone(debrisInfos[i].transform.position) && !debrisDetector.GetDebrisInShovel()[i] && listIsDebrisLocated[i])
             {
-                AddReward(reward_moveTowardsDebris, "Moved towards debris");
-                // Enable break for points to be given when moving towards atleast 1 debris (otherwise points are given up to reward * amount of debris)
-                break;
+                // Subtract previous distance from current distance
+                float distanceDifference = debrisInfos[i].distanceFromRobot - debrisInfos[i].lastDistanceFromRobot;
+                
+                // Check if robot has gotten closer by at least 0.01m (if difference is negative, it has gotten closer)
+                if (distanceDifference < -0.01f)
+                {
+                    AddReward(reward_moveTowardsDebris, "Moved towards debris");
+                    // Enable break for points to be given when moving towards atleast 1 debris (otherwise points are given up to reward * amount of debris)
+                    break;
+                }
             }
         }
     }
@@ -283,7 +290,8 @@ public class RobotAgent : Agent
             }
         }
 
-        if (carryingDebris && currentDistanceFromZone < previousDistanceFromZone)
+        float distanceDifference = currentDistanceFromZone - previousDistanceFromZone;
+        if (carryingDebris && distanceDifference < -0.01f)
             AddReward(reward_moveTowardsZoneWithDebris, "Moved towards zone with debris");
     }
 
@@ -333,7 +341,8 @@ public class RobotAgent : Agent
     // Constantly deduct rewards
     void PenaltyTime()
     {
-        AddReward(penalty_time, "Time passed");
+        //AddReward(penalty_time, "Time passed");
+        AddReward(penalty_time); // no message to avoid spam in console
     }
 
     void PenaltyForHittingWalls()

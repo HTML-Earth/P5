@@ -73,22 +73,21 @@ public class RobotAgent : Agent
         sensors = GetComponent<RobotSensors>();
         dropZone = FindObjectOfType<DropZone>();
         
-        // Reset robot velocity
-        rb.velocity = Vector3.zero;
-        rb.angularVelocity = Vector3.zero;
-        
+        startPosition = transform.position;
+        startRotation = transform.rotation;
+    }
+
+    public override void AgentReset()
+    {
         debrisDetector.InitializeDetector();
+        
         // Hard initialized to 6*false, one for each debris
         listIsDebrisLocated = new List<bool>() {false, false, false, false, false, false};
         
         wallRammingPenalties = new Queue<float>();
 
-        startPosition = transform.position;
-        startRotation = transform.rotation;
-
         timeElapsed = 0;
     }
-    
     
     // Called by academy on reset if random generation is disabled
     public void ResetPosition()
@@ -209,6 +208,7 @@ public class RobotAgent : Agent
         RewardMoveTowardsDebris();
         RewardLocateDebris();
         PenaltyTime();
+        PenaltyForHittingWalls();
 
         // Check if goal is met and simulation is done
         IsGoalMet();
@@ -278,14 +278,6 @@ public class RobotAgent : Agent
                     AddReward(reward_debrisEnteredZone, "debris entered zone");
             }
         }
-
-        // Check every wallRammingPenalties queue and add
-        while (wallRammingPenalties.Count > 0)
-        {
-            wallRammingPenalties.Dequeue();
-            AddReward(penalty_robotRammingWall,"robot ramming wall");
-
-        }
     }
 
     // Check if debris has entered or left shovel
@@ -313,6 +305,16 @@ public class RobotAgent : Agent
     void PenaltyTime()
     {
         AddReward(penalty_time, "Time passed");
+    }
+
+    void PenaltyForHittingWalls()
+    {
+        // Check every wallRammingPenalties queue and add
+        while (wallRammingPenalties.Count > 0)
+        {
+            wallRammingPenalties.Dequeue();
+            AddReward(penalty_robotRammingWall,"robot ramming wall");
+        }
     }
 
     // Check if robot has fallen or is outside area
@@ -349,11 +351,6 @@ public class RobotAgent : Agent
         }
     }
 
-    public override void AgentReset()
-    {
-        base.AgentReset();
-    }
-    
     // Wrapper function for Done that prints a custom done message in console
     void Done(string reason)
     {

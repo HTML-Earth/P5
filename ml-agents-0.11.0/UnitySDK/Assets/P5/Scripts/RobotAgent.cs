@@ -449,5 +449,8 @@ public class RobotAgent : Agent
             Handles.color = debrisInfo.isVisible ? debrisHighlight : debrisHighlightMissing;
             Handles.DrawWireDisc(debrisInfo.lastKnownPosition, Vector3.up, 0.5f);
         }
+        
+        Handles.color = Color.red;
+        Handles.DrawLine(transform.position, transform.position + rb.velocity);
     }
 }

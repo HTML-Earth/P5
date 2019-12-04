@@ -181,7 +181,14 @@ public class RobotAgent : Agent
         
         //Check if robot has picked up debris (67)
         List<bool> DebrisInShovel = debrisDetector.GetDebrisInShovel();
-        bool debrisInShovel = DebrisInShovel.Count > 0;
+        bool debrisInShovel = false;
+        foreach (var value in DebrisInShovel)
+        {
+            if (value)
+            {
+                debrisInShovel = true;
+            }
+        }
         AddVectorObs(debrisInShovel);
     }
 
@@ -353,6 +360,10 @@ public class RobotAgent : Agent
     {
         Debug.Log("Done! reason: " + reason);
         Done();
+        
+        // Force reset if not using Python
+        if (!academy.IsCommunicatorOn)
+            academy.ForceForcedFullReset();
     }
 
     // Wrapper function for AddReward that prints the reward/penalty and custom message in console

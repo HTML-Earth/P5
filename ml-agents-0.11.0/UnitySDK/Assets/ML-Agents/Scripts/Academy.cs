@@ -506,6 +506,15 @@ namespace MLAgents
             AgentForceReset?.Invoke();
             m_FirstAcademyReset = true;
         }
+        
+        /// <summary>
+        /// Public way to force reset (not an official mlagents function)
+        /// </summary>
+        public void ForceForcedFullReset()
+        {
+            Debug.LogWarning("Forcing academy reset");
+            ForcedFullReset();
+        }
 
         /// <summary>
         /// Performs a single environment update to the Academy, and Agent

@@ -22,11 +22,25 @@ public class ShovelControl : MonoBehaviour
     float armPos;
     float shovelPos;
 
+    Quaternion armStartRotation;
+    Quaternion shovelStartRotation;
+
     void Awake()
     {
         // Make the x rotation =/= 0
         arm.Rotate(Vector3.right, -1f, Space.Self);
         shovel.Rotate(Vector3.right, -1f, Space.Self);
+
+        armStartRotation = arm.localRotation;
+        shovelStartRotation = shovel.localRotation;
+        
+        UpdateArmAndShovelPos();
+    }
+
+    public void ResetRotations()
+    {
+        arm.localRotation = armStartRotation;
+        shovel.localRotation = shovelStartRotation;
         
         UpdateArmAndShovelPos();
     }

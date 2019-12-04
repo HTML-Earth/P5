@@ -90,6 +90,8 @@ public class RobotAgent : Agent
 
         currentDistanceFromZone = Vector3.Distance(transform.position, dropZone.transform.position);
         previousDistanceFromZone = currentDistanceFromZone;
+        
+        shovel.ResetRotations();
 
         timeElapsed = 0;
     }

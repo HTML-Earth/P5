@@ -14,13 +14,13 @@ public class IterationCounter : MonoBehaviour
     {
         text = GetComponent<TextMeshProUGUI>();
         robotAcademy = FindObjectOfType<RobotAcademy>();
-        text.text = "iterations: 0";
+        text.text = "Iterations: 0";
     }
 
     // Update is called once per frame
     void Update()
     {
         int iterations = robotAcademy.GetIterations();
-        text.text = "iterations: " + iterations;
+        text.text = "Iterations: " + iterations;
     }
 }

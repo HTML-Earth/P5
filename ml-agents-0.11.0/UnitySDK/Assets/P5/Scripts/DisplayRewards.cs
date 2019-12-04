@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class Timer : MonoBehaviour
+public class DisplayRewards : MonoBehaviour
 {
     TextMeshProUGUI text;
     RobotAgent robotAgent;
 
-    float theTime;
     // Start is called before the first frame update
     void Awake()
     {
@@ -20,9 +18,12 @@ public class Timer : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        theTime = robotAgent.GetElapsedTime();
-        string minutes = Mathf.Floor((theTime % 3600) / 60).ToString("00");
-        string seconds = (theTime % 60).ToString("00.##");
-        text.text = minutes + ":" + seconds;
+        text.text = "Rewards:\n"
+                    + robotAgent.GetReward().ToString("0.000")
+                    + " (step)\n"
+                    + robotAgent.GetCumulativeReward().ToString("0.00")
+                    + " (episode)\n"
+                    + robotAgent.GetTotalReward().ToString("0.00")
+                    + " (total)";
     }
 }

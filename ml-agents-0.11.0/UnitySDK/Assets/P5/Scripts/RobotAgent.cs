@@ -331,6 +331,7 @@ public class RobotAgent : Agent
         {
             goalReached = true;
             AddReward(reward_allDebrisEnteredZone, "all debris in zone");
+            academy.ResetDebrisInZone();
             Done("goal reached (all debris in zone)");
         }
     }

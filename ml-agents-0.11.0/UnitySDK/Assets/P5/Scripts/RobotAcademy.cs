@@ -129,4 +129,13 @@ public class RobotAcademy : Academy
     {
         return previousDebrisInZone;
     }
+
+    public void ResetDebrisInZone()
+    {
+        for (int debris = 0; debris < debrisInEnvironment.Count; debris++)
+        {
+            currentDebrisInZone[debris] = false;
+            previousDebrisInZone[debris] = false;
+        }
+    }
 }

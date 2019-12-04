@@ -15,13 +15,12 @@ class TrainingFileManager:
         self.episode_file_name = None
 
         # Folder variables
-        self.folder_name = "training-files"
-        self.reward_folder_name = "reward-files"
-        self.training_file_folder = os.path.dirname(os.path.abspath(__file__)) + "/training-files/"
+        self.folder_name = "Resources/training-files/"
+        self.training_file_folder = os.path.dirname(os.path.abspath(__file__)) + "/Resources/training-files/"
 
         # Reward folder variables
-        self.time_file_folder = os.path.dirname(os.path.abspath(__file__)) + "/time-files/"
-        self.episode_file_folder = os.path.dirname(os.path.abspath(__file__)) + "/episode-files/"
+        self.time_file_folder = os.path.dirname(os.path.abspath(__file__)) + "/Resources/time-files/"
+        self.episode_file_folder = os.path.dirname(os.path.abspath(__file__)) + "/Resources/episode-files/"
 
     def create_training_file(self):
         # If folder, 'training-files' does not exist, create it

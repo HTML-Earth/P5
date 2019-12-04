@@ -40,6 +40,7 @@ public class RobotAgent : Agent
     // Negative rewards
     float penalty_debrisLeftShovel = -0.2f;
     float penalty_debrisLeftZone = -1f;
+    float penalty_moveAwayFromZoneWithDebris = -0.2f;
 
     float penalty_robotRammingWall = -0.5f;
 
@@ -274,6 +275,7 @@ public class RobotAgent : Agent
     }
     
     // Reward for each time the agent moves towards the zone with debris
+    // And penalty for moving away from the zone with debris
     void RewardMoveTowardsZoneWithDebris()
     {
         previousDistanceFromZone = currentDistanceFromZone;
@@ -291,8 +293,14 @@ public class RobotAgent : Agent
         }
 
         float distanceDifference = currentDistanceFromZone - previousDistanceFromZone;
-        if (carryingDebris && distanceDifference < -0.01f)
-            AddReward(reward_moveTowardsZoneWithDebris, "Moved towards zone with debris");
+        if (carryingDebris)
+        {
+            if (distanceDifference < -0.01f)
+                AddReward(reward_moveTowardsZoneWithDebris, "Moved towards zone with debris");
+            
+            if (distanceDifference > 0.01f)
+                AddReward(penalty_moveAwayFromZoneWithDebris, "Moved away from zone with debris");
+        }
     }
 
     // Check if debris has entered or left the dropzone

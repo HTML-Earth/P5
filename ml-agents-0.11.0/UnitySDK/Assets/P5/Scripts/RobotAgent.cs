@@ -337,10 +337,6 @@ public class RobotAgent : Agent
         if (dropZone.IsAllDebrisInZone())
         {
             AddReward(reward_allDebrisEnteredZone, "all debris in zone");
-            academy.ResetDebrisInZone();
-            // Reset shovel content on restart
-            currentDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
-            previousDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
             Done("goal reached (all debris in zone)");
         }
     }
@@ -363,6 +359,12 @@ public class RobotAgent : Agent
     {
         Debug.Log("Done! reason: " + reason);
         Done();
+        
+        academy.ResetDebrisInZone();
+
+        // Reset shovel content on restart
+        currentDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
+        previousDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
         
         // Force reset if not using Python
         if (!academy.IsCommunicatorOn)

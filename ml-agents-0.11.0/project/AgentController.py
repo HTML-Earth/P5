@@ -94,6 +94,7 @@ class Agent:
             self.feature_values[11] = 0
 
     def get_state(self):
+        self.update_observations()
         self.update_feature_values()
 
         return self.feature_values

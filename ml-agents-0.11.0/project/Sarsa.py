@@ -1,5 +1,4 @@
 import random
-from AgentController import Agent
 from File_manager import TrainingFileManager
 import time
 

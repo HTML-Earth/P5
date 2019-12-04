@@ -39,10 +39,8 @@ if __name__ == '__main__':
                   .format("-i [training-file]", '', ''))
             sys.exit(0)
 
-    # Agent object
-    agent = Agent()
     # Algorithm object
-    sarsa = SarsaLFA(agent)
+    sarsa = SarsaLFA()
 
     # If training-mode is 1, start new training
     if training_mode == 1:

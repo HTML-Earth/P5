@@ -139,9 +139,3 @@ class SarsaLFA:
             # Save Weights and Q-function
             self.training_file_manager.save_values(self.weights, self.q_function)
             self.agent.reset_simulation()
-
-
-if __name__ == '__main__':
-    agent = Agent()
-    sarsa = SarsaLFA(agent)
-    sarsa.train_agent()

@@ -32,8 +32,8 @@ public class RobotAgent : Agent
     float reward_debrisEnteredShovel = 0.2f;
     float reward_debrisEnteredZone = 0f;
     float reward_allDebrisEnteredZone = 1f;
-    float reward_debrisFound = 0.1f;
-    float reward_moveTowardsDebris = 0.01f;
+    float reward_debrisFound = 0f;
+    float reward_moveTowardsDebris = 0f;
     float reward_moveTowardsZoneWithDebris = 0.2f;
     
     // Negative rewards

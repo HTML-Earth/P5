@@ -353,6 +353,10 @@ public class RobotAgent : Agent
     {
         Debug.Log("Done! reason: " + reason);
         Done();
+        
+        // Force reset if not using Python
+        if (!academy.IsCommunicatorOn)
+            academy.ForceForcedFullReset();
     }
 
     // Wrapper function for AddReward that prints the reward/penalty and custom message in console

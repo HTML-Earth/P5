@@ -35,8 +35,7 @@ public class RobotAgent : Agent
     float reward_debrisFound = 0.1f;
 
     float reward_moveTowardsDebris = 0.01f;
-    // TODO: Implement these
-    // float reward_debrisInShovelAndMoveTowardsZone = 0.2f;
+    float reward_moveTowardsZoneWithDebris = 0.2f;
     
     // Negative rewards
     float penalty_debrisLeftShovel = -0.2f;
@@ -54,6 +53,9 @@ public class RobotAgent : Agent
     Queue<float> wallRammingPenalties;
 
     List<RobotVision.DebrisInfo> debrisInfos;
+
+    float previousDistanceFromZone;
+    float currentDistanceFromZone;
 
     readonly int debrisCount = 6;
     
@@ -85,6 +87,9 @@ public class RobotAgent : Agent
         listIsDebrisLocated = new List<bool>() {false, false, false, false, false, false};
         
         wallRammingPenalties = new Queue<float>();
+
+        currentDistanceFromZone = Vector3.Distance(transform.position, dropZone.transform.position);
+        previousDistanceFromZone = currentDistanceFromZone;
 
         timeElapsed = 0;
     }
@@ -206,6 +211,7 @@ public class RobotAgent : Agent
         RewardDebrisInShovel();
         RewardDebrisInOutZone();
         RewardMoveTowardsDebris();
+        RewardMoveTowardsZoneWithDebris();
         RewardLocateDebris();
         PenaltyTime();
         PenaltyForHittingWalls();
@@ -256,6 +262,27 @@ public class RobotAgent : Agent
                 break;
             }
         }
+    }
+    
+    // Reward for each time the agent moves towards the zone with debris
+    void RewardMoveTowardsZoneWithDebris()
+    {
+        previousDistanceFromZone = currentDistanceFromZone;
+        currentDistanceFromZone = Vector3.Distance(transform.position, dropZone.transform.position);
+
+        bool carryingDebris = false;
+        
+        // Check if agent is carrying debris
+        for (int i = 0; i < debrisInfos.Count; i++)
+        {
+            if (currentDebrisInShovel[i])
+            {
+                carryingDebris = true;
+            }
+        }
+
+        if (carryingDebris && currentDistanceFromZone < previousDistanceFromZone)
+            AddReward(reward_moveTowardsZoneWithDebris, "Moved towards zone with debris");
     }
 
     // Check if debris has entered or left the dropzone

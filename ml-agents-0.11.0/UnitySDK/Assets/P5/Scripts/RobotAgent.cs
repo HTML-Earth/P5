@@ -193,26 +193,6 @@ public class RobotAgent : Agent
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
-        // Check if goal is met and simulation is done
-        IsGoalMet();
-        
-        // Give rewards or penalties
-        RewardDebrisInShovel();
-        RewardDebrisInOutZone();
-        RewardMoveTowardsDebris();
-        RewardLocateDebris();
-        PenaltyTime();
-        
-        // Make sure robot in inside area and upright
-        RobotUpright();
-        
-        // Reset if time limit is reached
-        if (timeElapsed > timeLimit)
-        {
-            timeElapsed = 0;
-            Done("Time limit reached");
-        }
-
         // Perform actions
         wheels.SetTorque(vectorAction[0]);
         wheels.SetAngle(vectorAction[1]);
@@ -222,6 +202,27 @@ public class RobotAgent : Agent
         
         // Store current action vector state for visualization
         actionVector = vectorAction;
+        
+        // Give rewards or penalties
+        RewardDebrisInShovel();
+        RewardDebrisInOutZone();
+        RewardMoveTowardsDebris();
+        RewardLocateDebris();
+        PenaltyTime();
+
+        // Check if goal is met and simulation is done
+        IsGoalMet();
+
+        // Make sure robot in inside area and upright
+        RobotUpright();
+        
+        // Reset if time limit is reached
+        if (timeElapsed > timeLimit)
+        {
+            timeElapsed = 0;
+            Done("Time limit reached");
+        }
+        
     }
 
     // Reward given for the first time each debris is seen
@@ -337,6 +338,9 @@ public class RobotAgent : Agent
         {
             AddReward(reward_allDebrisEnteredZone, "all debris in zone");
             academy.ResetDebrisInZone();
+            // Reset shovel content on restart
+            currentDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
+            previousDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
             Done("goal reached (all debris in zone)");
         }
     }

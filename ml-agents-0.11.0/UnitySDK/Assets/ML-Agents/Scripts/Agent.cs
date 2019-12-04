@@ -305,6 +305,7 @@ namespace MLAgents
             academy.DecideAction += DecideAction;
             academy.AgentAct += AgentStep;
             academy.AgentForceReset += _AgentReset;
+            academy.AgentSetDoneFlagFalse += NotDone;
             m_PolicyFactory = GetComponent<BehaviorParameters>();
             m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
             ResetData();
@@ -325,6 +326,7 @@ namespace MLAgents
                 academy.DecideAction -= DecideAction;
                 academy.AgentAct -= AgentStep;
                 academy.AgentForceReset -= ForceReset;
+                academy.AgentSetDoneFlagFalse -= NotDone;
             }
             m_Brain?.Dispose();
         }
@@ -430,6 +432,14 @@ namespace MLAgents
         public void Done()
         {
             m_Done = true;
+        }
+        
+        /// <summary>
+        /// Sets the done flag to false.
+        /// </summary>
+        public void NotDone()
+        {
+            m_Done = false;
         }
 
         /// <summary>

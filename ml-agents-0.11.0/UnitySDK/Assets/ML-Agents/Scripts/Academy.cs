@@ -218,6 +218,9 @@ namespace MLAgents
 
         // Signals to all the agents each time the Academy force resets.
         public event System.Action AgentForceReset;
+        
+        // Signals to all the agents each time the Academy force resets.
+        public event System.Action AgentSetDoneFlagFalse;
 
         /// <summary>
         /// MonoBehavior function called at the very beginning of environment
@@ -513,6 +516,8 @@ namespace MLAgents
         public void ForceForcedFullReset()
         {
             Debug.LogWarning("Forcing academy reset");
+            
+            AgentSetDoneFlagFalse?.Invoke();
             ForcedFullReset();
         }
 

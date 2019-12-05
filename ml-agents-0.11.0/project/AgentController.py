@@ -19,6 +19,9 @@ class Agent:
                         for k in range(-1, 2)
                         for l in range(-1, 2)]
 
+        self.throttle_constant = 1.1
+        self.reverse_constant = 0.9
+
         self.features = [self.feature_1,
                          self.throttling_into_wall,
                          self.reversing_into_wall,
@@ -97,10 +100,26 @@ class Agent:
         return 1
 
     def throttling_into_wall(self, state, action):
-        return 1 if self.sensors_front < [self.velocity_z] else 0
+        # Convert to list because tuples returns an error when indexing
+        action_list = list(action)
+
+        if action_list[0] == 1:
+            return 1 if self.sensors_front < [self.velocity_z * self.throttle_constant] else 0
+        elif action_list[0] == -1:
+            return 1 if self.sensors_front < [self.velocity_z * self.reverse_constant] else 0
+        elif action_list[0] == 0:
+            return 1 if self.sensors_front < [self.velocity_z] else 0
 
     def reversing_into_wall(self, state, action):
-        return 1 if self.sensors_behind > [self.velocity_z] else 0
+        # Convert to list because tuples returns an error when indexing
+        action_list = list(action)
+
+        if action_list[0] == -1:
+            return 1 if self.sensors_behind > [self.velocity_z * self.reverse_constant] else 0
+        elif action_list[0] == 1:
+            return 1 if self.sensors_behind > [self.velocity_z * self.throttle_constant] else 0
+        elif action_list[0] == 0:
+            return 1 if self.sensors_behind > [self.velocity_z] else 0
 
     def robot_within_dropzone(self, state, action):
         return 1 if self.observations[60] else 0

@@ -24,7 +24,7 @@ public class RobotAgent : Agent
     Vector3 startPosition;
     Quaternion startRotation;
     
-    readonly float timeLimit = 30f;
+    readonly float timeLimit = 90f;
     
     float timeElapsed;
 

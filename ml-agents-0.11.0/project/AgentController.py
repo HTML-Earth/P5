@@ -31,7 +31,9 @@ class Agent:
                          self.robot_within_dropzone,
                          self.getting_closer_to_debris_1,
                          self.ready_to_pickup_debris,
-                         self.debris_in_shovel]
+                         self.debris_in_shovel,
+                         self.debris_in_front_of_shovel,
+                         self.velocity]
 
         # Observations
         self.observations = None
@@ -99,6 +101,9 @@ class Agent:
         # Check if debris in front of shovel
         state.append(1) if self.observations[68] else state.append(0)
 
+        # Robot velocity
+        state.append(round(self.velocity_z, 1))
+
         return state
 
     # Features
@@ -119,7 +124,6 @@ class Agent:
         return 1 if self.sensors_front < [(self.velocity_z + self.robot_length_forward) * constant] else 0
 
     def reversing_into_wall(self, state, action):
-        # Convert to list because tuples returns an error when indexing
         action_list = list(action)
 
         constant = 1
@@ -142,3 +146,17 @@ class Agent:
 
     def debris_in_shovel(self, state, action):
         return 1 if self.observations[67] else 0
+
+    def debris_in_front_of_shovel(self, state, action):
+        return 1 if self.observations[68] else 0
+
+    # TODO - Check of this makes sense
+    def velocity(self, state, action):
+        action_list = list(action)
+
+        if action_list[0] == 1:
+            return round(self.velocity_z * self.throttle_constant, 1)
+        elif action_list[0] == -1:
+            return round(self.velocity_z * self.reverse_constant, 1)
+        elif action_list[0] == 0:
+            return round(self.velocity_z, 1)

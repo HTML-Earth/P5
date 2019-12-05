@@ -39,7 +39,7 @@ sysinfo.txt
 *.idea
 
 # Time which always changes
-csharp_timers.json
+*csharp_timers.json
 
 # Virtual environment
 venv

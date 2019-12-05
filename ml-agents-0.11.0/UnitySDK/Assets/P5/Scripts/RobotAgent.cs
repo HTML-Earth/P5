@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using MLAgents;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class RobotAgent : Agent
 {
@@ -15,8 +16,11 @@ public class RobotAgent : Agent
     RobotVision vision;
     DropZone dropZone;
     
+    [FormerlySerializedAs("debrisDetector")] [SerializeField]
+    DebrisDetector debrisInShovel;
+
     [SerializeField]
-    DebrisDetector debrisDetector;
+    DebrisDetector debrisInfront;
     
     List<bool> currentDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
     List<bool> previousDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
@@ -82,7 +86,8 @@ public class RobotAgent : Agent
 
     public override void AgentReset()
     {
-        debrisDetector.InitializeDetector();
+        debrisInShovel.InitializeDetector();
+        debrisInfront.InitializeDetector();
         
         // Hard initialized to 6*false, one for each debris
         listIsDebrisLocated = new List<bool>() {false, false, false, false, false, false};
@@ -186,9 +191,9 @@ public class RobotAgent : Agent
         }
         
         //Check if robot has picked up debris (67)
-        List<bool> DebrisInShovel = debrisDetector.GetDebrisInShovel();
+        List<bool> debrisInShovelList = this.debrisInShovel.GetDebrisInArea();
         bool debrisInShovel = false;
-        foreach (var value in DebrisInShovel)
+        foreach (var value in debrisInShovelList)
         {
             if (value)
             {
@@ -196,6 +201,18 @@ public class RobotAgent : Agent
             }
         }
         AddVectorObs(debrisInShovel);
+        
+        //Check if debris infront of shovel
+        List<bool> debrisInfrontList = this.debrisInfront.GetDebrisInArea();
+        bool debrisIsInfront = false;
+        foreach (var value in debrisInfrontList)
+        {
+            if (value)
+            {
+                debrisIsInfront = true;
+            }
+        }
+        AddVectorObs(debrisIsInfront);
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)
@@ -258,7 +275,7 @@ public class RobotAgent : Agent
                 break;
             
             // Check that debris is not in zone or shovel and is located
-            if (!dropZone.IsInZone(debrisInfos[i].transform.position) && !debrisDetector.GetDebrisInShovel()[i] && listIsDebrisLocated[i])
+            if (!dropZone.IsInZone(debrisInfos[i].transform.position) && !debrisInShovel.GetDebrisInArea()[i] && listIsDebrisLocated[i])
             {
                 // Subtract previous distance from current distance
                 float distanceDifference = debrisInfos[i].distanceFromRobot - debrisInfos[i].lastDistanceFromRobot;
@@ -328,7 +345,7 @@ public class RobotAgent : Agent
     // Check if debris has entered or left shovel
     void RewardDebrisInShovel()
     {
-        currentDebrisInShovel = debrisDetector.GetDebrisInShovel();
+        currentDebrisInShovel = debrisInShovel.GetDebrisInArea();
 
         for (int i = 0; i < currentDebrisInShovel.Count; i++)
         {

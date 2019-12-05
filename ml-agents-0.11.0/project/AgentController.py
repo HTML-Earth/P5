@@ -90,6 +90,9 @@ class Agent:
         # Check if debris is in shovel
         state.append(1) if self.observations[67] else state.append(0)
 
+        # Check if debris in front of shovel
+        state.append(1) if self.observations[68] else state.append(0)
+
         return state
 
     # Features

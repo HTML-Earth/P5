@@ -22,6 +22,9 @@ class Agent:
         self.throttle_constant = 1.1
         self.reverse_constant = 0.9
 
+        self.robot_length_forward = 2.4
+        self.robot_length_backwards = 1.1
+
         self.features = [self.feature_1,
                          self.throttling_into_wall,
                          self.reversing_into_wall,
@@ -106,23 +109,27 @@ class Agent:
         # Convert to list because tuples returns an error when indexing
         action_list = list(action)
 
+        constant = 1
+
         if action_list[0] == 1:
-            return 1 if self.sensors_front < [self.velocity_z * self.throttle_constant] else 0
+            constant = self.throttle_constant
         elif action_list[0] == -1:
-            return 1 if self.sensors_front < [self.velocity_z * self.reverse_constant] else 0
-        elif action_list[0] == 0:
-            return 1 if self.sensors_front < [self.velocity_z] else 0
+            constant = self.reverse_constant
+
+        return 1 if self.sensors_front < [(self.velocity_z + self.robot_length_forward) * constant] else 0
 
     def reversing_into_wall(self, state, action):
         # Convert to list because tuples returns an error when indexing
         action_list = list(action)
 
+        constant = 1
+
         if action_list[0] == -1:
-            return 1 if self.sensors_behind > [self.velocity_z * self.reverse_constant] else 0
+            constant = self.reverse_constant
         elif action_list[0] == 1:
-            return 1 if self.sensors_behind > [self.velocity_z * self.throttle_constant] else 0
-        elif action_list[0] == 0:
-            return 1 if self.sensors_behind > [self.velocity_z] else 0
+            constant = self.throttle_constant
+
+        return 1 if self.sensors_behind > [(self.velocity_z + self.robot_length_backwards) * constant] else 0
 
     def robot_within_dropzone(self, state, action):
         return 1 if self.observations[60] else 0

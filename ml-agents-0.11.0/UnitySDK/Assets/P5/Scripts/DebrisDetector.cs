@@ -5,14 +5,14 @@ using UnityEngine;
 
 public class DebrisDetector : MonoBehaviour
 {
-    List<bool> debrisInShovel;
+    List<bool> debrisInArea;
 
     public void InitializeDetector()
     {
-        debrisInShovel = new List<bool>();
+        debrisInArea = new List<bool>();
         for (int i = 0; i < 6; i++)
         {
-            debrisInShovel.Add(false);
+            debrisInArea.Add(false);
         }
     }
 
@@ -21,7 +21,7 @@ public class DebrisDetector : MonoBehaviour
         Debris debris = other.transform.parent.GetComponent<Debris>();
         if (debris != null)
         {
-            debrisInShovel[debris.GetDebrisIndex()] = true;
+            debrisInArea[debris.GetDebrisIndex()] = true;
         }
     }
 
@@ -29,11 +29,11 @@ public class DebrisDetector : MonoBehaviour
     {
         Debris debris = other.transform.parent.GetComponent<Debris>();
         if (debris != null)
-            debrisInShovel[debris.GetDebrisIndex()] = false;
+            debrisInArea[debris.GetDebrisIndex()] = false;
     }
 
-    public List<bool> GetDebrisInShovel()
+    public List<bool> GetDebrisInArea()
     {
-        return debrisInShovel;
+        return debrisInArea;
     }
 }

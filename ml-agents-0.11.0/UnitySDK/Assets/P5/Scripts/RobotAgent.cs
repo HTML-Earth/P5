@@ -212,7 +212,6 @@ public class RobotAgent : Agent
                 debrisIsInfront = true;
             }
         }
-        Debug.Log(debrisIsInfront);
         AddVectorObs(debrisIsInfront);
     }
 

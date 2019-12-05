@@ -38,8 +38,8 @@ sysinfo.txt
 # User-specific stuff
 *.idea
 
-# Time which always changes
-*csharp_timers.json
+# Time which always changes (Remove stupid csharp-timer)
+*.json
 
 # Virtual environment
 venv

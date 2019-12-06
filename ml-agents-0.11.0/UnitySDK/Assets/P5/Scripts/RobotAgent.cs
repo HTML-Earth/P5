@@ -131,7 +131,7 @@ public class RobotAgent : Agent
         AddVectorObs(localVelocity.x);
         AddVectorObs(localVelocity.y);
         AddVectorObs(localVelocity.z);
-
+        
         // Arm and shovel position (6, 7)
         AddVectorObs(shovel.GetArmPos());
         AddVectorObs(shovel.GetShovelPos());
@@ -212,6 +212,14 @@ public class RobotAgent : Agent
             }
         }
         AddVectorObs(debrisIsInfront);
+
+        // Angle between (Robot forward) and (vector between robot and debris) (68 -> 73)
+        foreach (var debrisInfo in debrisInfos)
+        {
+            Vector3 vecRobotToDebris = debrisInfo.transform.position - rb.position;
+            float angleToDebris = Vector3.Angle(vecRobotToDebris, rb.transform.forward);
+            AddVectorObs(angleToDebris);
+        }
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)

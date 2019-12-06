@@ -49,3 +49,5 @@
 61 - 66 Check if agent is getting closer to debris
 
 67 Check if Debris has entered the shovel
+
+68 debris in front of shovel

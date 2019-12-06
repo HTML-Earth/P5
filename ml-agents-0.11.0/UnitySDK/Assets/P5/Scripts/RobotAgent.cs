@@ -49,8 +49,7 @@ public class RobotAgent : Agent
     float penalty_robotRammingWall = -0.5f;
 
     float penalty_time = -0.01f;
-    // TODO: Implement these
-    // float penalty_debrisRunOver = -5f;
+    private float penalty_robot_fall = -1f;
     
 
     // Variables used to check for rewards
@@ -386,6 +385,7 @@ public class RobotAgent : Agent
         // Check if robot has fallen
         if (Vector3.Dot(transform.up, Vector3.up) < 0.1f)
         {
+            AddReward(penalty_robot_fall, "Robot fell");
             Done("robot has fallen (probably)");
         }
         

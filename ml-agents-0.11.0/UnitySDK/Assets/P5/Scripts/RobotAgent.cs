@@ -131,7 +131,7 @@ public class RobotAgent : Agent
         AddVectorObs(localVelocity.x);
         AddVectorObs(localVelocity.y);
         AddVectorObs(localVelocity.z);
-
+        
         // Arm and shovel position (6, 7)
         AddVectorObs(shovel.GetArmPos());
         AddVectorObs(shovel.GetShovelPos());
@@ -201,8 +201,16 @@ public class RobotAgent : Agent
         }
 
         AddVectorObs(debrisInShovel);
-
-        //Check if debris infront of shovel (68)
+        
+        // Angle between (Robot forward) and (vector between robot and debris) (68 -> 73)
+        foreach (var debrisInfo in debrisInfos)
+        {
+            Vector3 vecRobotToDebris = debrisInfo.transform.position - rb.position;
+            float angleToDebris = Vector3.Angle(vecRobotToDebris, rb.transform.forward);
+            AddVectorObs(angleToDebris);
+        }
+        
+        //Check if debris infront of shovel (74)
         List<bool> debrisInfrontList = this.debrisInfront.GetDebrisInArea();
         bool debrisIsInfront = false;
         foreach (var value in debrisInfrontList)
@@ -214,8 +222,8 @@ public class RobotAgent : Agent
         }
 
         AddVectorObs(debrisIsInfront);
-
-        // Check if robot is rotated towards a debris (69) //TODO Does not take walls into account
+        
+        // Check if robot is rotated towards a debris (75) //TODO Does not take walls into account
         int counter = 0;
         bool pointingTowardDebris = false;
         foreach (var debris in debrisInfos)

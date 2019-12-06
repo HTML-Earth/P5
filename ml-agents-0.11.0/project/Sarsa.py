@@ -6,7 +6,7 @@ from AgentController import Agent
 
 class SarsaLFA:
 
-    def __init__(self, gamma=0.5, eta=1, epsilon=0.9):
+    def __init__(self, gamma=0.5, eta=0.4, epsilon=0.9):
         self.agent = Agent()
         self.training_file_manager = TrainingFileManager()
 

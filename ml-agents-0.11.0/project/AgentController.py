@@ -25,6 +25,8 @@ class Agent:
         self.robot_length_forward = 2.4
         self.robot_length_backwards = 1.1
 
+        self.rotation_constant = 0.83 * 5
+
         self.features = [self.feature_1,
                          self.throttling_into_wall,
                          self.reversing_into_wall,
@@ -33,7 +35,8 @@ class Agent:
                          self.ready_to_pickup_debris,
                          self.debris_in_shovel,
                          self.debris_in_front_of_shovel,
-                         self.velocity]
+                         self.velocity,
+                         self.rotation]
 
         # Observations
         self.observations = None
@@ -104,6 +107,9 @@ class Agent:
         # Robot velocity
         state.append(round(self.velocity_z, 1))
 
+        # Robot rotation
+        state.append(int(self.observations[2]))
+
         return state
 
     # Features
@@ -151,6 +157,7 @@ class Agent:
         return 1 if self.observations[68] else 0
 
     # TODO - Check of this makes sense
+    # TODO - Consider transforming velocity into a number between 0 and 1
     def velocity(self, state, action):
         action_list = list(action)
 
@@ -160,3 +167,27 @@ class Agent:
             return round(self.velocity_z * self.reverse_constant, 1)
         elif action_list[0] == 0:
             return round(self.velocity_z, 1)
+
+    def rotation(self, state, action):
+        action_list = list(action)
+        rotation = self.observations[2]
+
+        # Transform rotation into a value between 0 and 1
+        transform_value = 1 / 360
+        
+        if self.velocity_z == 0 or action_list[1] == 0:
+            return int(rotation) * transform_value
+        elif action_list[1] == 1:
+            total_rotation = rotation + self.rotation_constant
+
+            if total_rotation >= 360:
+                return int(total_rotation - 360) * transform_value
+            else:
+                return int(total_rotation) * transform_value
+        elif action_list[1] == -1:
+            total_rotation = rotation - self.rotation_constant
+
+            if total_rotation < 0:
+                return int(360 - abs(total_rotation)) * transform_value
+            else:
+                return int(total_rotation) * transform_value

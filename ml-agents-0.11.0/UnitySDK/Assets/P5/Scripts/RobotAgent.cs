@@ -209,6 +209,11 @@ public class RobotAgent : Agent
             float angleToDebris = Vector3.Angle(vecRobotToDebris, rb.transform.forward);
             AddVectorObs(angleToDebris);
         }
+        // If there are fewer than 6 debris, pad out the observations
+        for (int i = 0; i < debrisCount - debrisInfos.Count; i++)
+        {
+            AddVectorObs(Mathf.Infinity);
+        }
         
         //Check if debris infront of shovel (74)
         List<bool> debrisInfrontList = this.debrisInfront.GetDebrisInArea();

@@ -154,7 +154,7 @@ class Agent:
         return 1 if self.observations[67] else 0
 
     def debris_in_front_of_shovel(self, state, action):
-        return 1 if self.observations[68] else 0
+        return 1 if self.observations[74] else 0
 
     # TODO - Check of this makes sense
     # TODO - Consider transforming velocity into a number between 0 and 1

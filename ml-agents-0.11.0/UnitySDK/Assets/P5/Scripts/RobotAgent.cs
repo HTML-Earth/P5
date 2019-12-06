@@ -202,7 +202,7 @@ public class RobotAgent : Agent
 
         AddVectorObs(debrisInShovel);
 
-        //Check if debris infront of shovel
+        //Check if debris infront of shovel (68)
         List<bool> debrisInfrontList = this.debrisInfront.GetDebrisInArea();
         bool debrisIsInfront = false;
         foreach (var value in debrisInfrontList)
@@ -215,8 +215,9 @@ public class RobotAgent : Agent
 
         AddVectorObs(debrisIsInfront);
 
-        // Check if robot is rotated towards a debris //TODO Does not take walls into account
+        // Check if robot is rotated towards a debris (69) //TODO Does not take walls into account
         int counter = 0;
+        bool pointingTowardDebris = false;
         foreach (var debris in debrisInfos)
         {
             // Check it is not in dropzone
@@ -225,11 +226,13 @@ public class RobotAgent : Agent
                 float dot = Vector3.Dot(transform.forward, (debris.transform.position - transform.position).normalized);
                 if (dot > 0.99f)
                 {
-                    AddVectorObs(true);
+                    pointingTowardDebris = true;
                 }
             }
             counter++;
         }
+        AddVectorObs(pointingTowardDebris);
+
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)

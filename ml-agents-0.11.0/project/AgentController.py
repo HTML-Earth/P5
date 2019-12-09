@@ -204,13 +204,32 @@ class Agent:
 
     def ready_to_pickup_debris(self, state, action):
         action_list = list(action)
-        constant = 1
-        return 1 if action_list[0] > 0 and self.observations[6] == 330 and self.observations[7] == 360 - 47 and self.observations[74] else 0
+
+        # if arm is not down
+        if self.observations[6] < 360 - self.robot_arm_rotation_constant:
+            # if arm is not moving down
+            if action_list[2] < 1:
+                return 0
+
+        # if shovel is not down
+        if self.observations[7] < 360 - 47 - self.robot_shovel_rotation_constant:
+            # if shovel is not moving down
+            if action_list[3] < 1:
+                return 0
+
+        # if there is debris in front of the shovel
+        return self.debris_in_front_of_shovel(state, action)
 
     def debris_in_shovel(self, state, action):
         return 1 if self.observations[67] else 0
 
     def debris_in_front_of_shovel(self, state, action):
+        action_list = list(action)
+
+        if self.velocity_z > self.throttle_constant or self.velocity_z < -self.reverse_constant:
+            if action_list[1] != 0:
+                return 0
+
         return 1 if self.observations[74] else 0
 
     def getting_closer_to_dropzone(self, state, action):
@@ -281,8 +300,19 @@ class Agent:
             else:
                 return int(total_rotation) * transform_value
 
-    def pointed_towards_debris (self, state, action):
-        return 1 if self.observations[75] else 0
+    def pointed_towards_debris (self, state, action): # TODO kig på 68
+        action_list = list(action)
+        pointing = 0
+
+        if not self.observations[75]:
+            if action_list[1] == 1 and self.observations[68] < 0:
+                pointing = 1
+            elif action_list[1] == -1 and self.observations[68] > 0:
+                pointing = 1
+        elif self.observations[75]:
+            pointing = 1
+
+        return pointing
 
     # Arm rotation: 0 to 89
     def arm_rotation(self, state, action):

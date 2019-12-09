@@ -159,11 +159,31 @@ class Agent:
     def robot_within_dropzone(self, state, action):
         return 1 if self.observations[60] else 0
 
+    # Getting closer to debris number 1 (2-6 following)
     def getting_closer_to_debris_1(self, state, action):
+        return self.getting_closer_to_debris(state, action, 68)
+
+    # TODO: add 2-6 to feature list (line 33)
+    def getting_closer_to_debris_2(self, state, action):
+        return self.getting_closer_to_debris(state, action, 69)
+
+    def getting_closer_to_debris_3(self, state, action):
+        return self.getting_closer_to_debris(state, action, 70)
+
+    def getting_closer_to_debris_4(self, state, action):
+        return self.getting_closer_to_debris(state, action, 71)
+
+    def getting_closer_to_debris_5(self, state, action):
+        return self.getting_closer_to_debris(state, action, 72)
+
+    def getting_closer_to_debris_6(self, state, action):
+        return self.getting_closer_to_debris(state, action, 73)
+
+    def getting_closer_to_debris(self, state, action, obs_num):
         action_list = list(action)
         # Angle on each side of the robot's forward vector
         angle_range = 45  # TODO: Figure out the exact value
-        direction_debris = -angle_range < self.observations[68] < angle_range
+        direction_debris = -angle_range < self.observations[obs_num] < angle_range
 
         getting_closer = 0
 
@@ -172,10 +192,10 @@ class Agent:
         if action_list[0] == 1 and direction_debris:
             getting_closer = 1
         # Turn (left) towards debris
-        elif action_list[1] == 1 and self.observations[68] < -angle_range:
+        elif action_list[1] == 1 and self.observations[obs_num] < -angle_range:
             getting_closer = 1
         # Turn (Right) towards debris
-        elif action_list[1] == -1 and self.observations[68] > angle_range:
+        elif action_list[1] == -1 and self.observations[obs_num] > angle_range:
             getting_closer = 1
         elif self.velocity_z > 0 and action_list[0] == 0 and action_list[1] == 0 and direction_debris:
             getting_closer = 1

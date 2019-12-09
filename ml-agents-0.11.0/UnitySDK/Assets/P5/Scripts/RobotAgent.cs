@@ -228,7 +228,7 @@ public class RobotAgent : Agent
 
         AddVectorObs(debrisIsInfront);
         
-        // Check if robot is rotated towards a debris (75) //TODO Does not take walls into account
+        // Check if robot is pointed towards a debris (75) //TODO Does not take walls into account
         int counter = 0;
         bool pointingTowardDebris = false;
         Vector2 vecForward = new Vector2(transform.forward.x, transform.forward.z);

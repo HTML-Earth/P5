@@ -40,6 +40,7 @@ class Agent:
                          self.debris_in_front_of_shovel,
                          self.velocity,
                          self.rotation,
+                         self.pointed_towards_debris,
                          self.arm_rotation,
                          self.shovel_rotation]
 
@@ -211,7 +212,7 @@ class Agent:
             else:
                 return int(total_rotation) * transform_value
 
-    def rotated_towards_debris (self, state, action):
+    def pointed_towards_debris (self, state, action):
         return 1 if self.observations[75] else 0
 
     # Arm rotation: 0 to 89

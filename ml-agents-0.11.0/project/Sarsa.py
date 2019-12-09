@@ -1,12 +1,12 @@
 import random
-import time
 from File_manager import TrainingFileManager
 from AgentController import Agent
+import matplotlib.pyplot as plt
 
 
 class SarsaLFA:
 
-    def __init__(self, gamma=0.5, eta=0.4, epsilon=0.9):
+    def __init__(self, gamma=0.7, eta=0.7, epsilon=0.3):
         self.agent = Agent()
         self.training_file_manager = TrainingFileManager()
 
@@ -23,12 +23,8 @@ class SarsaLFA:
 
         # Rewards
         self.reward_per_episode = 0
-        self.reward_per_time = 0
 
-        # Time
-        self.start_time = None
         self.episode = 1
-        self.target_time = 10
 
     def get_q_value(self, state, action):
         total_q_value = 0
@@ -60,13 +56,16 @@ class SarsaLFA:
     def train_agent(self):
         state = self.agent.get_state()
         action = (1, 0, 0, 0)
-        self.start_time = time.time()
 
-        while True:
+        # Variables for x- and y- coordinates
+        x = []
+        y = []
+
+        while self.episode <= 50:
             self.agent.perform_action(*action)
 
-            reward = self.agent.get_reward()
             new_state = self.agent.get_state()
+            reward = self.agent.get_reward()
             new_action = self.choose_action(state)
 
             # Calculate data point for linear regression
@@ -80,13 +79,29 @@ class SarsaLFA:
             action = new_action
 
             self.reward_per_episode += reward
-            self.reward_per_time += reward
 
-            self.save()
+            if self.agent.is_done():
+                # Save x- and y- values
+                x.append(self.episode)
+                y.append(delta)
+                self.training_file_manager.save_episode_rewards(self.episode, self.reward_per_episode)
+
+                self.episode += 1
+                self.reward_per_episode = 0
+                self.agent.reset_simulation()
+
+        plt.plot(x, y)
+        plt.xlabel('x - Episode')
+        plt.ylabel('y - Delta')
+        plt.title('Delta in relation to Episode')
+
+        plt.show()
+
+        # Save weights and Q-function
+        self.training_file_manager.save_values(self.weights, self.q_function)
 
     def new_training_agent(self):
-        # Create reward files
-        self.training_file_manager.create_time_file()
+        # Create reward file
         self.training_file_manager.create_episode_file()
 
         # Create training file
@@ -105,29 +120,3 @@ class SarsaLFA:
         self.q_function = self.training_file_manager.read_q_function()
 
         self.train_agent()
-
-    def save(self):
-        # Set time checkpoint
-        checkpoint = time.time()
-        time_passed = checkpoint - self.start_time
-
-        # Every 10 seconds
-        if time_passed > self.target_time:
-            # Save time and reward
-            self.training_file_manager.save_time_rewards(time_passed, self.reward_per_time)
-            self.reward_per_time = 0
-
-            # Save Weights and Q-function
-            self.training_file_manager.save_values(self.weights, self.q_function)
-
-            # Set new target time
-            self.target_time += 10
-
-        if self.agent.is_done():
-            self.training_file_manager.save_episode_rewards(self.episode, self.reward_per_episode)
-            self.episode += 1
-            self.reward_per_episode = 0
-
-            # Save Weights and Q-function
-            self.training_file_manager.save_values(self.weights, self.q_function)
-            self.agent.reset_simulation()

@@ -27,6 +27,9 @@ class Agent:
 
         self.rotation_constant = 0.83 * 5
 
+        self.robot_arm_rotation_constant = 10
+        self.robot_shovel_rotation_constant = 10
+
         self.features = [self.feature_1,
                          self.throttling_into_wall,
                          self.reversing_into_wall,
@@ -36,7 +39,9 @@ class Agent:
                          self.debris_in_shovel,
                          self.debris_in_front_of_shovel,
                          self.velocity,
-                         self.rotation]
+                         self.rotation,
+                         self.arm_rotation,
+                         self.shovel_rotation]
 
         # Observations
         self.observations = None
@@ -110,6 +115,15 @@ class Agent:
         # Robot rotation
         state.append(int(self.observations[2]))
 
+        # Robot rotated towards debris
+        state.append(1) if self.observations[75] else state.append(0)
+
+        # Robot arm rotation
+        state.append(int(self.observations[6]))
+
+        # Robot shovel rotation
+        state.append(int(self.observations[7]))
+
         return state
 
     # Features
@@ -160,14 +174,17 @@ class Agent:
     # TODO - Consider transforming velocity into a number between 0 and 1
     def velocity(self, state, action):
         action_list = list(action)
+        # Transform velocity into a value between 0 and 1
+        transform_value = 1 / 10
 
         if action_list[0] == 1:
-            return round(self.velocity_z * self.throttle_constant, 1)
+            return round(self.velocity_z * self.throttle_constant, 1) * transform_value
         elif action_list[0] == -1:
-            return round(self.velocity_z * self.reverse_constant, 1)
+            return round(self.velocity_z * self.reverse_constant, 1) * transform_value
         elif action_list[0] == 0:
-            return round(self.velocity_z, 1)
+            return round(self.velocity_z, 1) * transform_value
 
+    # Rotation: 0 to 360
     def rotation(self, state, action):
         action_list = list(action)
         rotation = self.observations[2]
@@ -180,6 +197,7 @@ class Agent:
         elif action_list[1] == 1:
             total_rotation = rotation + self.rotation_constant
 
+            # Check if new rotation is above 360 and return value beyond 0 instead
             if total_rotation >= 360:
                 return int(total_rotation - 360) * transform_value
             else:
@@ -187,7 +205,55 @@ class Agent:
         elif action_list[1] == -1:
             total_rotation = rotation - self.rotation_constant
 
+            # Check if new rotation is below zero and return value behind 360 instead
             if total_rotation < 0:
                 return int(360 - abs(total_rotation)) * transform_value
             else:
                 return int(total_rotation) * transform_value
+
+    def rotated_towards_debris (self, state, action):
+        return 1 if self.observations[75] else 0
+
+    # Arm rotation: 0 to 89
+    def arm_rotation(self, state, action):
+        action_list = list(action)
+        arm_rotation = self.observations[6]
+
+        # TODO Should the transform value be 1/360 instead?
+        # Transform rotation into a value between 0 and 1
+        transform_value = 1 / 360
+
+        if action_list[2] == 1:
+            # Add rotation constant to rotation to check if rotation is beyond maximum
+            total_rotation = arm_rotation + self.robot_arm_rotation_constant
+
+            return 89 * transform_value if total_rotation > 89 else int(total_rotation) * transform_value
+        elif action_list[2] == -1:
+            # Subtract rotation constant from rotation to check if rotation is beyond minimum
+            total_rotation = arm_rotation - self.robot_arm_rotation_constant
+
+            return 0 * transform_value if total_rotation < 0 else int(total_rotation) * transform_value
+        elif action_list[2] == 0:
+            return int(arm_rotation) * transform_value
+
+    # Shovel rotation: 0 to 70
+    def shovel_rotation(self, state, action):
+        action_list = list(action)
+        shovel_rotation = self.observations[7]
+
+        # TODO Should the transform value be 1/360 instead?
+        # Transform rotation into a value between 0 and 1
+        transform_value = 1 / 360
+
+        if action_list[3] == 1:
+            # Add rotation constant to rotation to check if rotation is beyond maximum
+            total_rotation = shovel_rotation + self.robot_shovel_rotation_constant
+
+            return 70 * transform_value if total_rotation > 70 else int(total_rotation) * transform_value
+        elif action_list[3] == -1:
+            # Subtract rotation constant from rotation to check if rotation is beyond minimum
+            total_rotation = shovel_rotation - self.robot_shovel_rotation_constant
+
+            return 0 * transform_value if total_rotation < 0 else int(total_rotation) * transform_value
+        elif action_list[3] == 0:
+            return int(shovel_rotation) * transform_value

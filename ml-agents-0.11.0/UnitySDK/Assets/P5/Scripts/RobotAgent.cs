@@ -206,8 +206,9 @@ public class RobotAgent : Agent
         foreach (var debrisInfo in debrisInfos)
         {
             Vector3 vecRobotToDebris = debrisInfo.transform.position - rb.position;
-            float angleToDebris = Vector3.Angle(vecRobotToDebris, rb.transform.forward);
+            float angleToDebris = Vector3.SignedAngle(vecRobotToDebris, rb.transform.forward, new Vector3(0, 1, 0));
             AddVectorObs(angleToDebris);
+            print(angleToDebris);
         }
         // If there are fewer than 6 debris, pad out the observations
         for (int i = 0; i < debrisCount - debrisInfos.Count; i++)

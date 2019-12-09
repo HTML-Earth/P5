@@ -261,8 +261,19 @@ class Agent:
             else:
                 return int(total_rotation) * transform_value
 
-    def pointed_towards_debris (self, state, action):
-        return 1 if self.observations[75] else 0
+    def pointed_towards_debris (self, state, action): # TODO kig på 68
+        action_list = list(action)
+        pointing = 0
+
+        if not self.observations[75]:
+            if action_list[1] == 1 and self.observations[68] < 0:
+                pointing = 1
+            elif action_list[1] == -1 and self.observations[68] > 0:
+                pointing = 1
+        elif self.observations[75]:
+            pointing = 1
+
+        return pointing
 
     # Arm rotation: 0 to 89
     def arm_rotation(self, state, action):

@@ -162,25 +162,25 @@ class Agent:
     def getting_closer_to_debris_1(self, state, action):
         action_list = list(action)
         # Angle on each side of the robot's forward vector
-        angleRange = 45  # TODO: Figure out the exact value
-        directionDebris = -angleRange < self.observations[68] < angleRange
+        angle_range = 45  # TODO: Figure out the exact value
+        direction_debris = -angle_range < self.observations[68] < angle_range
 
-        gettingCloser = 0
+        getting_closer = 0
 
         # steer 1 = more negative, steer -1 = more positive
         # Move directly towards debris
-        if action_list[0] == 1 and directionDebris:
-            gettingCloser = 1
+        if action_list[0] == 1 and direction_debris:
+            getting_closer = 1
         # Turn (left) towards debris
-        elif action_list[1] == 1 and self.observations[68] < -angleRange:
-            gettingCloser = 1
+        elif action_list[1] == 1 and self.observations[68] < -angle_range:
+            getting_closer = 1
         # Turn (Right) towards debris
-        elif action_list[1] == -1 and self.observations[68] > angleRange:
-            gettingCloser = 1
-        elif self.velocity_z > 0 and action_list[0] == 0 and action_list[1] == 0 and directionDebris:
-            gettingCloser = 1
+        elif action_list[1] == -1 and self.observations[68] > angle_range:
+            getting_closer = 1
+        elif self.velocity_z > 0 and action_list[0] == 0 and action_list[1] == 0 and direction_debris:
+            getting_closer = 1
 
-        return gettingCloser
+        return getting_closer
 
     def ready_to_pickup_debris(self, state, action):
         action_list = list(action)

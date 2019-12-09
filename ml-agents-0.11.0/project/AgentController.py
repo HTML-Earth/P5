@@ -162,7 +162,7 @@ class Agent:
         return 1 if self.observations[61] else 0
 
     def ready_to_pickup_debris(self, state, action):
-        return 1 if self.observations[6] == 330 and self.observations[7] == 360 - 47 else 0
+        return 1 if self.observations[6] == 330 and self.observations[7] == 360 - 47 and self.observations[74] else 0
 
     def debris_in_shovel(self, state, action):
         return 1 if self.observations[67] else 0

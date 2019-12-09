@@ -54,4 +54,4 @@
 
 74 debris in front of shovel
 
-75 Robot rotated towards debris
+75 Robot pointed towards debris

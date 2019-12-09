@@ -261,6 +261,8 @@ class Agent:
                     else:
                         return 0
 
+        return 0
+
     # If action is (0, 0, 0, 0), the velocity should be considered.
 
     def velocity(self, state, action):

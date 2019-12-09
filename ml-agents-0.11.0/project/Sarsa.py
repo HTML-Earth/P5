@@ -58,8 +58,9 @@ class SarsaLFA:
         action = (1, 0, 0, 0)
 
         # Variables for x- and y- coordinates
-        x = []
-        y = []
+        x_episode = []
+        y_delta = []
+        y_reward = []
 
         while self.episode <= 50:
             self.agent.perform_action(*action)
@@ -82,18 +83,27 @@ class SarsaLFA:
 
             if self.agent.is_done():
                 # Save x- and y- values
-                x.append(self.episode)
-                y.append(delta)
+                x_episode.append(self.episode)
+                y_delta.append(delta)
+                y_reward.append(self.reward_per_episode)
+
                 self.training_file_manager.save_episode_rewards(self.episode, self.reward_per_episode)
 
                 self.episode += 1
                 self.reward_per_episode = 0
                 self.agent.reset_simulation()
 
-        plt.plot(x, y)
-        plt.xlabel('x - Episode')
+        # Delta in relation to episodes
+        plt.subplot(2, 1, 1)
+        plt.plot(x_episode, y_delta)
         plt.ylabel('y - Delta')
-        plt.title('Delta in relation to Episode')
+
+        # Reward in relation to episodes
+        plt.subplot(2, 1, 2)
+        plt.plot(x_episode, y_reward)
+        plt.ylabel('y - Reward')
+        plt.xlabel('x - Episode')
+        plt.title('Delta and Reward in relation to Episode')
 
         plt.show()
 

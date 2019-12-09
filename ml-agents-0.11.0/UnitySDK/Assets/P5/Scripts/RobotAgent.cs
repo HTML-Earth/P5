@@ -15,6 +15,7 @@ public class RobotAgent : Agent
     RobotSensors sensors;
     RobotVision vision;
     DropZone dropZone;
+    DisplayRewards displayRewards;
     
     [FormerlySerializedAs("debrisDetector")] [SerializeField]
     DebrisDetector debrisInShovel;
@@ -58,6 +59,10 @@ public class RobotAgent : Agent
 
     List<RobotVision.DebrisInfo> debrisInfos;
 
+    float minimumDistanceBeforeCheck = 0.5f;
+    Vector3 lastCheckedPosition;
+    bool checkedPositionThisStep;
+    
     float previousDistanceFromZone;
     float currentDistanceFromZone;
 
@@ -78,9 +83,12 @@ public class RobotAgent : Agent
         vision = GetComponent<RobotVision>();
         sensors = GetComponent<RobotSensors>();
         dropZone = FindObjectOfType<DropZone>();
+        displayRewards = FindObjectOfType<DisplayRewards>();
         
         startPosition = transform.position;
         startRotation = transform.rotation;
+
+        lastCheckedPosition = startPosition;
     }
 
     public override void AgentReset()
@@ -92,6 +100,8 @@ public class RobotAgent : Agent
         listIsDebrisLocated = new List<bool>() {false, false, false, false, false, false};
         
         wallRammingPenalties = new Queue<float>();
+
+        lastCheckedPosition = transform.position;
 
         currentDistanceFromZone = Vector3.Distance(transform.position, dropZone.transform.position);
         previousDistanceFromZone = currentDistanceFromZone;
@@ -106,6 +116,8 @@ public class RobotAgent : Agent
     {
         transform.position = startPosition;
         transform.rotation = startRotation;
+        
+        lastCheckedPosition = startPosition;
         
         // Reset robot velocity
         rb.velocity = Vector3.zero;
@@ -272,6 +284,9 @@ public class RobotAgent : Agent
         // Store current action vector state for visualization
         actionVector = vectorAction;
         
+        // if robot has moved enough to do a distance check, set checked bool to true
+        checkedPositionThisStep = Vector3.Distance(lastCheckedPosition, transform.position) > minimumDistanceBeforeCheck;
+
         // Give rewards or penalties
         RewardDebrisInShovel();
         RewardDebrisInOutZone();
@@ -286,6 +301,10 @@ public class RobotAgent : Agent
 
         // Make sure robot in inside area and upright
         RobotUpright();
+
+        // if the check bool is true, update last checked position
+        if (checkedPositionThisStep)
+            lastCheckedPosition = transform.position;
         
         // Reset if time limit is reached
         if (timeElapsed > timeLimit)
@@ -304,7 +323,7 @@ public class RobotAgent : Agent
         {
             if (debrisInfos[debrisNum].isVisible && !listIsDebrisLocated[debrisNum])
             {
-                AddReward(reward_debrisFound, "Debris was located");
+                AddReward(reward_debrisFound, "Debris was located", debrisInfos[debrisNum].transform.position);
                 listIsDebrisLocated[debrisNum] = true;
             }
         }
@@ -313,24 +332,27 @@ public class RobotAgent : Agent
     // Reward for each time the agent moves towards debris
     void RewardMoveTowardsDebris()
     {
-        // Check if agent moves towards debris
-        for (int i = 0; i < debrisInfos.Count; i++)
+        // if robot has moved enough to do a distance check
+        if (checkedPositionThisStep)
         {
-            if (debrisInfos[i].transform == null)
-                break;
-            
-            // Check that debris is not in zone or shovel and is located
-            if (!dropZone.IsInZone(debrisInfos[i].transform.position) && !debrisInShovel.GetDebrisInArea()[i] && listIsDebrisLocated[i])
+            // Check if agent moves towards debris
+            for (int i = 0; i < debrisInfos.Count; i++)
             {
-                // Subtract previous distance from current distance
-                float distanceDifference = debrisInfos[i].distanceFromRobot - debrisInfos[i].lastDistanceFromRobot;
-                
-                // Check if robot has gotten closer by at least 0.01m (if difference is negative, it has gotten closer)
-                if (distanceDifference < -0.01f)
-                {
-                    AddReward(reward_moveTowardsDebris, "Moved towards debris");
-                    // Enable break for points to be given when moving towards atleast 1 debris (otherwise points are given up to reward * amount of debris)
+                if (debrisInfos[i].transform == null)
                     break;
+            
+                // Check that debris is not in zone or shovel and is located
+                if (!dropZone.IsInZone(debrisInfos[i].transform.position) && !debrisInShovel.GetDebrisInArea()[i] && listIsDebrisLocated[i])
+                {
+                    Vector3 debrisPos = debrisInfos[i].transform.position;
+
+                    // If current distance is less than last checked position distance
+                    if (Vector3.Distance(debrisPos, transform.position) < Vector3.Distance(debrisPos, lastCheckedPosition))
+                    {
+                        AddReward(reward_moveTowardsDebris, "Moved towards debris", transform.position);
+                        // Enable break for points to be given when moving towards atleast 1 debris (otherwise points are given up to reward * amount of debris)
+                        break;
+                    }
                 }
             }
         }
@@ -340,28 +362,31 @@ public class RobotAgent : Agent
     // And penalty for moving away from the zone with debris
     void RewardMoveTowardsZoneWithDebris()
     {
-        previousDistanceFromZone = currentDistanceFromZone;
-        currentDistanceFromZone = Vector3.Distance(transform.position, dropZone.transform.position);
-
-        bool carryingDebris = false;
-        
-        // Check if agent is carrying debris
-        for (int i = 0; i < debrisInfos.Count; i++)
+        // if robot has moved enough to do a distance check
+        if (checkedPositionThisStep)
         {
-            if (currentDebrisInShovel[i])
-            {
-                carryingDebris = true;
-            }
-        }
-
-        float distanceDifference = currentDistanceFromZone - previousDistanceFromZone;
-        if (carryingDebris)
-        {
-            if (distanceDifference < -0.01f)
-                AddReward(reward_moveTowardsZoneWithDebris, "Moved towards zone with debris");
+            bool carryingDebris = false;
             
-            if (distanceDifference > 0.01f)
-                AddReward(penalty_moveAwayFromZoneWithDebris, "Moved away from zone with debris");
+            // Check if agent is carrying debris
+            for (int i = 0; i < debrisInfos.Count; i++)
+            {
+                if (currentDebrisInShovel[i])
+                {
+                    carryingDebris = true;
+                }
+            }
+
+            if (carryingDebris)
+            {
+                previousDistanceFromZone = Vector3.Distance(lastCheckedPosition, dropZone.transform.position);
+                currentDistanceFromZone = Vector3.Distance(transform.position, dropZone.transform.position);
+                
+                if (currentDistanceFromZone < previousDistanceFromZone)
+                    AddReward(reward_moveTowardsZoneWithDebris, "Moved towards zone with debris", transform.position);
+                
+                if (currentDistanceFromZone > previousDistanceFromZone)
+                    AddReward(penalty_moveAwayFromZoneWithDebris, "Moved away from zone with debris", transform.position);
+            }
         }
     }
 
@@ -377,12 +402,12 @@ public class RobotAgent : Agent
             if (previousDebrisInZone[i])
             {
                 if (!currentDebrisInZone[i])
-                    AddReward(penalty_debrisLeftZone, "debris left zone");
+                    AddReward(penalty_debrisLeftZone, "debris left zone", debrisInfos[i].transform.position);
             }
             else
             {
                 if (currentDebrisInZone[i])
-                    AddReward(reward_debrisEnteredZone, "debris entered zone");
+                    AddReward(reward_debrisEnteredZone, "debris entered zone", debrisInfos[i].transform.position);
             }
         }
     }
@@ -396,13 +421,13 @@ public class RobotAgent : Agent
         {
             if (currentDebrisInShovel[i] && !previousDebrisInShovel[i])
             {
-                AddReward(reward_debrisEnteredShovel, "debris entered shovel");
+                AddReward(reward_debrisEnteredShovel, "debris entered shovel", debrisInfos[i].transform.position);
                 previousDebrisInShovel[i] = true;
             }
             
             if (previousDebrisInShovel[i] && !currentDebrisInShovel[i] && !dropZone.IsInZone(debrisInfos[i].transform.position))
             {
-                AddReward(penalty_debrisLeftShovel, "debris left shovel outside DropZone");
+                AddReward(penalty_debrisLeftShovel, "debris left shovel outside DropZone", debrisInfos[i].transform.position);
                 previousDebrisInShovel[i] = false;
             }
         }
@@ -421,7 +446,7 @@ public class RobotAgent : Agent
         while (wallRammingPenalties.Count > 0)
         {
             wallRammingPenalties.Dequeue();
-            AddReward(penalty_robotRammingWall,"robot ramming wall");
+            AddReward(penalty_robotRammingWall,"robot ramming wall", transform.position);
         }
     }
 
@@ -431,7 +456,7 @@ public class RobotAgent : Agent
         // Check if robot has fallen
         if (Vector3.Dot(transform.up, Vector3.up) < 0.1f)
         {
-            AddReward(penalty_robot_fall, "Robot fell");
+            AddReward(penalty_robot_fall, "Robot fell", transform.position);
             Done("robot has fallen (probably)");
         }
         
@@ -447,7 +472,7 @@ public class RobotAgent : Agent
         // Check if goal is met
         if (dropZone.IsAllDebrisInZone())
         {
-            AddReward(reward_allDebrisEnteredZone, "all debris in zone");
+            AddReward(reward_allDebrisEnteredZone, "all debris in zone", dropZone.transform.position);
             Done("goal reached (all debris in zone)");
         }
     }
@@ -482,6 +507,13 @@ public class RobotAgent : Agent
     {
         Debug.Log(((reward < 0) ? "Penalty: " : "Reward: ") + reward + " (" + message + ")");
         AddReward(reward);
+    }
+
+    // Wrapper function for AddReward that displays the reward/penalty and custom message on the canvas
+    public void AddReward(float reward, string message, Vector3 position)
+    {
+        if (displayRewards != null)
+            displayRewards.DisplayReward(reward, message, position);
     }
 
     // Used to control the agent manually

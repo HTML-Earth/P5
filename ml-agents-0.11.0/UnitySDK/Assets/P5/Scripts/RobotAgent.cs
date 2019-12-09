@@ -208,7 +208,6 @@ public class RobotAgent : Agent
             Vector3 vecRobotToDebris = debrisInfo.transform.position - rb.position;
             float angleToDebris = Vector3.SignedAngle(vecRobotToDebris, rb.transform.forward, new Vector3(0, 1, 0));
             AddVectorObs(angleToDebris);
-            print(angleToDebris);
         }
         // If there are fewer than 6 debris, pad out the observations
         for (int i = 0; i < debrisCount - debrisInfos.Count; i++)
@@ -232,13 +231,17 @@ public class RobotAgent : Agent
         // Check if robot is rotated towards a debris (75) //TODO Does not take walls into account
         int counter = 0;
         bool pointingTowardDebris = false;
+        Vector2 vecForward = new Vector2(transform.forward.x, transform.forward.z);
         foreach (var debris in debrisInfos)
         {
+            Vector2 vecRobotToDebris2 = new Vector2(debris.transform.position.x - transform.position.x,
+                debris.transform.position.z - transform.position.z);
+
             // Check it is not in dropzone
             if (!dropZone.IsInZone(debris.transform.position) && !debrisInShovelList[counter])
             {
-                float dot = Vector3.Dot(transform.forward, (debris.transform.position - transform.position).normalized);
-                if (dot > 0.99f)
+                float dot = Vector2.Dot(vecForward, (vecRobotToDebris2).normalized);
+                if (dot > 0.999f)
                 {
                     pointingTowardDebris = true;
                 }

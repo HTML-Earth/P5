@@ -191,6 +191,19 @@ class Agent:
         return 1 if self.observations[67] else 0
 
     def debris_in_front_of_shovel(self, state, action):
+        # if arm is not down
+        if self.observations[6] < 360 - self.robot_arm_rotation_constant:
+            # if arm is not moving down
+            if action[2] < 1:
+                return 0
+
+        # if shovel is not down
+        if self.observations[7] < 360-47 - self.robot_shovel_rotation_constant:
+            # if shovel is not moving down
+            if action[3] < 1:
+                return 0
+
+        # if there is debris in front of the shovel
         return 1 if self.observations[74] else 0
 
     def getting_closer_to_dropzone(self, state, action):

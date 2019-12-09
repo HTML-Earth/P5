@@ -441,8 +441,8 @@ public class RobotAgent : Agent
     // Constantly deduct rewards
     void PenaltyTime()
     {
-        //AddReward(penalty_time, "Time passed");
-        AddReward(penalty_time); // no message to avoid spam in console
+        //AddReward(penalty_time, "Time passed", dropZone.transform.position);
+        AddReward(penalty_time); // no message to avoid spam
     }
 
     void PenaltyForHittingWalls()
@@ -519,6 +519,8 @@ public class RobotAgent : Agent
     {
         if (displayRewards != null)
             displayRewards.DisplayReward(reward, message, position);
+        
+        AddReward(reward);
     }
 
     // Used to control the agent manually

@@ -173,7 +173,34 @@ class Agent:
     def debris_in_front_of_shovel(self, state, action):
         return 1 if self.observations[74] else 0
 
-    # TODO - Check of this makes sense
+    def getting_closer_to_dropzone(self, state, action):
+        action_list = list(action)
+
+        if action_list[0] == 1:
+            if action_list[1] == 0:
+                if 90 < self.observations[76] < 270:
+                    return 1
+                else:
+                    return 0
+
+        if action_list[0] == -1:
+            if action_list[1] == 0:
+                if (90 > self.observations[76] > 0) or (270 < self.observations[76] < 360):
+                    return 1
+                else:
+                    return 0
+
+        if action_list[0] == 0:
+            if action_list[1] == 0:
+                if 90 < self.observations[76] < 270:
+                    if self.velocity_z > 0:
+                        return 1
+                    else:
+                        return 0
+
+    # If action is (0, 0, 0, 0), the velocity should be considered.
+
+    # TODO - Check of (if?) this makes sense
     # TODO - Consider transforming velocity into a number between 0 and 1
     def velocity(self, state, action):
         action_list = list(action)

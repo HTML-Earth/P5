@@ -55,3 +55,5 @@
 74 debris in front of shovel
 
 75 Robot pointed towards debris
+
+76 Robot getting closer to drop-zone

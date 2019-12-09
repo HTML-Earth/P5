@@ -203,10 +203,18 @@ public class RobotAgent : Agent
         AddVectorObs(debrisInShovel);
         
         // Angle between (Robot forward) and (vector between robot and debris) (68 -> 73)
+        var robotPosition = transform.position;
+        var forward = transform.forward;
+        // Vec2 pointing straight from robot
+        Vector2 vec2TransformForward = new Vector2(forward.x, forward.z);
         foreach (var debrisInfo in debrisInfos)
         {
-            Vector3 vecRobotToDebris = debrisInfo.transform.position - rb.position;
-            float angleToDebris = Vector3.SignedAngle(vecRobotToDebris, rb.transform.forward, new Vector3(0, 1, 0));
+            var debrisPosition = debrisInfo.transform.position;
+            // Create vector2 from robot to debris
+            Vector2 vec2RobotToDebris = new Vector2(debrisPosition.x - robotPosition.x,
+                debrisPosition.z - robotPosition.z);
+            // Find angle between robot direction and debris (Signed to indicate which side the debris is closest to)
+            float angleToDebris = Vector2.SignedAngle(vec2RobotToDebris, vec2TransformForward);
             AddVectorObs(angleToDebris);
         }
         // If there are fewer than 6 debris, pad out the observations

@@ -110,6 +110,9 @@ class Agent:
         # Robot rotation
         state.append(int(self.observations[2]))
 
+        # Robot rotated towards debris
+        state.append(1) if self.observations[75] else state.append(0)
+
         return state
 
     # Features
@@ -191,3 +194,7 @@ class Agent:
                 return int(360 - abs(total_rotation)) * transform_value
             else:
                 return int(total_rotation) * transform_value
+
+    def rotated_towards_debris (self, state, action):
+        return 1 if self.observations[75] else 0
+

@@ -187,11 +187,10 @@ public class RobotAgent : Agent
         ObsDebrisInFront();
         ObsPointedAtDebris();
 
-        // Check if robot is getting closer to the zone, Returns float (76)
-        Vector3 distanceToDropzone = dropZonePosition - rb.position;
-        Vector3 pointingTowardDropzone = transform.forward;
-        float AngleToDropzone = Vector3.Angle(distanceToDropzone, pointingTowardDropzone);
-        AddVectorObs(AngleToDropzone);
+        // Check if robot is facing the zone (76)
+        Vector3 robotToDropZone = dropZonePosition - rb.position;
+        float angleToDropzone = Vector3.Angle(robotToDropZone, transform.forward);
+        AddVectorObs(angleToDropzone);
     }
     
     //Check if robot is getting closer to debris, Returns boolean (61 -> 66)
@@ -465,8 +464,8 @@ public class RobotAgent : Agent
     // Constantly deduct rewards
     void PenaltyTime()
     {
-        //AddReward(penalty_time, "Time passed");
-        AddReward(penalty_time); // no message to avoid spam in console
+        //AddReward(penalty_time, "Time passed", dropZone.transform.position);
+        AddReward(penalty_time); // no message to avoid spam
     }
 
     void PenaltyForHittingWalls()
@@ -543,6 +542,8 @@ public class RobotAgent : Agent
     {
         if (displayRewards != null)
             displayRewards.DisplayReward(reward, message, position);
+        
+        AddReward(reward);
     }
 
     // Used to control the agent manually

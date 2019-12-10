@@ -38,6 +38,7 @@ class Agent:
                          self.ready_to_pickup_debris,
                          self.debris_in_shovel,
                          self.debris_in_front_of_shovel,
+                         self.getting_closer_to_dropzone,
                          self.velocity,
                          self.rotation,
                          self.pointed_towards_debris,
@@ -89,40 +90,43 @@ class Agent:
 
         self.update_observations()
 
-        # Check if robot is throttling into wall
+        # Throttling into wall
         state.append(1) if self.sensors_front < [self.velocity_z] else state.append(0)
 
-        # Check if robot is reversing into wall
+        # Reversing into wall
         state.append(1) if self.sensors_behind > [self.velocity_z] else state.append(0)
 
-        # Check if robot is within the dropZone
+        # Robot within dropZone
         state.append(1) if self.observations[60] else state.append(0)
 
-        # Check if robot is getting closer to debris 1
+        # Getting closer to debris 1
         state.append(1) if self.observations[61] else state.append(0)
 
-        # Check if ready to pickup debris
+        # Ready to pickup debris
         state.append(1) if self.observations[6] == 330 and self.observations[7] == 360 - 47 else state.append(0)
 
-        # Check if debris is in shovel
+        # Debris is in shovel
         state.append(1) if self.observations[67] else state.append(0)
 
-        # Check if debris in front of shovel
+        # Debris in front of shovel
         state.append(1) if self.observations[68] else state.append(0)
 
-        # Robot velocity
+        # Getting closer to dropzone
+        state.append(1) if 90 < self.observations[76] < 270 and self.velocity_z > 0 else state.append(0)
+
+        # Velocity
         state.append(round(self.velocity_z, 1))
 
-        # Robot rotation
+        # Rotation
         state.append(int(self.observations[2]))
 
-        # Robot rotated towards debris
+        # Pointed towards debris
         state.append(1) if self.observations[75] else state.append(0)
 
-        # Robot arm rotation
+        # Arm rotation
         state.append(int(self.observations[6]))
 
-        # Robot shovel rotation
+        # Shovel rotation
         state.append(int(self.observations[7]))
 
         return state
@@ -257,10 +261,10 @@ class Agent:
                     else:
                         return 0
 
+        return 0
+
     # If action is (0, 0, 0, 0), the velocity should be considered.
 
-    # TODO - Check of (if?) this makes sense
-    # TODO - Consider transforming velocity into a number between 0 and 1
     def velocity(self, state, action):
         action_list = list(action)
         # Transform velocity into a value between 0 and 1
@@ -300,7 +304,7 @@ class Agent:
             else:
                 return int(total_rotation) * transform_value
 
-    def pointed_towards_debris (self, state, action): # TODO kig på 68
+    def pointed_towards_debris (self, state, action):  # TODO kig på 68
         action_list = list(action)
         pointing = 0
 
@@ -319,7 +323,6 @@ class Agent:
         action_list = list(action)
         arm_rotation = self.observations[6]
 
-        # TODO Should the transform value be 1/360 instead?
         # Transform rotation into a value between 0 and 1
         transform_value = 1 / 360
 
@@ -341,7 +344,6 @@ class Agent:
         action_list = list(action)
         shovel_rotation = self.observations[7]
 
-        # TODO Should the transform value be 1/360 instead?
         # Transform rotation into a value between 0 and 1
         transform_value = 1 / 360
 

@@ -46,7 +46,8 @@
 
 60 Check if within dropZone
 
-61 - 66 Check if agent is getting closer to debris
+61 - 66 *Old: Check if agent is getting closer to debris
+61 - 66 *New: Distance between robot and each debris with a total of 6
 
 67 Check if Debris has entered the shovel
 
@@ -57,3 +58,5 @@
 75 Robot pointed towards debris
 
 76 Robot getting closer to drop-zone
+
+77 - 82 Distance between each debris to drop-zone with a total of 6

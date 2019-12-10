@@ -198,13 +198,21 @@ public class RobotAgent : Agent
         AddVectorObs(angleToDropzone);
     }
     
-    //Check if robot is getting closer to debris, Returns boolean (61 -> 66)
+    // *Old: Check if robot is getting closer to debris, Returns boolean (61 -> 66)
+    // *New: Distance between robot and each debris with a total of 6, returns floats (61 -> 66)
     void ObsGettingCloserToDebris()
     {
         foreach (var debrisInfo in debrisInfos)
         {
-            bool gettingCloserToDebris = debrisInfo.distanceFromRobot < debrisInfo.lastDistanceFromRobot;
-            AddVectorObs(gettingCloserToDebris);
+            //bool gettingCloserToDebris = debrisInfo.distanceFromRobot < debrisInfo.lastDistanceFromRobot;
+            //AddVectorObs(gettingCloserToDebris);
+            
+            Vector3 rbNewPosition = rb.position + rb.velocity; //robot current position + velocity
+            
+            float distanceToDebris = Vector3.Distance(debrisInfo.lastKnownPosition, rbNewPosition);
+            
+            
+            AddVectorObs(distanceToDebris);
         }
 
         // If there are fewer than 6 debris, pad out the observations
@@ -302,6 +310,20 @@ public class RobotAgent : Agent
             {
                 AddVectorObs(Mathf.Infinity);
             }
+        }
+    }
+    
+    // distance from each debris to dropzone (total of 6) (77 -> 82)
+    void debrisToDropzone()
+    {
+        List<RobotVision.DebrisInfo> debrisList = debrisInfos;
+        
+        foreach (var debris in debrisList)
+        {
+            Vector3 dropZonePosition = dropZone.transform.position;
+            Vector3 debrisDistanceToDropzone = debris.lastKnownPosition - dropZonePosition;
+            
+            AddVectorObs(debrisDistanceToDropzone);
         }
     }
 

@@ -38,9 +38,6 @@ public class DisplayActions : MonoBehaviour
             left = transform.Find("left").GetComponent<Image>();
             right = transform.Find("right").GetComponent<Image>();
             
-            armUp = transform.Find("arm_up").GetComponent<Image>();
-            armDown = transform.Find("arm_down").GetComponent<Image>();
-            
             shovelUp = transform.Find("shovel_up").GetComponent<Image>();
             shovelDown = transform.Find("shovel_down").GetComponent<Image>();
         }
@@ -66,11 +63,8 @@ public class DisplayActions : MonoBehaviour
             left.color  = (actions[1] < -0.9) ? opaque : transparent;
             right.color = (actions[1] > 0.9)  ? opaque : transparent;
             
-            armUp.color   = (actions[2] < -0.9)  ? opaque : transparent;
-            armDown.color = (actions[2] > 0.9) ? opaque : transparent;
-            
-            shovelUp.color   = (actions[3] < -0.9)  ? opaque : transparent;
-            shovelDown.color = (actions[3] > 0.9) ? opaque : transparent;
+            shovelUp.color   = (actions[2] < -0.9)  ? opaque : transparent;
+            shovelDown.color = (actions[2] > 0.9) ? opaque : transparent;
         }
     }
     

@@ -9,15 +9,11 @@ class Agent:
         self.env_info = None
         self.default_brain = None
 
-        # Setup connection
-        self.setup_connection_with_unity()
-
         # Algorithm
-        self.actions = [(i, j, k, l)
+        self.actions = [(i, j, k, 0)
                         for i in range(-1, 2)
                         for j in range(-1, 2)
-                        for k in range(-1, 2)
-                        for l in range(-1, 2)]
+                        for k in range(-1, 2)]
 
         self.throttle_constant = 1.1
         self.reverse_constant = 0.9
@@ -52,9 +48,9 @@ class Agent:
         self.sensors_behind = None
 
     # Setup connection between Unity and Python
-    def setup_connection_with_unity(self):
+    def setup_connection_with_unity(self, build_scene):
         # Connect to Unity and get environment
-        self.env = UnityEnvironment(file_name=None, worker_id=0, seed=3)
+        self.env = UnityEnvironment(file_name=build_scene, worker_id=0, seed=3)
 
         # Reset the environment
         self.env_info = self.env.reset(train_mode=True)
@@ -163,6 +159,69 @@ class Agent:
     def robot_within_dropzone(self, state, action):
         return 1 if self.observations[60] else 0
 
+    # distance between robot and each debris (a total of 6)
+    def distance_to_debris_1(self, state, action):
+        return self.distance_to_debris(state, action, 61)
+
+    def distance_to_debris_2(self, state, action):
+        return self.distance_to_debris(state, action, 62)
+
+    def distance_to_debris_3(self, state, action):
+        return self.distance_to_debris(state, action, 63)
+
+    def distance_to_debris_4(self, state, action):
+        return self.distance_to_debris(state, action, 64)
+
+    def distance_to_debris_5(self, state, action):
+        return self.distance_to_debris(state, action, 65)
+
+    def distance_to_debris_6(self, state, action):
+        return self.distance_to_debris(state, action, 66)
+
+    # function called by previous 6 functions
+    def distance_to_debris(self, state, action, observation_index):
+        action_list = list(action)
+        distance = 0
+
+        # each relevant action is used to predict
+        if action_list[0] == 1:
+            if action_list[1] == 1:
+                if self.observations[observation_index] > 0:
+                    distance = self.observations[observation_index]
+
+        if action_list[0] == 1:
+            if action_list[1] == 0:
+                if self.observations[observation_index] > 0:
+                    distance = self.observations[observation_index]
+
+        if action_list[0] == 1:
+            if action_list[1] == -1:
+                if self.observations[observation_index] > 0:
+                    distance = self.observations[observation_index]
+
+        if action_list[0] == -1:
+            if action_list[1] == 1:
+                if self.observations[observation_index] > 0:
+                    distance = self.observations[observation_index]
+
+        if action_list[0] == -1:
+            if action_list[1] == 0:
+                if self.observations[observation_index] > 0:
+                    distance = self.observations[observation_index]
+
+        if action_list[0] == -1:
+            if action_list[1] == -1:
+                if self.observations[observation_index] > 0:
+                    distance = self.observations[observation_index]
+
+        if action_list[0] == 0:
+            if action_list[1] == 0:
+                if self.velocity_z > 0:
+                    if self.observations[observation_index] > 0:
+                        distance = self.observations[observation_index]
+
+        return distance
+
     # Getting closer to debris number 1 (2-6 following)
     def getting_closer_to_debris_1(self, state, action):
         return self.getting_closer_to_debris(state, action, 68)
@@ -262,8 +321,6 @@ class Agent:
                         return 0
 
         return 0
-
-    # If action is (0, 0, 0, 0), the velocity should be considered.
 
     def velocity(self, state, action):
         action_list = list(action)

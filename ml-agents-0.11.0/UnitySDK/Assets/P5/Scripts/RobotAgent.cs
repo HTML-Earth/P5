@@ -152,8 +152,8 @@ public class RobotAgent : Agent
         AddVectorObs(localVelocity.y);
         AddVectorObs(localVelocity.z);
         
-        // Arm and shovel position (6, 7)
-        AddVectorObs(shovel.GetArmPos());
+        // Shovel position (6, 7) TODO: remove one of these
+        AddVectorObs(shovel.GetShovelPos());
         AddVectorObs(shovel.GetShovelPos());
 
         // Drop-Zone Position and radius (8, 9, 10)
@@ -201,13 +201,21 @@ public class RobotAgent : Agent
         AddVectorObs(angleToDropzone);
     }
     
-    //Check if robot is getting closer to debris, Returns boolean (61 -> 66)
+    // *Old: Check if robot is getting closer to debris, Returns boolean (61 -> 66)
+    // *New: Distance between robot and each debris with a total of 6, returns floats (61 -> 66)
     void ObsGettingCloserToDebris()
     {
         foreach (var debrisInfo in debrisInfos)
         {
-            bool gettingCloserToDebris = debrisInfo.distanceFromRobot < debrisInfo.lastDistanceFromRobot;
-            AddVectorObs(gettingCloserToDebris);
+            //bool gettingCloserToDebris = debrisInfo.distanceFromRobot < debrisInfo.lastDistanceFromRobot;
+            //AddVectorObs(gettingCloserToDebris);
+            
+            Vector3 rbNewPosition = rb.position + rb.velocity; //robot current position + velocity
+            
+            float distanceToDebris = Vector3.Distance(debrisInfo.lastKnownPosition, rbNewPosition);
+            
+            
+            AddVectorObs(distanceToDebris);
         }
 
         // If there are fewer than 6 debris, pad out the observations
@@ -307,6 +315,20 @@ public class RobotAgent : Agent
             }
         }
     }
+    
+    // distance from each debris to dropzone (total of 6) (77 -> 82)
+    void debrisToDropzone()
+    {
+        List<RobotVision.DebrisInfo> debrisList = debrisInfos;
+        
+        foreach (var debris in debrisList)
+        {
+            Vector3 dropZonePosition = dropZone.transform.position;
+            Vector3 debrisDistanceToDropzone = debris.lastKnownPosition - dropZonePosition;
+            
+            AddVectorObs(debrisDistanceToDropzone);
+        }
+    }
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
@@ -314,8 +336,7 @@ public class RobotAgent : Agent
         wheels.SetTorque(vectorAction[0]);
         wheels.SetAngle(vectorAction[1]);
         
-        shovel.RotateArm(vectorAction[2]);
-        shovel.RotateShovel(vectorAction[3]);
+        shovel.RotateShovel(vectorAction[2]);
         
         // Store current action vector state for visualization
         actionVector = vectorAction;
@@ -597,7 +618,6 @@ public class RobotAgent : Agent
         heuristicValues[1] = Input.GetAxis("Horizontal");
 
         heuristicValues[2] = (Input.GetKey(KeyCode.Q)) ? 1f : (Input.GetKey(KeyCode.E)) ? -1f : 0f;
-        heuristicValues[3] = (Input.GetKey(KeyCode.Z)) ? 1f : (Input.GetKey(KeyCode.X)) ? -1f : 0f;
 
         return heuristicValues;
     }
@@ -617,6 +637,7 @@ public class RobotAgent : Agent
         return lastTenAttempts;
     }
 
+    #if UNITY_EDITOR
     // Used to draw debug info on screen
     void OnDrawGizmos()
     {
@@ -633,4 +654,5 @@ public class RobotAgent : Agent
         Handles.color = Color.red;
         Handles.DrawLine(transform.position, transform.position + rb.velocity);
     }
+    #endif
 }

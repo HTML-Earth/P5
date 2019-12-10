@@ -6,8 +6,9 @@ import matplotlib.pyplot as plt
 
 class SarsaLFA:
 
-    def __init__(self, gamma=0.7, eta=0.7, epsilon=0.3):
+    def __init__(self, build_scene, gamma=0.99, eta=0.9, epsilon=0.3):
         self.agent = Agent()
+        self.agent.setup_connection_with_unity(build_scene)
         self.training_file_manager = TrainingFileManager()
 
         # Q-function
@@ -26,6 +27,9 @@ class SarsaLFA:
 
         self.episode = 1
 
+    def lookup_q(self, state, action):
+        return self.q_function.get((tuple(state), action), 0.0)
+
     def get_q_value(self, state, action):
         total_q_value = 0
 
@@ -39,9 +43,9 @@ class SarsaLFA:
         actions = self.agent.actions
 
         if random.random() < self.epsilon:
-            action = (random.randint(-1, 1), random.randint(-1, 1), random.randint(-1, 1), random.randint(-1, 1))
+            action = (random.randint(-1, 1), random.randint(-1, 1), random.randint(-1, 1), 0)
         else:
-            q = [self.get_q_value(state, a) for a in actions]
+            q = [self.lookup_q(state, a) for a in actions]
             max_q = max(q)
             count = q.count(max_q)
             if count > 1:
@@ -62,7 +66,7 @@ class SarsaLFA:
         y_delta = []
         y_reward = []
 
-        while self.episode <= 50:
+        while self.episode <= 100:
             self.agent.perform_action(*action)
 
             new_state = self.agent.get_state()

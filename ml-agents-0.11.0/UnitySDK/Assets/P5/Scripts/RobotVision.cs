@@ -134,6 +134,7 @@ public class RobotVision : MonoBehaviour
         return Vector3.Angle(sensorPosition.forward, direction.normalized) < visionAngle * 0.5f;
     }
 
+    #if UNITY_EDITOR
     void OnDrawGizmos()
     {
         if (!EditorApplication.isPlaying)
@@ -144,4 +145,5 @@ public class RobotVision : MonoBehaviour
         Gizmos.DrawRay(sensorPosition.position, Quaternion.AngleAxis(visionAngle * -0.5f, Vector3.up) * transform.forward * 50f);
         Gizmos.DrawRay(sensorPosition.position, Quaternion.AngleAxis(visionAngle * 0.5f, Vector3.up) * transform.forward * 50f);
     }
+    #endif
 }

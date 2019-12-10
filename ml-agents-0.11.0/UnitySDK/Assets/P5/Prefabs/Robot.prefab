@@ -4232,8 +4232,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 530033d3e6be1194984dce0f77c3bc13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  arm: {fileID: 2312370750822274003}
-  shovel: {fileID: 2405924958219048433}
+  shovel: {fileID: 2312370750822274003}
   rotationSpeed: 100
 --- !u!114 &8974189952733590803
 MonoBehaviour:

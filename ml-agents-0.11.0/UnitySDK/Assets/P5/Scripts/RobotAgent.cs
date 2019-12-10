@@ -149,8 +149,8 @@ public class RobotAgent : Agent
         AddVectorObs(localVelocity.y);
         AddVectorObs(localVelocity.z);
         
-        // Arm and shovel position (6, 7)
-        AddVectorObs(shovel.GetArmPos());
+        // Shovel position (6, 7) TODO: remove one of these
+        AddVectorObs(shovel.GetShovelPos());
         AddVectorObs(shovel.GetShovelPos());
 
         // Drop-Zone Position and radius (8, 9, 10)
@@ -311,8 +311,7 @@ public class RobotAgent : Agent
         wheels.SetTorque(vectorAction[0]);
         wheels.SetAngle(vectorAction[1]);
         
-        shovel.RotateArm(vectorAction[2]);
-        shovel.RotateShovel(vectorAction[3]);
+        shovel.RotateShovel(vectorAction[2]);
         
         // Store current action vector state for visualization
         actionVector = vectorAction;
@@ -582,7 +581,6 @@ public class RobotAgent : Agent
         heuristicValues[1] = Input.GetAxis("Horizontal");
 
         heuristicValues[2] = (Input.GetKey(KeyCode.Q)) ? 1f : (Input.GetKey(KeyCode.E)) ? -1f : 0f;
-        heuristicValues[3] = (Input.GetKey(KeyCode.Z)) ? 1f : (Input.GetKey(KeyCode.X)) ? -1f : 0f;
 
         return heuristicValues;
     }

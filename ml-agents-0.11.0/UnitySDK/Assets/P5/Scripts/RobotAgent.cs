@@ -194,7 +194,7 @@ public class RobotAgent : Agent
     }
     
     //Check if robot is getting closer to debris, Returns boolean (61 -> 66)
-    Void ObsGettingCloserToDebris()
+    void ObsGettingCloserToDebris()
     {
         foreach (var debrisInfo in debrisInfos)
         {
@@ -210,7 +210,7 @@ public class RobotAgent : Agent
     }
     
     //Check if robot has picked up debris, Returns boolean (67)
-    Void ObsRobotPickedUpDebris()
+    void ObsRobotPickedUpDebris()
     {
         List<bool> debrisInShovelList = this.debrisInShovel.GetDebrisInArea();
         bool debrisInShovel = false;
@@ -289,7 +289,7 @@ public class RobotAgent : Agent
     }
     
     // If there are fewer than 6 debris, pad out the observations
-    Void ObsPadOutInfinity(int observationAmount)
+    void ObsPadOutInfinity(int observationAmount)
     {
         for (int i = 0; i < debrisCount - debrisInfos.Count; i++)
         {

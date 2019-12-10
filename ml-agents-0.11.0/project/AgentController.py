@@ -1,4 +1,5 @@
 import numpy as np
+import RobotObservations as observation
 from mlagents.envs.environment import UnityEnvironment
 
 
@@ -8,6 +9,7 @@ class Agent:
         self.env = None
         self.env_info = None
         self.default_brain = None
+
 
         # Setup connection
         self.setup_connection_with_unity()
@@ -49,6 +51,8 @@ class Agent:
         self.velocity_z = None
         self.sensors_front = None
         self.sensors_behind = None
+        # Observation list class(IntEnum)
+        self.obs = observation.RobotObservations
 
     # Setup connection between Unity and Python
     def setup_connection_with_unity(self):
@@ -65,9 +69,9 @@ class Agent:
     def update_observations(self):
         self.observations = self.env_info[self.default_brain].vector_observations[0]
 
-        self.velocity_z = self.observations[5]
-        self.sensors_front = [self.observations[11], self.observations[12], self.observations[40]]
-        self.sensors_behind = [-self.observations[26], -self.observations[25], -self.observations[27]]
+        self.velocity_z = self.observations[self.obs.robot_velocity_z]
+        self.sensors_front = [self.observations[self.obs.sensor_measurement_1], self.observations[self.obs.sensor_measurement_2], self.observations[self.obs.sensor_measurement_30]]
+        self.sensors_behind = [-self.observations[self.obs.sensor_measurement_16], -self.observations[self.obs.sensor_measurement_15], -self.observations[self.obs.sensor_measurement_17]]
 
     # Action functions
     def perform_action(self, throttle, angle, arm_rotation, shovel_rotation):

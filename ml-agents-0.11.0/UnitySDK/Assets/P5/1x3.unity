@@ -1382,35 +1382,5 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3618636210620047418, guid: 98ec33d517d8dc445bceca17c5c3d1ea,
-        type: 3}
-      propertyPath: m_text
-      value: "Rewards:\nstep: \nepisode:\ntotal:\n\nhighest:\nlowest:"
-      objectReference: {fileID: 0}
-    - target: {fileID: 3618636210620047418, guid: 98ec33d517d8dc445bceca17c5c3d1ea,
-        type: 3}
-      propertyPath: m_textInfo.characterCount
-      value: 49
-      objectReference: {fileID: 0}
-    - target: {fileID: 3618636210620047418, guid: 98ec33d517d8dc445bceca17c5c3d1ea,
-        type: 3}
-      propertyPath: m_textInfo.spaceCount
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 3618636210620047418, guid: 98ec33d517d8dc445bceca17c5c3d1ea,
-        type: 3}
-      propertyPath: m_textInfo.lineCount
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 3618636210620047418, guid: 98ec33d517d8dc445bceca17c5c3d1ea,
-        type: 3}
-      propertyPath: m_textInfo.wordCount
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 3618636210620047418, guid: 98ec33d517d8dc445bceca17c5c3d1ea,
-        type: 3}
-      propertyPath: m_firstOverflowCharacterIndex
-      value: 42
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 98ec33d517d8dc445bceca17c5c3d1ea, type: 3}

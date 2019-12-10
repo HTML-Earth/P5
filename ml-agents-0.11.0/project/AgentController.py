@@ -304,7 +304,8 @@ class Agent:
             else:
                 return int(total_rotation) * transform_value
 
-    def pointed_towards_debris (self, state, action):  # TODO kig på 68
+    # Pointing / Turning towards debris base on angle
+    def pointed_towards_debris (self, state, action):
         action_list = list(action)
         pointing = 0
 

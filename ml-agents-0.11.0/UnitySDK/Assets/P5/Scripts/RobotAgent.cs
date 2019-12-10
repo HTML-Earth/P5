@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using MLAgents;
 using UnityEditor;
 using UnityEngine;
@@ -28,6 +29,8 @@ public class RobotAgent : Agent
     
     List<bool> currentDebrisInFront = new List<bool>() {false, false, false, false, false, false};
     List<bool> previousDebrisInFront = new List<bool>() {false, false, false, false, false, false};
+
+    private List<bool> lastTenAttempts = new List<bool>();
 
     Vector3 startPosition;
     Quaternion startRotation;
@@ -344,7 +347,9 @@ public class RobotAgent : Agent
         if (timeElapsed > timeLimit)
         {
             timeElapsed = 0;
+            lastTenAttempts.Add(false);
             Done("Time limit reached");
+            
         }
         
     }
@@ -512,6 +517,7 @@ public class RobotAgent : Agent
         if (Vector3.Dot(transform.up, Vector3.up) < 0.1f)
         {
             AddReward(penalty_robot_fall, "Robot fell", transform.position);
+            lastTenAttempts.Add(false);
             Done("robot has fallen (probably)");
         }
         
@@ -529,6 +535,8 @@ public class RobotAgent : Agent
         {
             AddReward(reward_allDebrisEnteredZone, "all debris in zone", dropZone.transform.position);
             Done("goal reached (all debris in zone)");
+            
+            lastTenAttempts.Add(true);
         }
     }
 
@@ -545,8 +553,15 @@ public class RobotAgent : Agent
     {
         Debug.Log("Done! reason: " + reason);
         Done();
-        
+
+        if (lastTenAttempts.Count >= 10)
+        {
+            lastTenAttempts.RemoveAt(0);
+        }
+            
+            
         academy.ResetDebrisInZone();
+        
 
         // Reset shovel content on restart
         currentDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
@@ -595,6 +610,11 @@ public class RobotAgent : Agent
     public float[] GetActionVector()
     {
         return actionVector;
+    }
+
+    public List<bool> GetLastTenAttemptsList()
+    {
+        return lastTenAttempts;
     }
 
     // Used to draw debug info on screen

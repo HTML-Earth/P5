@@ -270,11 +270,10 @@ public class RobotAgent : Agent
         }
         AddVectorObs(pointingTowardDebris);
 
-        // Check if robot is getting closer to the zone (76)
-        Vector3 distanceToDropzone = dropZonePosition - rb.position;
-        Vector3 pointingTowardDropzone = transform.forward;
-        float AngleToDropzone = Vector3.Angle(distanceToDropzone, pointingTowardDropzone);
-        AddVectorObs(AngleToDropzone);
+        // Check if robot is facing the zone (76)
+        Vector3 robotToDropZone = dropZonePosition - rb.position;
+        float angleToDropzone = Vector3.Angle(robotToDropZone, transform.forward);
+        AddVectorObs(angleToDropzone);
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)

@@ -38,6 +38,7 @@ public class RobotAgent : Agent
     readonly float timeLimit = 90f;
     
     float timeElapsed;
+    int timesWon = 0;
 
     // Positive rewards
     float reward_debrisCameInfront = 0.08f;
@@ -558,6 +559,7 @@ public class RobotAgent : Agent
             Done("goal reached (all debris in zone)");
             
             lastTenAttempts.Add(true);
+            timesWon++;
         }
     }
 
@@ -637,7 +639,12 @@ public class RobotAgent : Agent
         return lastTenAttempts;
     }
 
-    #if UNITY_EDITOR
+    public int getTimesWon()
+    {
+        return timesWon;
+    }
+
+#if UNITY_EDITOR
     // Used to draw debug info on screen
     void OnDrawGizmos()
     {

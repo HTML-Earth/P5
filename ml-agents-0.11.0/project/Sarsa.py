@@ -39,7 +39,7 @@ class SarsaLFA:
         actions = self.agent.actions
 
         if random.random() < self.epsilon:
-            action = (random.randint(-1, 1), random.randint(-1, 1), random.randint(-1, 1), random.randint(-1, 1))
+            action = (random.randint(-1, 1), random.randint(-1, 1), random.randint(-1, 1), 0)
         else:
             q = [self.get_q_value(state, a) for a in actions]
             max_q = max(q)
@@ -62,7 +62,7 @@ class SarsaLFA:
         y_delta = []
         y_reward = []
 
-        while self.episode <= 50:
+        while self.episode <= 75:
             self.agent.perform_action(*action)
 
             new_state = self.agent.get_state()

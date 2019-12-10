@@ -25,6 +25,9 @@ public class RobotAgent : Agent
     
     List<bool> currentDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
     List<bool> previousDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
+    
+    List<bool> currentDebrisInFront = new List<bool>() {false, false, false, false, false, false};
+    List<bool> previousDebrisInFront = new List<bool>() {false, false, false, false, false, false};
 
     Vector3 startPosition;
     Quaternion startRotation;
@@ -34,6 +37,7 @@ public class RobotAgent : Agent
     float timeElapsed;
 
     // Positive rewards
+    float reward_debrisCameInfront = 0.08f;
     float reward_debrisEnteredShovel = 0.2f;
     float reward_debrisEnteredZone = 0.4f;
     float reward_allDebrisEnteredZone = 1f;
@@ -43,6 +47,7 @@ public class RobotAgent : Agent
     float reward_moveTowardsZoneWithDebris = 0.2f;
     
     // Negative rewards
+    float penalty_debrisLeftInfront = -0.16f;
     float penalty_debrisLeftShovel = -0.4f;
     float penalty_debrisLeftZone = -1f;
     float penalty_moveAwayFromZoneWithDebris = -0.2f;
@@ -317,6 +322,7 @@ public class RobotAgent : Agent
 
         // Give rewards or penalties
         RewardDebrisInShovel();
+        RewardDebrisCameInfront();
         RewardDebrisInOutZone();
         RewardMoveTowardsDebris();
         RewardMoveTowardsZoneWithDebris();
@@ -475,6 +481,27 @@ public class RobotAgent : Agent
         {
             wallRammingPenalties.Dequeue();
             AddReward(penalty_robotRammingWall,"robot ramming wall", transform.position);
+        }
+    }
+    
+    // AddReward if debris infront
+    void RewardDebrisCameInfront()
+    {
+        currentDebrisInFront = debrisInfront.GetDebrisInArea();
+        
+        for (int i = 0; i < currentDebrisInFront.Count; i++)
+        {
+            if (currentDebrisInFront[i] && !previousDebrisInFront[i])
+            {
+                AddReward(reward_debrisCameInfront, "debris came infront", debrisInfos[i].transform.position);
+                previousDebrisInFront[i] = true;
+            }
+            
+            if (previousDebrisInFront[i] && !currentDebrisInFront[i] && !dropZone.IsInZone(debrisInfos[i].transform.position))
+            {
+                AddReward(penalty_debrisLeftInfront, "debris left infront", debrisInfos[i].transform.position);
+                previousDebrisInFront[i] = false;
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using MLAgents;
 using UnityEditor;
 using UnityEngine;
@@ -28,6 +29,8 @@ public class RobotAgent : Agent
     
     List<bool> currentDebrisInFront = new List<bool>() {false, false, false, false, false, false};
     List<bool> previousDebrisInFront = new List<bool>() {false, false, false, false, false, false};
+
+    private List<bool> lastTenAttempts = new List<bool>();
 
     Vector3 startPosition;
     Quaternion startRotation;
@@ -198,13 +201,21 @@ public class RobotAgent : Agent
         AddVectorObs(angleToDropzone);
     }
     
-    //Check if robot is getting closer to debris, Returns boolean (61 -> 66)
+    // *Old: Check if robot is getting closer to debris, Returns boolean (61 -> 66)
+    // *New: Distance between robot and each debris with a total of 6, returns floats (61 -> 66)
     void ObsGettingCloserToDebris()
     {
         foreach (var debrisInfo in debrisInfos)
         {
-            bool gettingCloserToDebris = debrisInfo.distanceFromRobot < debrisInfo.lastDistanceFromRobot;
-            AddVectorObs(gettingCloserToDebris);
+            //bool gettingCloserToDebris = debrisInfo.distanceFromRobot < debrisInfo.lastDistanceFromRobot;
+            //AddVectorObs(gettingCloserToDebris);
+            
+            Vector3 rbNewPosition = rb.position + rb.velocity; //robot current position + velocity
+            
+            float distanceToDebris = Vector3.Distance(debrisInfo.lastKnownPosition, rbNewPosition);
+            
+            
+            AddVectorObs(distanceToDebris);
         }
 
         // If there are fewer than 6 debris, pad out the observations
@@ -304,6 +315,20 @@ public class RobotAgent : Agent
             }
         }
     }
+    
+    // distance from each debris to dropzone (total of 6) (77 -> 82)
+    void debrisToDropzone()
+    {
+        List<RobotVision.DebrisInfo> debrisList = debrisInfos;
+        
+        foreach (var debris in debrisList)
+        {
+            Vector3 dropZonePosition = dropZone.transform.position;
+            Vector3 debrisDistanceToDropzone = debris.lastKnownPosition - dropZonePosition;
+            
+            AddVectorObs(debrisDistanceToDropzone);
+        }
+    }
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
@@ -343,7 +368,9 @@ public class RobotAgent : Agent
         if (timeElapsed > timeLimit)
         {
             timeElapsed = 0;
+            lastTenAttempts.Add(false);
             Done("Time limit reached");
+            
         }
         
     }
@@ -511,6 +538,7 @@ public class RobotAgent : Agent
         if (Vector3.Dot(transform.up, Vector3.up) < 0.1f)
         {
             AddReward(penalty_robot_fall, "Robot fell", transform.position);
+            lastTenAttempts.Add(false);
             Done("robot has fallen (probably)");
         }
         
@@ -528,6 +556,8 @@ public class RobotAgent : Agent
         {
             AddReward(reward_allDebrisEnteredZone, "all debris in zone", dropZone.transform.position);
             Done("goal reached (all debris in zone)");
+            
+            lastTenAttempts.Add(true);
         }
     }
 
@@ -544,8 +574,15 @@ public class RobotAgent : Agent
     {
         Debug.Log("Done! reason: " + reason);
         Done();
-        
+
+        if (lastTenAttempts.Count >= 10)
+        {
+            lastTenAttempts.RemoveAt(0);
+        }
+            
+            
         academy.ResetDebrisInZone();
+        
 
         // Reset shovel content on restart
         currentDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
@@ -593,6 +630,11 @@ public class RobotAgent : Agent
     public float[] GetActionVector()
     {
         return actionVector;
+    }
+
+    public List<bool> GetLastTenAttemptsList()
+    {
+        return lastTenAttempts;
     }
 
     #if UNITY_EDITOR

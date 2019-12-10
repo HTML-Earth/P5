@@ -570,6 +570,7 @@ public class RobotAgent : Agent
         return actionVector;
     }
 
+    #if UNITY_EDITOR
     // Used to draw debug info on screen
     void OnDrawGizmos()
     {
@@ -586,4 +587,5 @@ public class RobotAgent : Agent
         Handles.color = Color.red;
         Handles.DrawLine(transform.position, transform.position + rb.velocity);
     }
+    #endif
 }

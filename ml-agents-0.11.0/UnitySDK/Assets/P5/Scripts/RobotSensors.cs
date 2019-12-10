@@ -54,6 +54,7 @@ public class RobotSensors : MonoBehaviour
         }
     }
 
+    #if UNITY_EDITOR
     void OnDrawGizmos()
     {
         if (!EditorApplication.isPlaying)
@@ -69,6 +70,7 @@ public class RobotSensors : MonoBehaviour
             Gizmos.DrawRay(sensorPosition.position, sensorDirections[i].normalized * measuredDistances[i]);
         }
     }
+    #endif
 
     void UpdateDistances()
     {

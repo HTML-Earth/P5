@@ -13,11 +13,10 @@ class Agent:
         self.setup_connection_with_unity()
 
         # Algorithm
-        self.actions = [(i, j, k, l)
+        self.actions = [(i, j, k, 0)
                         for i in range(-1, 2)
                         for j in range(-1, 2)
-                        for k in range(-1, 2)
-                        for l in range(-1, 2)]
+                        for k in range(-1, 2)]
 
         self.throttle_constant = 1.1
         self.reverse_constant = 0.9

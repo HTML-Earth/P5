@@ -18,6 +18,8 @@ public class DisplayRewards : MonoBehaviour
     Color penaltyColor = new Color(1, 0, 0, 0.5f);
     public float highestReward = 0;
     public float lowestReward = 0;
+    public float totalHighestReward = 0;
+    public float totalLowestReward = 0;
 
     // Start is called before the first frame update
     void Awake()
@@ -33,6 +35,8 @@ public class DisplayRewards : MonoBehaviour
     {
         if (highestReward < robotAgent.GetCumulativeReward()) { highestReward = robotAgent.GetCumulativeReward(); }
         if (lowestReward > robotAgent.GetCumulativeReward()) { lowestReward = robotAgent.GetCumulativeReward(); }
+        if (totalHighestReward < robotAgent.GetTotalReward()) { totalHighestReward = robotAgent.GetTotalReward(); }
+        if (totalLowestReward > robotAgent.GetTotalReward()) { totalLowestReward = robotAgent.GetTotalReward(); }
 
         text.text = "Rewards:\n"
                     + robotAgent.GetReward().ToString("0.000")
@@ -43,9 +47,13 @@ public class DisplayRewards : MonoBehaviour
                     + " (total)\n"
                     + "\n"
                     + highestReward.ToString("0.00")
-                    + " (highest)\n"
+                    + " (highest) \t"
+                    + totalHighestReward.ToString("0.00")
+                    + " (total highest) \n"
                     + lowestReward.ToString("0.00")
-                    + " (lowest)\n";
+                    + " (lowest) \t"
+                    + totalLowestReward.ToString("0.00")
+                    + " (total lowest) \n";
 
     }
 

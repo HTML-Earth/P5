@@ -9,9 +9,6 @@ class Agent:
         self.env_info = None
         self.default_brain = None
 
-        # Setup connection
-        self.setup_connection_with_unity()
-
         # Algorithm
         self.actions = [(i, j, k, 0)
                         for i in range(-1, 2)
@@ -51,9 +48,9 @@ class Agent:
         self.sensors_behind = None
 
     # Setup connection between Unity and Python
-    def setup_connection_with_unity(self):
+    def setup_connection_with_unity(self, build_scene):
         # Connect to Unity and get environment
-        self.env = UnityEnvironment(file_name=None, worker_id=0, seed=3)
+        self.env = UnityEnvironment(file_name=build_scene, worker_id=0, seed=3)
 
         # Reset the environment
         self.env_info = self.env.reset(train_mode=True)

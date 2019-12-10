@@ -170,25 +170,33 @@ public class RobotAgent : Agent
             AddVectorObs(debrisInfo.lastKnownPosition.y);
             AddVectorObs(debrisInfo.lastKnownPosition.z);
         }
-
-        // If there are fewer than 6 debris, pad out the observations
-        for (int i = 0; i < debrisCount - debrisInfos.Count; i++)
-        {
-            AddVectorObs(Mathf.Infinity);
-            AddVectorObs(Mathf.Infinity);
-            AddVectorObs(Mathf.Infinity);
-        }
+        ObsPadOutInfinity(3);
 
         // Simulation time (59)
         AddVectorObs(timeElapsed);
 
         // features:
 
-        //Check if robot is within dropZone (60)
+        //Check if robot is within dropZone, Returns boolean (60)
         bool isInDropZone = dropZone.IsInZone(transform.position);
         AddVectorObs(isInDropZone);
 
-        //Check if robot is getting closer to debris (61 -> 66)
+        ObsGettingCloserToDebris();
+        ObsRobotPickedUpDebris();
+        ObsAngleToDebris();
+        ObsDebrisInFront();
+        ObsPointedAtDebris();
+
+        // Check if robot is getting closer to the zone, Returns float (76)
+        Vector3 distanceToDropzone = dropZonePosition - rb.position;
+        Vector3 pointingTowardDropzone = transform.forward;
+        float AngleToDropzone = Vector3.Angle(distanceToDropzone, pointingTowardDropzone);
+        AddVectorObs(AngleToDropzone);
+    }
+    
+    //Check if robot is getting closer to debris, Returns boolean (61 -> 66)
+    Void ObsGettingCloserToDebris()
+    {
         foreach (var debrisInfo in debrisInfos)
         {
             bool gettingCloserToDebris = debrisInfo.distanceFromRobot < debrisInfo.lastDistanceFromRobot;
@@ -200,8 +208,11 @@ public class RobotAgent : Agent
         {
             AddVectorObs(false);
         }
-
-        //Check if robot has picked up debris (67)
+    }
+    
+    //Check if robot has picked up debris, Returns boolean (67)
+    Void ObsRobotPickedUpDebris()
+    {
         List<bool> debrisInShovelList = this.debrisInShovel.GetDebrisInArea();
         bool debrisInShovel = false;
         foreach (var value in debrisInShovelList)
@@ -213,8 +224,11 @@ public class RobotAgent : Agent
         }
 
         AddVectorObs(debrisInShovel);
-        
-        // Angle between (Robot forward) and (vector between robot and debris) (68 -> 73)
+    }
+    
+    // Angle between (Robot forward) and (vector between robot and debris), Returns float (68 -> 73)
+    void ObsAngleToDebris()
+    {
         var robotPosition = transform.position;
         var forward = transform.forward;
         // Vec2 pointing straight from robot
@@ -229,13 +243,12 @@ public class RobotAgent : Agent
             float angleToDebris = Vector2.SignedAngle(vec2RobotToDebris, vec2TransformForward);
             AddVectorObs(angleToDebris);
         }
-        // If there are fewer than 6 debris, pad out the observations
-        for (int i = 0; i < debrisCount - debrisInfos.Count; i++)
-        {
-            AddVectorObs(Mathf.Infinity);
-        }
-        
-        //Check if debris infront of shovel (74)
+        ObsPadOutInfinity(1);
+    }
+    
+    //Check if debris infront of shovel, Returns boolean (74)
+    void ObsDebrisInFront()
+    {
         List<bool> debrisInfrontList = this.debrisInfront.GetDebrisInArea();
         bool debrisIsInfront = false;
         foreach (var value in debrisInfrontList)
@@ -245,17 +258,22 @@ public class RobotAgent : Agent
                 debrisIsInfront = true;
             }
         }
-
         AddVectorObs(debrisIsInfront);
-        
-        // Check if robot is pointed towards a debris (75) //TODO Does not take walls into account
+    }
+
+    // Check if robot is pointed towards a debris (75), Returns boolean //TODO Does not take walls into account
+    void ObsPointedAtDebris()
+    {
         int counter = 0;
         bool pointingTowardDebris = false;
+        List<bool> debrisInShovelList = this.debrisInShovel.GetDebrisInArea();
+        var robotPosition = transform.position;
         Vector2 vecForward = new Vector2(transform.forward.x, transform.forward.z);
+
         foreach (var debris in debrisInfos)
         {
-            Vector2 vecRobotToDebris2 = new Vector2(debris.transform.position.x - transform.position.x,
-                debris.transform.position.z - transform.position.z);
+            Vector2 vecRobotToDebris2 = new Vector2(debris.transform.position.x - robotPosition.x,
+                debris.transform.position.z - robotPosition.z);
 
             // Check it is not in dropzone
             if (!dropZone.IsInZone(debris.transform.position) && !debrisInShovelList[counter])
@@ -269,12 +287,18 @@ public class RobotAgent : Agent
             counter++;
         }
         AddVectorObs(pointingTowardDebris);
-
-        // Check if robot is getting closer to the zone (76)
-        Vector3 distanceToDropzone = dropZonePosition - rb.position;
-        Vector3 pointingTowardDropzone = transform.forward;
-        float AngleToDropzone = Vector3.Angle(distanceToDropzone, pointingTowardDropzone);
-        AddVectorObs(AngleToDropzone);
+    }
+    
+    // If there are fewer than 6 debris, pad out the observations
+    Void ObsPadOutInfinity(int observationAmount)
+    {
+        for (int i = 0; i < debrisCount - debrisInfos.Count; i++)
+        {
+            for (int j = 0; j < observationAmount; j++)
+            {
+                AddVectorObs(Mathf.Infinity);
+            }
+        }
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)

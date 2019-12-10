@@ -16,6 +16,8 @@ public class DisplayRewards : MonoBehaviour
     
     Color rewardColor = new Color(0, 1, 1, 0.5f);
     Color penaltyColor = new Color(1, 0, 0, 0.5f);
+    public float highestReward = 0;
+    public float lowestReward = 0;
 
     // Start is called before the first frame update
     void Awake()
@@ -29,13 +31,22 @@ public class DisplayRewards : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        if (highestReward < robotAgent.GetCumulativeReward()) { highestReward = robotAgent.GetCumulativeReward(); }
+        if (lowestReward > robotAgent.GetCumulativeReward()) { lowestReward = robotAgent.GetCumulativeReward(); }
+
         text.text = "Rewards:\n"
                     + robotAgent.GetReward().ToString("0.000")
                     + " (step)\n"
                     + robotAgent.GetCumulativeReward().ToString("0.00")
                     + " (episode)\n"
                     + robotAgent.GetTotalReward().ToString("0.00")
-                    + " (total)";
+                    + " (total)\n"
+                    + "\n"
+                    + highestReward.ToString("0.00")
+                    + " (highest)\n"
+                    + lowestReward.ToString("0.00")
+                    + " (lowest)\n";
+
     }
 
     public void DisplayReward(float rewardValue, string rewardString, Vector3 position)

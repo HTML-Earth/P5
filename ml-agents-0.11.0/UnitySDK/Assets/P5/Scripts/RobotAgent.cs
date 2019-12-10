@@ -186,11 +186,11 @@ public class RobotAgent : Agent
         bool isInDropZone = dropZone.IsInZone(transform.position);
         AddVectorObs(isInDropZone);
 
-        ObsGettingCloserToDebris();
-        ObsRobotPickedUpDebris();
-        ObsAngleToDebris();
-        ObsDebrisInFront();
-        ObsPointedAtDebris();
+        ObsGettingCloserToDebris();   // Index 61 -> 66
+        ObsRobotPickedUpDebris();     // Index 67
+        ObsAngleToDebris();           // Index 68 -> 73
+        ObsDebrisInFront();           // Index 74
+        ObsPointedAtDebris();         // Index 75
 
         // Check if robot is facing the zone (76)
         Vector3 robotToDropZone = dropZonePosition - rb.position;

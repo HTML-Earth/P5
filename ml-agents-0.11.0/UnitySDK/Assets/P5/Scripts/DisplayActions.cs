@@ -4,19 +4,77 @@ using System.Collections.Generic;
 using System.Text;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DisplayActions : MonoBehaviour
 {
     TextMeshProUGUI text;
     RobotAgent robotAgent;
 
+    Image up;
+    Image down;
+    Image left;
+    Image right;
+    
+    Image armUp;
+    Image armDown;
+    
+    Image shovelUp;
+    Image shovelDown;
+
+    Color opaque = Color.white;
+    Color transparent = new Color(1,1,1,0.5f);
+
+    public bool useTextInsteadOfGraphics;
+
     void Awake()
     {
-        text = GetComponent<TextMeshProUGUI>();
+        if (useTextInsteadOfGraphics)
+            text = GetComponent<TextMeshProUGUI>();
+        else
+        {
+            up = transform.Find("up").GetComponent<Image>();
+            down = transform.Find("down").GetComponent<Image>();
+            left = transform.Find("left").GetComponent<Image>();
+            right = transform.Find("right").GetComponent<Image>();
+            
+            armUp = transform.Find("arm_up").GetComponent<Image>();
+            armDown = transform.Find("arm_down").GetComponent<Image>();
+            
+            shovelUp = transform.Find("shovel_up").GetComponent<Image>();
+            shovelDown = transform.Find("shovel_down").GetComponent<Image>();
+        }
         robotAgent = FindObjectOfType<RobotAgent>();
     }
 
     void FixedUpdate()
+    {
+        if (useTextInsteadOfGraphics)
+            DisplayActionsText();
+        else
+            DisplayActionsGraphical();
+    }
+
+    void DisplayActionsGraphical()
+    {
+        float[] actions = robotAgent.GetActionVector();
+
+        if (actions != null)
+        {
+            up.color    = (actions[0] > 0.9)  ? opaque : transparent;
+            down.color  = (actions[0] < -0.9) ? opaque : transparent;
+            left.color  = (actions[1] < -0.9) ? opaque : transparent;
+            right.color = (actions[1] > 0.9)  ? opaque : transparent;
+            
+            armUp.color   = (actions[2] < -0.9)  ? opaque : transparent;
+            armDown.color = (actions[2] > 0.9) ? opaque : transparent;
+            
+            shovelUp.color   = (actions[3] < -0.9)  ? opaque : transparent;
+            shovelDown.color = (actions[3] > 0.9) ? opaque : transparent;
+        }
+    }
+    
+    void DisplayActionsText()
     {
         float[] actions = robotAgent.GetActionVector();
 

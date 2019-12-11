@@ -192,31 +192,31 @@ class Agent:
         # each relevant action is used to predict
         if action_list[0] == 1:
             if action_list[1] == 1:
-                if self.observations[observation_index] > distance:
-                    distance = self.observations[observation_index]
+                if self.get_obs(observation_index) > distance:
+                    distance = self.get_obs(observation_index)
             elif action_list[1] == 0:
-                if self.observations[observation_index] > distance:
-                    distance = self.observations[observation_index]
+                if self.get_obs(observation_index) > distance:
+                    distance = self.get_obs(observation_index)
             elif action_list[1] == -1:
-                if self.observations[observation_index] > distance:
-                    distance = self.observations[observation_index]
+                if self.get_obs(observation_index) > distance:
+                    distance = self.get_obs(observation_index)
 
         if action_list[0] == -1:
             if action_list[1] == 1:
-                if self.observations[observation_index] > distance:
-                    distance = self.observations[observation_index]
+                if self.get_obs(observation_index) > distance:
+                    distance = self.get_obs(observation_index)
             elif action_list[1] == 0:
-                if self.observations[observation_index] > distance:
-                    distance = self.observations[observation_index]
+                if self.get_obs(observation_index) > distance:
+                    distance = self.get_obs(observation_index)
             elif action_list[1] == -1:
-                if self.observations[observation_index] > distance:
-                    distance = self.observations[observation_index]
+                if self.get_obs(observation_index) > distance:
+                    distance = self.get_obs(observation_index)
 
         if action_list[0] == 0:
             if action_list[1] == 0:
                 if self.velocity_z > 0:
-                    if self.observations[observation_index] > distance:
-                        distance = self.observations[observation_index]
+                    if self.get_obs(observation_index) > distance:
+                        distance = self.get_obs(observation_index)
 
         return distance
 
@@ -344,36 +344,36 @@ class Agent:
 
         if action_list[0] == 1:
             if action_list[1] == 1:
-                if self.observations[observation_index] is 1:
-                    closer_to_dropzone = self.observations[observation_index]
+                if self.get_obs(observation_index) is 1:
+                    closer_to_dropzone = self.get_obs(observation_index)
             elif action_list[1] == 0:
-                if self.observations[observation_index] is 1:
-                    closer_to_dropzone = self.observations[observation_index]
+                if self.get_obs(observation_index) is 1:
+                    closer_to_dropzone = self.get_obs(observation_index)
             elif action_list[1] == -1:
-                if self.observations[observation_index] is 1:
-                    closer_to_dropzone = self.observations[observation_index]
+                if self.get_obs(observation_index) is 1:
+                    closer_to_dropzone = self.get_obs(observation_index)
 
         if action_list[0] == 0:
             if action_list[1] == 1:
-                if self.observations[observation_index] is 1:
-                    closer_to_dropzone = self.observations[observation_index]
+                if self.get_obs(observation_index) is 1:
+                    closer_to_dropzone = self.get_obs(observation_index)
             elif action_list[1] == 0:
-                if self.observations[observation_index] is 1:
-                    closer_to_dropzone = self.observations[observation_index]
+                if self.get_obs(observation_index) is 1:
+                    closer_to_dropzone = self.get_obs(observation_index)
             elif action_list[1] == -1:
-                if self.observations[observation_index] is 1:
-                    closer_to_dropzone = self.observations[observation_index]
+                if self.get_obs(observation_index) is 1:
+                    closer_to_dropzone = self.get_obs(observation_index)
 
         if action_list[0] == -1:
             if action_list[1] == 1:
-                if self.observations[observation_index] is 1:
-                    closer_to_dropzone = self.observations[observation_index]
+                if self.get_obs(observation_index) is 1:
+                    closer_to_dropzone = self.get_obs(observation_index)
             elif action_list[1] == 0:
-                if self.observations[observation_index] is 1:
-                    closer_to_dropzone = self.observations[observation_index]
+                if self.get_obs(observation_index) is 1:
+                    closer_to_dropzone = self.get_obs(observation_index)
             elif action_list[1] == -1:
-                if self.observations[observation_index] is 1:
-                    closer_to_dropzone = self.observations[observation_index]
+                if self.get_obs(observation_index) is 1:
+                    closer_to_dropzone = self.get_obs(observation_index)
 
         return closer_to_dropzone
 

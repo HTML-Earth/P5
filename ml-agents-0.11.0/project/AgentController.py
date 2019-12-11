@@ -65,9 +65,12 @@ class Agent:
     def update_observations(self):
         self.observations = self.env_info[self.default_brain].vector_observations[0]
 
-        self.velocity_z = self.observations[self.obs.robot_velocity_z]
-        self.sensors_front = [self.observations[self.obs.sensor_measurement_1], self.observations[self.obs.sensor_measurement_2], self.observations[self.obs.sensor_measurement_30]]
-        self.sensors_behind = [-self.observations[self.obs.sensor_measurement_16], -self.observations[self.obs.sensor_measurement_15], -self.observations[self.obs.sensor_measurement_17]]
+        self.velocity_z = self.get_obs(self.obs.robot_velocity_z)
+        self.sensors_front = [self.get_obs(self.obs.sensor_measurement_1), self.get_obs(self.obs.sensor_measurement_2), self.get_obs(self.obs.sensor_measurement_30)]
+        self.sensors_behind = [-self.get_obs(self.obs.sensor_measurement_16), -self.get_obs(self.obs.sensor_measurement_15), -self.get_obs(self.obs.sensor_measurement_17)]
+
+    def get_obs(self, index):
+        return self.observations[index]
 
     # Action functions
     def perform_action(self, throttle, angle, arm_rotation, shovel_rotation):
@@ -96,37 +99,37 @@ class Agent:
         state.append(1) if self.sensors_behind > [self.velocity_z] else state.append(0)
 
         # Robot within dropZone
-        state.append(1) if self.observations[self.obs.robot_in_dropzone] else state.append(0)
+        state.append(1) if self.get_obs(self.obs.robot_in_dropzone) else state.append(0)
 
         # Getting closer to debris 1
-        state.append(1) if self.observations[self.obs.getting_closer_to_debris_1] else state.append(0)
+        state.append(1) if self.get_obs(self.obs.getting_closer_to_debris_1) else state.append(0)
 
         # Ready to pickup debris
-        state.append(1) if self.observations[self.obs.arm_position] == 330 and self.observations[self.obs.shovel_position] == 360 - 47 else state.append(0)
+        state.append(1) if self.get_obs(self.obs.arm_position) == 330 and self.get_obs(self.obs.shovel_position) == 360 - 47 else state.append(0)
 
         # Debris is in shovel
-        state.append(1) if self.observations[self.obs.debris_in_shovel] else state.append(0)
+        state.append(1) if self.get_obs(self.obs.debris_in_shovel) else state.append(0)
 
         # Debris in front of shovel
-        state.append(1) if self.observations[self.obs.debris_in_front] else state.append(0)
+        state.append(1) if self.get_obs(self.obs.debris_in_front) else state.append(0)
 
         # Getting closer to dropzone
-        state.append(1) if 90 < self.observations[self.obs.getting_closer_dropzone] < 270 and self.velocity_z > 0 else state.append(0)
+        state.append(1) if 90 < self.get_obs(self.obs.getting_closer_dropzone) < 270 and self.velocity_z > 0 else state.append(0)
 
         # Velocity
         state.append(round(self.velocity_z, 1))
 
         # Rotation
-        state.append(int(self.observations[2]))
+        state.append(int(self.get_obs(self.obs.robot_rotation)))
 
         # Pointed towards debris
-        state.append(1) if self.observations[self.obs.robot_direction_debris] else state.append(0)
+        state.append(1) if self.get_obs(self.obs.robot_direction_debris) else state.append(0)
 
         # Arm rotation
-        state.append(int(self.observations[self.obs.arm_position]))
+        state.append(int(self.get_obs(self.obs.arm_position)))
 
         # Shovel rotation
-        state.append(int(self.observations[self.obs.shovel_position]))
+        state.append(int(self.get_obs(self.obs.shovel_position)))
 
         return state
 
@@ -160,7 +163,7 @@ class Agent:
         return 1 if self.sensors_behind > [(self.velocity_z + self.robot_length_backwards) * constant] else 0
 
     def robot_within_dropzone(self, state, action):
-        return 1 if self.observations[self.obs.robot_in_dropzone] else 0
+        return 1 if self.get_obs(self.obs.robot_in_dropzone) else 0
 
     # distance between robot and each debris (a total of 6)
     def distance_to_debris_1(self, state, action):
@@ -189,39 +192,39 @@ class Agent:
         # each relevant action is used to predict
         if action_list[0] == 1:
             if action_list[1] == 1:
-                if self.observations[observation_index] > 0:
-                    distance = self.observations[observation_index]
+                if self.get_obs(observation_index) > 0:
+                    distance = self.get_obs(observation_index)
 
         if action_list[0] == 1:
             if action_list[1] == 0:
-                if self.observations[observation_index] > 0:
-                    distance = self.observations[observation_index]
+                if self.get_obs(observation_index) > 0:
+                    distance = self.get_obs(observation_index)
 
         if action_list[0] == 1:
             if action_list[1] == -1:
-                if self.observations[observation_index] > 0:
-                    distance = self.observations[observation_index]
+                if self.get_obs(observation_index) > 0:
+                    distance = self.get_obs(observation_index)
 
         if action_list[0] == -1:
             if action_list[1] == 1:
-                if self.observations[observation_index] > 0:
-                    distance = self.observations[observation_index]
+                if self.get_obs(observation_index) > 0:
+                    distance = self.get_obs(observation_index)
 
         if action_list[0] == -1:
             if action_list[1] == 0:
-                if self.observations[observation_index] > 0:
-                    distance = self.observations[observation_index]
+                if self.get_obs(observation_index) > 0:
+                    distance = self.get_obs(observation_index)
 
         if action_list[0] == -1:
             if action_list[1] == -1:
-                if self.observations[observation_index] > 0:
-                    distance = self.observations[observation_index]
+                if self.get_obs(observation_index) > 0:
+                    distance = self.get_obs(observation_index)
 
         if action_list[0] == 0:
             if action_list[1] == 0:
                 if self.velocity_z > 0:
-                    if self.observations[observation_index] > 0:
-                        distance = self.observations[observation_index]
+                    if self.get_obs(observation_index) > 0:
+                        distance = self.get_obs(observation_index)
 
         return distance
 
@@ -249,7 +252,7 @@ class Agent:
         action_list = list(action)
         # Angle on each side of the robot's forward vector
         angle_range = 45  # TODO: Figure out the exact value
-        direction_debris = -angle_range < self.observations[obs_num] < angle_range
+        direction_debris = -angle_range < self.get_obs(obs_num) < angle_range
 
         getting_closer = 0
 
@@ -258,10 +261,10 @@ class Agent:
         if action_list[0] == 1 and direction_debris:
             getting_closer = 1
         # Turn (left) towards debris
-        elif action_list[1] == 1 and self.observations[obs_num] < -angle_range:
+        elif action_list[1] == 1 and self.get_obs(obs_num) < -angle_range:
             getting_closer = 1
         # Turn (Right) towards debris
-        elif action_list[1] == -1 and self.observations[obs_num] > angle_range:
+        elif action_list[1] == -1 and self.get_obs(obs_num) > angle_range:
             getting_closer = 1
         elif self.velocity_z > 0 and action_list[0] == 0 and action_list[1] == 0 and direction_debris:
             getting_closer = 1
@@ -272,13 +275,13 @@ class Agent:
         action_list = list(action)
 
         # if arm is not down
-        if self.observations[self.obs.arm_position] < 360 - self.robot_arm_rotation_constant:
+        if self.get_obs(self.obs.arm_position) < 360 - self.robot_arm_rotation_constant:
             # if arm is not moving down
             if action_list[2] < 1:
                 return 0
 
         # if shovel is not down
-        if self.observations[self.obs.shovel_position] < 360 - 47 - self.robot_shovel_rotation_constant:
+        if self.get_obs(self.obs.shovel_position) < 360 - 47 - self.robot_shovel_rotation_constant:
             # if shovel is not moving down
             if action_list[3] < 1:
                 return 0
@@ -287,7 +290,7 @@ class Agent:
         return self.debris_in_front_of_shovel(state, action)
 
     def debris_in_shovel(self, state, action):
-        return 1 if self.observations[self.obs.debris_in_shovel] else 0
+        return 1 if self.get_obs(self.obs.debris_in_shovel) else 0
 
     def debris_in_front_of_shovel(self, state, action):
         action_list = list(action)
@@ -296,28 +299,28 @@ class Agent:
             if action_list[1] != 0:
                 return 0
 
-        return 1 if self.observations[self.obs.debris_in_front] else 0
+        return 1 if self.get_obs(self.obs.debris_in_front) else 0
 
     def getting_closer_to_dropzone(self, state, action):
         action_list = list(action)
 
         if action_list[0] == 1:
             if action_list[1] == 0:
-                if 90 < self.observations[self.obs.getting_closer_dropzone] < 270:
+                if 90 < self.get_obs(self.obs.getting_closer_dropzone) < 270:
                     return 1
                 else:
                     return 0
 
         if action_list[0] == -1:
             if action_list[1] == 0:
-                if (90 > self.observations[self.obs.getting_closer_dropzone] > 0) or (270 < self.observations[self.obs.getting_closer_dropzone] < 360):
+                if (90 > self.get_obs(self.obs.getting_closer_dropzone) > 0) or (270 < self.get_obs(self.obs.getting_closer_dropzone) < 360):
                     return 1
                 else:
                     return 0
 
         if action_list[0] == 0:
             if action_list[1] == 0:
-                if 90 < self.observations[self.obs.getting_closer_dropzone] < 270:
+                if 90 < self.get_obs(self.obs.getting_closer_dropzone) < 270:
                     if self.velocity_z > 0:
                         return 1
                     else:
@@ -340,7 +343,7 @@ class Agent:
     # Rotation: 0 to 360
     def rotation(self, state, action):
         action_list = list(action)
-        rotation = self.observations[self.obs.robot_rotation]
+        rotation = self.get_obs(self.obs.robot_rotation)
 
         # Transform rotation into a value between 0 and 1
         transform_value = 1 / 360
@@ -369,12 +372,12 @@ class Agent:
         action_list = list(action)
         pointing = 0
 
-        if not self.observations[self.obs.robot_direction_debris]:
-            if action_list[1] == 1 and self.observations[self.obs.angle_robot_debris_1] < 0:
+        if not self.get_obs(self.obs.robot_direction_debris):
+            if action_list[1] == 1 and self.get_obs(self.obs.angle_robot_debris_1) < 0:
                 pointing = 1
-            elif action_list[1] == -1 and self.observations[self.obs.angle_robot_debris_1] > 0:
+            elif action_list[1] == -1 and self.get_obs(self.obs.angle_robot_debris_1) > 0:
                 pointing = 1
-        elif self.observations[self.obs.robot_direction_debris]:
+        elif self.get_obs(self.obs.robot_direction_debris):
             pointing = 1
 
         return pointing
@@ -382,7 +385,7 @@ class Agent:
     # Arm rotation: 0 to 89
     def arm_rotation(self, state, action):
         action_list = list(action)
-        arm_rotation = self.observations[self.obs.arm_position]
+        arm_rotation = self.get_obs(self.obs.arm_position)
 
         # Transform rotation into a value between 0 and 1
         transform_value = 1 / 360
@@ -403,7 +406,7 @@ class Agent:
     # Shovel rotation: 0 to 70
     def shovel_rotation(self, state, action):
         action_list = list(action)
-        shovel_rotation = self.observations[self.obs.shovel_position]
+        shovel_rotation = self.get_obs(self.obs.shovel_position)
 
         # Transform rotation into a value between 0 and 1
         transform_value = 1 / 360

@@ -17,11 +17,12 @@ public class SuccessRate : MonoBehaviour
 
     // Update is called once per frame
     void Update()
+    //Shows the success rate of the last 100 attempts
     {
-        List<bool> lastTenAttempts = robotAgent.GetLastTenAttemptsList();
+        List<bool> lastHundredAttempts = robotAgent.GetLastHundredAttemptsList();
         int successFullAttempts = 0;
 
-        foreach (var attempt in lastTenAttempts)
+        foreach (var attempt in lastHundredAttempts)
         {
             if (attempt)
             {
@@ -29,10 +30,10 @@ public class SuccessRate : MonoBehaviour
             }
         }
 
-        if (lastTenAttempts.Count > 0)
+        if (lastHundredAttempts.Count > 0)
         {
-            text.text = "Success rate:" + successFullAttempts / (lastTenAttempts.Count + 0f);
+            float successRate = (((successFullAttempts+0f) / (lastHundredAttempts.Count+0f)) * 100f);
+            text.text = "Success rate: " + (successRate.ToString("0.00") + "%");
         }
-
     }
 }

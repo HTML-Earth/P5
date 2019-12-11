@@ -30,7 +30,7 @@ public class RobotAgent : Agent
     List<bool> currentDebrisInFront = new List<bool>() {false, false, false, false, false, false};
     List<bool> previousDebrisInFront = new List<bool>() {false, false, false, false, false, false};
 
-    private List<bool> lastTenAttempts = new List<bool>();
+    private List<bool> lastHundredAttempts = new List<bool>();
 
     Vector3 startPosition;
     Quaternion startRotation;
@@ -39,6 +39,9 @@ public class RobotAgent : Agent
     
     float timeElapsed;
     int timesWon = 0;
+    int timesDone = 0;
+    
+    bool isAddedToSuccessRateList = false;
 
     // Positive rewards
     float reward_debrisCameInfront = 0.08f;
@@ -344,6 +347,9 @@ public class RobotAgent : Agent
         
         // if robot has moved enough to do a distance check, set checked bool to true
         checkedPositionThisStep = Vector3.Distance(lastCheckedPosition, transform.position) > minimumDistanceBeforeCheck;
+        
+        //Evaluation Methods:
+        CreateListWithSuccessRate();
 
         // Give rewards or penalties
         RewardDebrisInShovel();
@@ -369,11 +375,9 @@ public class RobotAgent : Agent
         if (timeElapsed > timeLimit)
         {
             timeElapsed = 0;
-            lastTenAttempts.Add(false);
+            lastHundredAttempts.Add(false);
             Done("Time limit reached");
-            
         }
-        
     }
 
     // Reward given for the first time each debris is seen
@@ -539,7 +543,7 @@ public class RobotAgent : Agent
         if (Vector3.Dot(transform.up, Vector3.up) < 0.1f)
         {
             AddReward(penalty_robot_fall, "Robot fell", transform.position);
-            lastTenAttempts.Add(false);
+            lastHundredAttempts.Add(false);
             Done("robot has fallen (probably)");
         }
         
@@ -558,7 +562,7 @@ public class RobotAgent : Agent
             AddReward(reward_allDebrisEnteredZone, "all debris in zone", dropZone.transform.position);
             Done("goal reached (all debris in zone)");
             
-            lastTenAttempts.Add(true);
+            lastHundredAttempts.Add(true);
             timesWon++;
         }
     }
@@ -577,15 +581,16 @@ public class RobotAgent : Agent
         Debug.Log("Done! reason: " + reason);
         Done();
 
-        if (lastTenAttempts.Count >= 10)
+        if (lastHundredAttempts.Count >= 100)
         {
-            lastTenAttempts.RemoveAt(0);
+            
+            lastHundredAttempts.RemoveAt(0);
         }
-            
-            
+        
+        timesDone++;
+
         academy.ResetDebrisInZone();
         
-
         // Reset shovel content on restart
         currentDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
         previousDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
@@ -623,6 +628,36 @@ public class RobotAgent : Agent
 
         return heuristicValues;
     }
+    //Keep track of success rate every 100 attempts
+
+    public void CreateListWithSuccessRate()
+    {
+        List<float> successRateList = new List<float>();
+        float successfullAttempts = 0.0f;
+        float successRate;
+
+
+        if (timesDone % 5 == 0 && timesDone > 0)
+        {
+            foreach (var attempt in lastHundredAttempts)
+            {
+                if (attempt == true)
+                {
+                    successfullAttempts++;
+                }
+            
+            }
+
+            successRate = successfullAttempts / 5;
+            {
+                if (!isAddedToSuccessRateList)
+                {
+                    isAddedToSuccessRateList = true;
+                    successRateList.Add(successRate);
+                }
+            }
+        }
+    }
 
     public float GetElapsedTime()
     {
@@ -634,9 +669,9 @@ public class RobotAgent : Agent
         return actionVector;
     }
 
-    public List<bool> GetLastTenAttemptsList()
+    public List<bool> GetLastHundredAttemptsList()
     {
-        return lastTenAttempts;
+        return lastHundredAttempts;
     }
 
     public int getTimesWon()

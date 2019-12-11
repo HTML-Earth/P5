@@ -36,6 +36,8 @@ public class RobotAgent : Agent
     Quaternion startRotation;
     
     readonly float timeLimit = 90f;
+
+    bool doneHasBeenCalled = false;
     
     float timeElapsed;
     int timesWon = 0;
@@ -116,6 +118,8 @@ public class RobotAgent : Agent
         previousDistanceFromZone = currentDistanceFromZone;
         
         shovel.ResetRotations();
+
+        doneHasBeenCalled = false;
 
         timeElapsed = 0;
     }
@@ -365,6 +369,9 @@ public class RobotAgent : Agent
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
+        if (doneHasBeenCalled)
+            return;
+        
         // Perform actions
         wheels.SetTorque(vectorAction[0]);
         wheels.SetAngle(vectorAction[1]);
@@ -606,6 +613,8 @@ public class RobotAgent : Agent
     // Wrapper function for Done that prints a custom done message in console
     void Done(string reason)
     {
+        doneHasBeenCalled = true;
+        
         Debug.Log("Done! reason: " + reason);
         Done();
 

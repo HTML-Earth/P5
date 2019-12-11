@@ -64,6 +64,8 @@ public class RobotAgent : Agent
     const float Penalty_RobotRammingWall = -0.5f;
  
     const float Penalty_Time = -0.01f;
+    
+    const float Penalty_RobotNotLevel = -0.01f;
     const float Penalty_RobotFall = -1f;
     
 
@@ -569,11 +571,19 @@ public class RobotAgent : Agent
         }
     }
 
-    // Check if robot has fallen or is outside area
+    // Check if robot is not level, has fallen or is outside area
     void RobotUpright()
     {
+        float robotUpDotWorldUp = Vector3.Dot(transform.up, Vector3.up);
+
+        // Check if robot is not level
+        if (robotUpDotWorldUp < 0.9f)
+        {
+            AddReward(Penalty_RobotNotLevel, "Robot not level", transform.position);
+        }
+        
         // Check if robot has fallen
-        if (Vector3.Dot(transform.up, Vector3.up) < 0.1f)
+        if (robotUpDotWorldUp < 0.1f)
         {
             AddReward(Penalty_RobotFall, "Robot fell", transform.position);
             lastHundredAttempts.Add(false);

@@ -22,15 +22,22 @@ if __name__ == '__main__':
         elif sys.argv[1] == "-c":
             training_mode = 2
 
-            # Build scene
-            if not sys.argv[2] is None:
-                build_scene = sys.argv[2]
+            # Build scene and training file
+            if len(sys.argv) == 4:
+                # Build scene
+                if not sys.argv[2] is None:
+                    build_scene = sys.argv[2]
 
+                # Training file
+                if not sys.argv[3] is None:
+                    training_file_name = sys.argv[3]
+            
             # Training file
-            if not sys.argv[3] is None:
-                training_file_name = sys.argv[3]
+            elif len(sys.argv) == 3:
+                training_file_name = sys.argv[2]
             else:
-                raise Exception("Missing training-file argument.")
+                raise Exception("Missing training-file or build scene argument.")
+                
 
         elif sys.argv[1] == "-help":
             print("{:35s} Sets mode to 'training mode'. \n"

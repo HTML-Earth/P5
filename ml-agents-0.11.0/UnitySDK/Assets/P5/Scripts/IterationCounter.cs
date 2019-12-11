@@ -22,7 +22,7 @@ public class IterationCounter : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        int completions = robotAgent.getTimesWon();
+        int completions = robotAgent.GetTimesWon();
         int iterations = robotAcademy.GetIterations();
         if (iterations > 1)
         {

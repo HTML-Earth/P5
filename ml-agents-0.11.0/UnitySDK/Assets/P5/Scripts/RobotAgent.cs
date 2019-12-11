@@ -524,7 +524,7 @@ public class RobotAgent : Agent
                 previousDebrisInFront[i] = true;
             }
             
-            if (previousDebrisInFront[i] && !currentDebrisInFront[i] && !dropZone.IsInZone(debrisInfos[i].transform.position))
+            if (previousDebrisInFront[i] && !currentDebrisInFront[i] && debrisInShovel && !dropZone.IsInZone(debrisInfos[i].transform.position))
             {
                 AddReward(penalty_debrisLeftInfront, "debris left infront", debrisInfos[i].transform.position);
                 previousDebrisInFront[i] = false;

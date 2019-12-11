@@ -70,7 +70,7 @@ public class RobotAgent : Agent
 
     List<RobotVision.DebrisInfo> debrisInfos;
 
-    float minimumDistanceBeforeCheck = 0.5f;
+    const float MinimumDistanceBeforeCheck = 0.5f;
     Vector3 lastCheckedPosition;
     bool checkedPositionThisStep;
     
@@ -202,10 +202,10 @@ public class RobotAgent : Agent
 
         // Check if robot is facing the zone (76)
         Vector3 robotToDropZone = dropZonePosition - rb.position;
-        float angleToDropzone = Vector3.Angle(robotToDropZone, transform.forward);
-        AddVectorObs(angleToDropzone);
+        float angleToDropZone = Vector3.Angle(robotToDropZone, transform.forward);
+        AddVectorObs(angleToDropZone);
 
-        debrisToDropzone();           // Index 77 -> 82
+        DebrisToDropZone();           // Index 77 -> 82
     }
     
     // *Old: Check if robot is getting closer to debris, Returns boolean (61 -> 66)
@@ -235,17 +235,17 @@ public class RobotAgent : Agent
     //Check if robot has picked up debris, Returns boolean (67)
     void ObsRobotPickedUpDebris()
     {
-        List<bool> debrisInShovelList = this.debrisInShovel.GetDebrisInArea();
-        bool debrisInShovel = false;
+        List<bool> debrisInShovelList = debrisInShovel.GetDebrisInArea();
+        bool debrisIsInShovel = false;
         foreach (var value in debrisInShovelList)
         {
             if (value)
             {
-                debrisInShovel = true;
+                debrisIsInShovel = true;
             }
         }
 
-        AddVectorObs(debrisInShovel);
+        AddVectorObs(debrisIsInShovel);
     }
     
     // Angle between (Robot forward) and (vector between robot and debris), Returns float (68 -> 73)
@@ -271,16 +271,16 @@ public class RobotAgent : Agent
     //Check if debris infront of shovel, Returns boolean (74)
     void ObsDebrisInFront()
     {
-        List<bool> debrisInfrontList = this.debrisInFront.GetDebrisInArea();
-        bool debrisIsInfront = false;
-        foreach (var value in debrisInfrontList)
+        List<bool> debrisInFrontList = debrisInFront.GetDebrisInArea();
+        bool debrisIsInFront = false;
+        foreach (var value in debrisInFrontList)
         {
             if (value)
             {
-                debrisIsInfront = true;
+                debrisIsInFront = true;
             }
         }
-        AddVectorObs(debrisIsInfront);
+        AddVectorObs(debrisIsInFront);
     }
 
     // Check if robot is pointed towards a debris (75), Returns boolean //TODO Does not take walls into account
@@ -297,7 +297,7 @@ public class RobotAgent : Agent
             Vector2 vecRobotToDebris2 = new Vector2(debris.transform.position.x - robotPosition.x,
                 debris.transform.position.z - robotPosition.z);
 
-            // Check it is not in dropzone
+            // Check it is not in DropZone
             if (!dropZone.IsInZone(debris.transform.position) && !debrisInShovelList[counter])
             {
                 float dot = Vector2.Dot(vecForward, (vecRobotToDebris2).normalized);
@@ -323,8 +323,8 @@ public class RobotAgent : Agent
         }
     }
     
-    // distance from each debris to dropzone (total of 6) (77 -> 82)
-    void debrisToDropzone()
+    // distance from each debris to DropZone (total of 6) (77 -> 82)
+    void DebrisToDropZone()
     {
         //List for every debris if it is in the shovel
         List<bool> debrisInShovelList = debrisInShovel.GetDebrisInArea();
@@ -339,7 +339,7 @@ public class RobotAgent : Agent
                 // if debris is in the shovel
                 if (debrisInShovelList[i].Equals(true))
                 {
-                    bool debrisCloserToDropzone = false;
+                    bool debrisCloserToDropZone = false;
                     
                     // find the next position and predict the distance to dropzone
                     Vector3 dropZonePosition = dropZone.transform.position;
@@ -347,21 +347,15 @@ public class RobotAgent : Agent
                     // as the debris is in the shovel, to predict the next position, we use robot's position
                     Vector3 rbNewPosition = rb.position + rb.velocity; 
                     
-                    // the length from dropzone to robot's new position is the new distance we will use 
-                    float debrisToDropzone = Vector3.Distance(dropZonePosition, rbNewPosition);
+                    // the length from DropZone to robot's new position is the new distance we will use 
+                    float debrisToDropZone = Vector3.Distance(dropZonePosition, rbNewPosition);
 
-                    float oldDebrisToDropzone = Vector3.Distance(dropZonePosition, rb.position);
+                    float oldDebrisToDropZone = Vector3.Distance(dropZonePosition, rb.position);
 
                     // check if the new distance is shorter than the old distance
-                    if (debrisToDropzone < oldDebrisToDropzone)
-                    {
-                        debrisCloserToDropzone = true;
-                        AddVectorObs(debrisCloserToDropzone);
-                    }
-                    else
-                    {
-                        AddVectorObs(debrisCloserToDropzone);
-                    }
+                    debrisCloserToDropZone = debrisToDropZone < oldDebrisToDropZone;
+
+                    AddVectorObs(debrisCloserToDropZone);
                 }
             }
         }
@@ -382,7 +376,7 @@ public class RobotAgent : Agent
         actionVector = vectorAction;
         
         // if robot has moved enough to do a distance check, set checked bool to true
-        checkedPositionThisStep = Vector3.Distance(lastCheckedPosition, transform.position) > minimumDistanceBeforeCheck;
+        checkedPositionThisStep = Vector3.Distance(lastCheckedPosition, transform.position) > MinimumDistanceBeforeCheck;
 
         // Give rewards or penalties
         RewardDebrisInShovel();
@@ -450,7 +444,7 @@ public class RobotAgent : Agent
                     if (Vector3.Distance(debrisPos, transform.position) < Vector3.Distance(debrisPos, lastCheckedPosition))
                     {
                         AddReward(Reward_MoveTowardsDebris, "Moved towards debris", transform.position);
-                        // Enable break for points to be given when moving towards atleast 1 debris (otherwise points are given up to reward * amount of debris)
+                        // Enable break for points to be given when moving towards at least 1 debris (otherwise points are given up to reward * amount of debris)
                         break;
                     }
                 }
@@ -490,7 +484,7 @@ public class RobotAgent : Agent
         }
     }
 
-    // Check if debris has entered or left the dropzone
+    // Check if debris has entered or left the DropZone
     void RewardDebrisInOutZone()
     {
         // Check if debris has left/entered the zone

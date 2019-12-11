@@ -99,3 +99,11 @@ class RobotObservations(IntEnum):
     robot_direction_debris = 75
 
     getting_closer_dropzone = 76
+
+    debris_to_dropzone_1 = 77
+    debris_to_dropzone_2 = 78
+    debris_to_dropzone_3 = 79
+    debris_to_dropzone_4 = 80
+    debris_to_dropzone_5 = 81
+    debris_to_dropzone_6 = 82
+

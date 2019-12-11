@@ -200,6 +200,8 @@ public class RobotAgent : Agent
         Vector3 robotToDropZone = dropZonePosition - rb.position;
         float angleToDropzone = Vector3.Angle(robotToDropZone, transform.forward);
         AddVectorObs(angleToDropzone);
+
+        debrisToDropzone();           // Index 77 -> 82
     }
     
     // *Old: Check if robot is getting closer to debris, Returns boolean (61 -> 66)
@@ -320,14 +322,44 @@ public class RobotAgent : Agent
     // distance from each debris to dropzone (total of 6) (77 -> 82)
     void debrisToDropzone()
     {
-        List<RobotVision.DebrisInfo> debrisList = debrisInfos;
-        
-        foreach (var debris in debrisList)
+        //List for every debris if it is in the shovel
+        List<bool> debrisInShovelList = debrisInShovel.GetDebrisInArea();
+
+        // make sure that the length of debrisInfo list and previous list is the same
+        if (debrisInShovelList.Count.Equals(debrisInfos.Count))
         {
-            Vector3 dropZonePosition = dropZone.transform.position;
-            Vector3 debrisDistanceToDropzone = debris.lastKnownPosition - dropZonePosition;
-            
-            AddVectorObs(debrisDistanceToDropzone);
+            // go through debris
+            for (int i = 0; i < debrisInShovelList.Count; i++)
+            {
+                
+                // if debris is in the shovel
+                if (debrisInShovelList[i].Equals(true))
+                {
+                    bool debrisCloserToDropzone = false;
+                    
+                    // find the next position and predict the distance to dropzone
+                    Vector3 dropZonePosition = dropZone.transform.position;
+                    
+                    // as the debris is in the shovel, to predict the next position, we use robot's position
+                    Vector3 rbNewPosition = rb.position + rb.velocity; 
+                    
+                    // the length from dropzone to robot's new position is the new distance we will use 
+                    float debrisToDropzone = Vector3.Distance(dropZonePosition, rbNewPosition);
+
+                    float oldDebrisToDropzone = Vector3.Distance(dropZonePosition, rb.position);
+
+                    // check if the new distance is shorter than the old distance
+                    if (debrisToDropzone < oldDebrisToDropzone)
+                    {
+                        debrisCloserToDropzone = true;
+                        AddVectorObs(debrisCloserToDropzone);
+                    }
+                    else
+                    {
+                        AddVectorObs(debrisCloserToDropzone);
+                    }
+                }
+            }
         }
     }
 

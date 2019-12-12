@@ -218,7 +218,8 @@ public class RobotAgent : Agent
         AddVectorObs(angleToDropZone, "angle_to_dropzone");
 
         ObsDebrisToDropZone();
-
+        ObsNextAngleToDebris();
+        
         observationsLogged = true;
     }
 
@@ -248,9 +249,6 @@ public class RobotAgent : Agent
     {
         for (int debris = 0; debris < debrisInfos.Count; debris++)
         {
-            //bool gettingCloserToDebris = debrisInfo.distanceFromRobot < debrisInfo.lastDistanceFromRobot;
-            //AddVectorObs(gettingCloserToDebris);
-            
             Vector3 rbNewPosition = rb.position + rb.velocity; //robot current position + velocity
             
             float distanceToDebris = Vector3.Distance(debrisInfos[debris].lastKnownPosition, rbNewPosition);
@@ -400,6 +398,35 @@ public class RobotAgent : Agent
         for (int i = 0; i < DebrisCount - debrisInfos.Count; i++)
         {
             AddVectorObs(Mathf.Infinity, "debris_to_dropzone_" + (i+debrisInfos.Count+1));
+        }
+    }
+    
+    // Predict the next angle between robot and each debris (83 -> 88)
+    void ObsNextAngleToDebris()
+    {
+        int counter = 0;
+        foreach (var debris in debrisInfos)
+        {
+            // robot's next postiion
+            Vector3 rbNewPosition = rb.position + rb.velocity;
+
+            // robot's new direction poiting forward
+            Vector3 rbNewDirection = transform.forward;
+
+            // new vector from robot's next position to debris
+            Vector3 nextVecToDebris = debris.lastKnownPosition - rbNewPosition;
+
+            // new angle between debris and robot
+            float nextAngle =  Vector2.SignedAngle(rbNewDirection, nextVecToDebris);
+
+            counter++;
+            
+            AddVectorObs(nextAngle, "next_angle_to_debris_" + counter);
+        }
+        // If there are fewer than 6 debris, pad out the observations
+        for (int i = 0; i < DebrisCount - debrisInfos.Count; i++)
+        {
+            AddVectorObs(Mathf.Infinity, "next_angle_to_debris_" + (i+debrisInfos.Count+1));
         }
     }
 

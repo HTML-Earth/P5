@@ -45,6 +45,9 @@ public class RobotAgent : Agent
     
     bool isAddedToSuccessRateList = false;
 
+    List<string> observationNames = new List<string>();
+    bool observationsLogged = false;
+
     // Positive rewards
     const float Reward_DebrisCameInFront = 0.08f;
     const float Reward_DebrisEnteredShovel = 0.2f;
@@ -148,97 +151,123 @@ public class RobotAgent : Agent
 
     public override void CollectObservations()
     {
-        // Robot position (0, 1)
+        // Robot position
         Vector3 currentPosition = transform.position;
-        AddVectorObs(currentPosition.x);
-        AddVectorObs(currentPosition.z);
+        AddVectorObs(currentPosition.x, "robot_position_x");
+        AddVectorObs(currentPosition.z, "robot_position_z");
 
-        // Robot rotation (2)
-        AddVectorObs(transform.rotation.eulerAngles.y);
+        // Robot rotation
+        AddVectorObs(transform.rotation.eulerAngles.y, "robot_rotation");
 
-        // Robot velocity (3, 4, 5)
+        // Robot velocity
         Vector3 localVelocity = rb.transform.InverseTransformDirection(rb.velocity);
-        AddVectorObs(localVelocity.x);
-        AddVectorObs(localVelocity.y);
-        AddVectorObs(localVelocity.z);
+        AddVectorObs(localVelocity.x, "robot_velocity_x");
+        AddVectorObs(localVelocity.y, "robot_velocity_y");
+        AddVectorObs(localVelocity.z, "robot_velocity_z");
         
-        // Shovel position (6, 7) TODO: remove one of these
-        AddVectorObs(shovel.GetShovelPos());
-        AddVectorObs(shovel.GetShovelPos());
-
-        // Drop-Zone Position and radius (8, 9, 10)
+        // Shovel position
+        AddVectorObs(shovel.GetShovelPos(), "shovel_position");
+        
+        // DropZone position and radius
         Vector3 dropZonePosition = dropZone.transform.position;
-        AddVectorObs(dropZonePosition.x);
-        AddVectorObs(dropZonePosition.z);
-        AddVectorObs(dropZone.GetRadius());
+        AddVectorObs(dropZonePosition.x, "dropzone_position_x");
+        AddVectorObs(dropZonePosition.z, "dropzone_position_z");
+        AddVectorObs(dropZone.GetRadius(), "dropzone_radius");
 
-        // Distance sensor measurements (11 - 40)
+        // Distance sensor measurements
         float[] distances = sensors.GetMeasuredDistances();
         for (int dist = 0; dist < distances.Length; dist++)
         {
-            AddVectorObs(distances[dist]);
+            AddVectorObs(distances[dist], "sensor_measurement_" + (dist+1));
         }
 
-        // Debris positions (41 - 58)
+        // Debris positions
         debrisInfos = vision.UpdateVision();
 
-        foreach (RobotVision.DebrisInfo debrisInfo in debrisInfos)
+        for (int debris = 0; debris < debrisInfos.Count; debris++)
         {
-            AddVectorObs(debrisInfo.lastKnownPosition.x);
-            AddVectorObs(debrisInfo.lastKnownPosition.y);
-            AddVectorObs(debrisInfo.lastKnownPosition.z);
+            AddVectorObs(debrisInfos[debris].lastKnownPosition.x, "debris_" + (debris+1) + "_position_x");
+            AddVectorObs(debrisInfos[debris].lastKnownPosition.y, "debris_" + (debris+1) + "_position_y");
+            AddVectorObs(debrisInfos[debris].lastKnownPosition.z, "debris_" + (debris+1) + "_position_z");
         }
-        ObsPadOutInfinity(3);
+        for (int i = 0; i < DebrisCount - debrisInfos.Count; i++)
+        {
+            AddVectorObs(Mathf.Infinity, "debris_" + (i+debrisInfos.Count+1) + "_position_x");
+            AddVectorObs(Mathf.Infinity, "debris_" + (i+debrisInfos.Count+1) + "_position_y");
+            AddVectorObs(Mathf.Infinity, "debris_" + (i+debrisInfos.Count+1) + "_position_z");
+        }
 
-        // Simulation time (59)
-        AddVectorObs(timeElapsed);
+        // Simulation time
+        AddVectorObs(timeElapsed, "simulation_time");
 
-        // features:
+        // Features:
 
-        //Check if robot is within dropZone, Returns boolean (60)
+        //Check if robot is within dropZone, Returns boolean
         bool isInDropZone = dropZone.IsInZone(transform.position);
-        AddVectorObs(isInDropZone);
+        AddVectorObs(isInDropZone, "robot_in_dropzone");
 
-        ObsGettingCloserToDebris();   // Index 61 -> 66
-        ObsRobotPickedUpDebris();     // Index 67
-        ObsAngleToDebris();           // Index 68 -> 73
-        ObsDebrisInFront();           // Index 74
-        ObsPointedAtDebris();         // Index 75
+        ObsGettingCloserToDebris();
+        ObsDebrisIsInShovel();
+        ObsAngleToDebris();
+        ObsDebrisInFront();
+        ObsFacingDebris();
 
-        // Check if robot is facing the zone (76)
+        // Check if robot is facing the zone
         Vector3 robotToDropZone = dropZonePosition - rb.position;
         float angleToDropZone = Vector3.Angle(robotToDropZone, transform.forward);
-        AddVectorObs(angleToDropZone);
+        AddVectorObs(angleToDropZone, "angle_to_dropzone");
 
-        DebrisToDropZone();           // Index 77 -> 82
+        ObsDebrisToDropZone();
+
+        observationsLogged = true;
+    }
+
+    void AddVectorObs(float observation, string observationName)
+    {
+        AddVectorObs(observation);
+        
+        if (observationsLogged)
+            return;
+
+        observationNames.Add(observationName);
     }
     
-    // *Old: Check if robot is getting closer to debris, Returns boolean (61 -> 66)
-    // *New: Distance between robot and each debris with a total of 6, returns floats (61 -> 66)
+    void AddVectorObs(bool observation, string observationName)
+    {
+        AddVectorObs(observation);
+        
+        if (observationsLogged)
+            return;
+
+        observationNames.Add(observationName);
+    }
+    
+    // *Old: Check if robot is getting closer to debris, Returns boolean
+    // *New: Distance between robot and each debris with a total of 6, returns floats
     void ObsGettingCloserToDebris()
     {
-        foreach (var debrisInfo in debrisInfos)
+        for (int debris = 0; debris < debrisInfos.Count; debris++)
         {
             //bool gettingCloserToDebris = debrisInfo.distanceFromRobot < debrisInfo.lastDistanceFromRobot;
             //AddVectorObs(gettingCloserToDebris);
             
             Vector3 rbNewPosition = rb.position + rb.velocity; //robot current position + velocity
             
-            float distanceToDebris = Vector3.Distance(debrisInfo.lastKnownPosition, rbNewPosition);
+            float distanceToDebris = Vector3.Distance(debrisInfos[debris].lastKnownPosition, rbNewPosition);
             
             
-            AddVectorObs(distanceToDebris);
+            AddVectorObs(distanceToDebris, "getting_closer_to_debris_" + (debris+1));
         }
 
         // If there are fewer than 6 debris, pad out the observations
         for (int i = 0; i < DebrisCount - debrisInfos.Count; i++)
         {
-            AddVectorObs(false);
+            AddVectorObs(false, "getting_closer_to_debris_" + (i+debrisInfos.Count+1));
         }
     }
     
-    //Check if robot has picked up debris, Returns boolean (67)
-    void ObsRobotPickedUpDebris()
+    //Check if robot has picked up debris, Returns boolean
+    void ObsDebrisIsInShovel()
     {
         List<bool> debrisInShovelList = debrisInShovel.GetDebrisInArea();
         bool debrisIsInShovel = false;
@@ -250,30 +279,36 @@ public class RobotAgent : Agent
             }
         }
 
-        AddVectorObs(debrisIsInShovel);
+        AddVectorObs(debrisIsInShovel, "debris_in_shovel");
     }
     
-    // Angle between (Robot forward) and (vector between robot and debris), Returns float (68 -> 73)
+    // Angle between (Robot forward) and (vector between robot and debris), Returns float
     void ObsAngleToDebris()
     {
         var robotPosition = transform.position;
         var forward = transform.forward;
         // Vec2 pointing straight from robot
         Vector2 vec2TransformForward = new Vector2(forward.x, forward.z);
-        foreach (var debrisInfo in debrisInfos)
+        for (int debris = 0; debris < debrisInfos.Count; debris++)
         {
-            var debrisPosition = debrisInfo.transform.position;
+            var debrisPosition = debrisInfos[debris].transform.position;
+            
             // Create vector2 from robot to debris
             Vector2 vec2RobotToDebris = new Vector2(debrisPosition.x - robotPosition.x,
                 debrisPosition.z - robotPosition.z);
+            
             // Find angle between robot direction and debris (Signed to indicate which side the debris is closest to)
             float angleToDebris = Vector2.SignedAngle(vec2RobotToDebris, vec2TransformForward);
-            AddVectorObs(angleToDebris);
+            AddVectorObs(angleToDebris, "angle_robot_debris_" + (debris+1));
         }
-        ObsPadOutInfinity(1);
+        // If there are fewer than 6 debris, pad out the observations
+        for (int i = 0; i < DebrisCount - debrisInfos.Count; i++)
+        {
+            AddVectorObs(360f, "angle_robot_debris_" + (i+debrisInfos.Count+1));
+        }
     }
     
-    //Check if debris infront of shovel, Returns boolean (74)
+    //Check if debris infront of shovel, Returns boolean
     void ObsDebrisInFront()
     {
         List<bool> debrisInFrontList = debrisInFront.GetDebrisInArea();
@@ -285,11 +320,11 @@ public class RobotAgent : Agent
                 debrisIsInFront = true;
             }
         }
-        AddVectorObs(debrisIsInFront);
+        AddVectorObs(debrisIsInFront, "debris_in_front");
     }
 
-    // Check if robot is pointed towards a debris (75), Returns boolean //TODO Does not take walls into account
-    void ObsPointedAtDebris()
+    // Check if robot is pointed towards a debris, Returns boolean //TODO Does not take walls into account
+    void ObsFacingDebris()
     {
         int counter = 0;
         bool pointingTowardDebris = false;
@@ -313,56 +348,58 @@ public class RobotAgent : Agent
             }
             counter++;
         }
-        AddVectorObs(pointingTowardDebris);
+        AddVectorObs(pointingTowardDebris, "robot_facing_debris");
     }
     
     // If there are fewer than 6 debris, pad out the observations
-    void ObsPadOutInfinity(int observationAmount)
+    void PadOutDebrisObs(int observationAmount, float observation, string observationName)
     {
         for (int i = 0; i < DebrisCount - debrisInfos.Count; i++)
         {
             for (int j = 0; j < observationAmount; j++)
             {
-                AddVectorObs(Mathf.Infinity);
+                AddVectorObs(observation, observationName);
             }
         }
     }
     
-    // distance from each debris to DropZone (total of 6) (77 -> 82)
-    void DebrisToDropZone()
+    // distance from each debris to DropZone (total of 6)
+    void ObsDebrisToDropZone()
     {
         //List for every debris if it is in the shovel
         List<bool> debrisInShovelList = debrisInShovel.GetDebrisInArea();
 
-        // make sure that the length of debrisInfo list and previous list is the same
-        if (debrisInShovelList.Count.Equals(debrisInfos.Count))
+        // go through debris
+        for (int i = 0; i < debrisInfos.Count; i++)
         {
-            // go through debris
-            for (int i = 0; i < debrisInShovelList.Count; i++)
+            bool debrisCloserToDropZone = false;
+         
+            // if debris is in the shovel
+            if (debrisInShovelList[i].Equals(true))
             {
                 
-                // if debris is in the shovel
-                if (debrisInShovelList[i].Equals(true))
-                {
-                    bool debrisCloserToDropZone = false;
-                    
-                    // find the next position and predict the distance to dropzone
-                    Vector3 dropZonePosition = dropZone.transform.position;
-                    
-                    // as the debris is in the shovel, to predict the next position, we use robot's position
-                    Vector3 rbNewPosition = rb.position + rb.velocity; 
-                    
-                    // the length from DropZone to robot's new position is the new distance we will use 
-                    float debrisToDropZone = Vector3.Distance(dropZonePosition, rbNewPosition);
+                // find the next position and predict the distance to dropzone
+                Vector3 dropZonePosition = dropZone.transform.position;
+                
+                // as the debris is in the shovel, to predict the next position, we use robot's position
+                Vector3 rbNewPosition = rb.position + rb.velocity; 
+                
+                // the length from DropZone to robot's new position is the new distance we will use 
+                float debrisToDropZone = Vector3.Distance(dropZonePosition, rbNewPosition);
 
-                    float oldDebrisToDropZone = Vector3.Distance(dropZonePosition, rb.position);
+                float oldDebrisToDropZone = Vector3.Distance(dropZonePosition, rb.position);
 
-                    // check if the new distance is shorter than the old distance
-                    debrisCloserToDropZone = debrisToDropZone < oldDebrisToDropZone;
-
-                    AddVectorObs(debrisCloserToDropZone);
-                }
+                // check if the new distance is shorter than the old distance
+                debrisCloserToDropZone = debrisToDropZone < oldDebrisToDropZone;
             }
+            
+            AddVectorObs(debrisCloserToDropZone, "debris_to_dropzone_" + (i+1));
+        }
+        
+        // If there are fewer than 6 debris, pad out the observations
+        for (int i = 0; i < DebrisCount - debrisInfos.Count; i++)
+        {
+            AddVectorObs(Mathf.Infinity, "debris_to_dropzone_" + (i+debrisInfos.Count+1));
         }
     }
 

@@ -96,9 +96,9 @@ class RobotObservations(IntEnum):
 
     debris_in_front = 74
 
-    robot_direction_debris = 75
+    robot_facing_debris = 75
 
-    getting_closer_dropzone = 76
+    angle_to_dropzone = 76
 
     debris_to_dropzone_1 = 77
     debris_to_dropzone_2 = 78

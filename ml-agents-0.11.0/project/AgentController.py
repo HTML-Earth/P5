@@ -123,7 +123,7 @@ class Agent:
         state.append(int(self.get_obs(self.obs.robot_rotation)))
 
         # Pointed towards debris
-        state.append(1) if self.get_obs(self.obs.robot_direction_debris) else state.append(0)
+        state.append(1) if self.get_obs(self.obs.robot_facing_debris) else state.append(0)
 
         # Arm rotation
         state.append(int(self.get_obs(self.obs.arm_position)))
@@ -422,12 +422,12 @@ class Agent:
         action_list = list(action)
         pointing = 0
 
-        if not self.get_obs(self.obs.robot_direction_debris):
+        if not self.get_obs(self.obs.robot_facing_debris):
             if action_list[1] == 1 and self.get_obs(self.obs.angle_robot_debris_1) < 0:
                 pointing = 1
             elif action_list[1] == -1 and self.get_obs(self.obs.angle_robot_debris_1) > 0:
                 pointing = 1
-        elif self.get_obs(self.obs.robot_direction_debris):
+        elif self.get_obs(self.obs.robot_facing_debris):
             pointing = 1
 
         return pointing

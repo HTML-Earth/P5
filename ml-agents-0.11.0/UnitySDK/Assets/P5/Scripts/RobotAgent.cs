@@ -18,6 +18,8 @@ public class RobotAgent : Agent
     DropZone dropZone;
     DisplayRewards displayRewards;
     
+    public Transform Target;
+    
     [FormerlySerializedAs("debrisDetector")] [SerializeField]
     DebrisDetector debrisInShovel;
 
@@ -105,6 +107,7 @@ public class RobotAgent : Agent
         startRotation = transform.rotation;
 
         lastCheckedPosition = startPosition;
+        AgentReset();
     }
 
     public override void AgentReset()
@@ -159,36 +162,36 @@ public class RobotAgent : Agent
         // Robot velocity (3, 4, 5)
         Vector3 localVelocity = rb.transform.InverseTransformDirection(rb.velocity);
         AddVectorObs(localVelocity.x);
-        AddVectorObs(localVelocity.y);
+        //AddVectorObs(localVelocity.y);
         AddVectorObs(localVelocity.z);
         
         // Shovel position (6, 7) TODO: remove one of these
-        AddVectorObs(shovel.GetShovelPos());
-        AddVectorObs(shovel.GetShovelPos());
+        //AddVectorObs(shovel.GetShovelPos());
+        //AddVectorObs(shovel.GetShovelPos());
 
         // Drop-Zone Position and radius (8, 9, 10)
         Vector3 dropZonePosition = dropZone.transform.position;
-        AddVectorObs(dropZonePosition.x);
-        AddVectorObs(dropZonePosition.z);
-        AddVectorObs(dropZone.GetRadius());
+        //AddVectorObs(dropZonePosition.x);
+        //AddVectorObs(dropZonePosition.z);
+        //AddVectorObs(dropZone.GetRadius());
 
         // Distance sensor measurements (11 - 40)
         float[] distances = sensors.GetMeasuredDistances();
-        for (int dist = 0; dist < distances.Length; dist++)
-        {
-            AddVectorObs(distances[dist]);
-        }
+        //for (int dist = 0; dist < distances.Length; dist++)
+        //{
+        //    AddVectorObs(distances[dist]);
+        //}
 
         // Debris positions (41 - 58)
         debrisInfos = vision.UpdateVision();
 
-        foreach (RobotVision.DebrisInfo debrisInfo in debrisInfos)
-        {
-            AddVectorObs(debrisInfo.lastKnownPosition.x);
-            AddVectorObs(debrisInfo.lastKnownPosition.y);
-            AddVectorObs(debrisInfo.lastKnownPosition.z);
-        }
-        ObsPadOutInfinity(3);
+        //foreach (RobotVision.DebrisInfo debrisInfo in debrisInfos)
+        //{
+        AddVectorObs(debrisInfos[0].lastKnownPosition.x);
+        //   AddVectorObs(debrisInfo.lastKnownPosition.y);
+        AddVectorObs(debrisInfos[0].lastKnownPosition.z);
+        //}
+        //ObsPadOutInfinity(3);
 
         // Simulation time (59)
         AddVectorObs(timeElapsed);
@@ -196,21 +199,21 @@ public class RobotAgent : Agent
         // features:
 
         //Check if robot is within dropZone, Returns boolean (60)
-        bool isInDropZone = dropZone.IsInZone(transform.position);
-        AddVectorObs(isInDropZone);
+        //bool isInDropZone = dropZone.IsInZone(transform.position);
+        //AddVectorObs(isInDropZone);
 
-        ObsGettingCloserToDebris();   // Index 61 -> 66
-        ObsRobotPickedUpDebris();     // Index 67
-        ObsAngleToDebris();           // Index 68 -> 73
-        ObsDebrisInFront();           // Index 74
-        ObsPointedAtDebris();         // Index 75
+        //ObsGettingCloserToDebris();   // Index 61 -> 66
+        //ObsRobotPickedUpDebris();     // Index 67
+        //bsAngleToDebris();           // Index 68 -> 73
+        //ObsDebrisInFront();           // Index 74
+        //ObsPointedAtDebris();         // Index 75
 
         // Check if robot is facing the zone (76)
         Vector3 robotToDropZone = dropZonePosition - rb.position;
         float angleToDropZone = Vector3.Angle(robotToDropZone, transform.forward);
-        AddVectorObs(angleToDropZone);
+        //AddVectorObs(angleToDropZone);
 
-        DebrisToDropZone();           // Index 77 -> 82
+        //DebrisToDropZone();           // Index 77 -> 82
     }
     
     // *Old: Check if robot is getting closer to debris, Returns boolean (61 -> 66)
@@ -372,10 +375,10 @@ public class RobotAgent : Agent
             return;
         
         // Perform actions
-        wheels.SetTorque(vectorAction[0]);
-        wheels.SetAngle(vectorAction[1]);
+        wheels.SetTorque(vectorAction[0] * 2 - 1);
+        wheels.SetAngle(vectorAction[1] * 2 - 1);
         
-        shovel.RotateShovel(vectorAction[2]);
+        shovel.RotateShovel(vectorAction[2] * 2 - 1);
         
         // Store current action vector state for visualization
         actionVector = vectorAction;

@@ -838,6 +838,12 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1194253472}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &1286636275 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2468284302557912829, guid: 13b35aaaa7542034aa23a0ddb4bdff98,
+    type: 3}
+  m_PrefabInstance: {fileID: 1159105472}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1363006575
 GameObject:
   m_ObjectHideFlags: 0
@@ -871,7 +877,7 @@ MonoBehaviour:
     width: 80
     height: 80
     qualityLevel: 1
-    timeScale: 20
+    timeScale: 10
     targetFrameRate: -1
   m_InferenceConfiguration:
     width: 1280
@@ -881,7 +887,7 @@ MonoBehaviour:
     targetFrameRate: 60
   resetParameters:
     m_ResetParameters: []
-  communicatorPort: 5005
+  communicatorPort: 5004
   useRandomEnvironment: 0
 --- !u!4 &1363006577
 Transform:
@@ -1206,7 +1212,7 @@ PrefabInstance:
     - target: {fileID: 8510312020121741670, guid: 81f47bcef54978a40a80743e3328700e,
         type: 3}
       propertyPath: m_Name
-      value: robot
+      value: RollerAgent
       objectReference: {fileID: 0}
     - target: {fileID: 4630239631701515125, guid: 81f47bcef54978a40a80743e3328700e,
         type: 3}
@@ -1262,6 +1268,36 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6768497055058356372, guid: 81f47bcef54978a40a80743e3328700e,
+        type: 3}
+      propertyPath: agentParameters.numberOfActionsBetweenDecisions
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6768497055058356372, guid: 81f47bcef54978a40a80743e3328700e,
+        type: 3}
+      propertyPath: Target
+      value: 
+      objectReference: {fileID: 1286636275}
+    - target: {fileID: 1779018748840171066, guid: 81f47bcef54978a40a80743e3328700e,
+        type: 3}
+      propertyPath: m_BrainParameters.vectorActionSize.Array.data[0]
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1779018748840171066, guid: 81f47bcef54978a40a80743e3328700e,
+        type: 3}
+      propertyPath: m_BrainParameters.vectorObservationSize
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1779018748840171066, guid: 81f47bcef54978a40a80743e3328700e,
+        type: 3}
+      propertyPath: m_BehaviorName
+      value: RollerBallBrain
+      objectReference: {fileID: 0}
+    - target: {fileID: 1779018748840171066, guid: 81f47bcef54978a40a80743e3328700e,
+        type: 3}
+      propertyPath: m_BrainParameters.vectorActionSpaceType
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 81f47bcef54978a40a80743e3328700e, type: 3}

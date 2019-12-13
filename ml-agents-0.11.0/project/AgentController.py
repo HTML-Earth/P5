@@ -51,6 +51,9 @@ class Agent:
         # Observation list class(IntEnum)
         self.obs = observation.RobotObservations
 
+        # Last distance
+        self.last_distance_to_debris = 0
+
     # Setup connection between Unity and Python
     def setup_connection_with_unity(self, build_scene):
         # Connect to Unity and get environment
@@ -115,7 +118,7 @@ class Agent:
         state.append(1) if self.get_obs(self.obs.debris_in_front) else state.append(0)
 
         # Getting closer to dropzone
-        state.append(1) if 90 < self.get_obs(self.obs.angle_to_dropzone) < 270 and self.velocity_z > 0 else state.append(0)
+        state.append(1) if self.get_obs(self.obs.robot_facing_debris) and self.velocity_z > 0 else state.append(0)
 
         # Velocity
         state.append(round(self.velocity_z, 1))
@@ -133,7 +136,10 @@ class Agent:
         state.append(int(self.get_obs(self.obs.angle_robot_debris_1)))
 
         # Distance to debris
-        state.append(int(self.get_obs(self.obs.getting_closer_to_debris_1)))
+        if int(self.get_obs(self.obs.getting_closer_to_debris_1)) > 20:
+            state.append(self.last_distance_to_debris)
+        else:
+            state.append(int(self.get_obs(self.obs.getting_closer_to_debris_1)))
 
         # Debris distance to dropzone
         state.append(int(self.get_obs(self.obs.debris_to_dropzone_1)))
@@ -196,6 +202,8 @@ class Agent:
         action_list = list(action)
         distance = 0
 
+        transform_value = 1 / 20
+
         # each relevant action is used to predict
         if action_list[0] == 1:
             if action_list[1] == 1:
@@ -225,7 +233,13 @@ class Agent:
                     if self.get_obs(observation_index) > distance:
                         distance = self.get_obs(observation_index)
 
-        return distance
+        # Temporary fix to overwhelmingly large number
+        if distance > 20:
+            return self.last_distance_to_debris
+
+        self.last_distance_to_debris = distance
+
+        return distance * transform_value
 
     # Getting closer to debris number 1 (2-6 following)
     def getting_closer_to_debris_1(self, state, action):
@@ -341,7 +355,7 @@ class Agent:
 
     def debris_to_dropzone(self, state, action, observation_index):
         action_list = list(action)
-        closer_to_dropzone = 0 # the domain is either 1 or 0 (boolean-alike)
+        closer_to_dropzone = 0  # the domain is either 1 or 0 (boolean-alike)
 
         if action_list[0] == 1:
             if action_list[1] == 1:
@@ -399,39 +413,40 @@ class Agent:
     def angle_to_debris(self, state, action, observation_index):
         action_list = list(action)
 
-        angleToDebris = None
+        angle_to_debris = None
+        transform_value = 1 / 360
 
         if action_list[0] == 1:
             if action_list[1] == 1:
                 if self.get_obs(observation_index) is not None:
-                    angleToDebris = self.get_obs(observation_index)
+                    angle_to_debris = self.get_obs(observation_index)
 
             elif action_list[1] == 0:
                 if self.get_obs(observation_index) is not None:
-                    angleToDebris = self.get_obs(observation_index)
+                    angle_to_debris = self.get_obs(observation_index)
 
             elif action_list[1] == -1:
                 if self.get_obs(observation_index) is not None:
-                    angleToDebris = self.get_obs(observation_index)
+                    angle_to_debris = self.get_obs(observation_index)
 
         if action_list[0] == -1:
             if action_list[1] == 1:
                 if self.get_obs(observation_index) is not None:
-                    angleToDebris = self.get_obs(observation_index)
+                    angle_to_debris = self.get_obs(observation_index)
 
             elif action_list[1] == 0:
                 if self.get_obs(observation_index) is not None:
-                    angleToDebris = self.get_obs(observation_index)
+                    angle_to_debris = self.get_obs(observation_index)
 
             elif action_list[1] == -1:
                 if self.get_obs(observation_index) is not None:
-                    angleToDebris = self.get_obs(observation_index)
+                    angle_to_debris = self.get_obs(observation_index)
 
         if action_list[0] == 0:
             if self.velocity_z is not 0:
-                angleToDebris = self.get_obs(observation_index)
+                angle_to_debris = self.get_obs(observation_index)
 
-        return angleToDebris
+        return (angle_to_debris + 180) * transform_value
 
     def velocity(self, state, action):
         action_list = list(action)
@@ -473,7 +488,7 @@ class Agent:
                 return int(total_rotation) * transform_value
 
     # Pointing / Turning towards debris base on angle
-    def pointed_towards_debris (self, state, action):
+    def pointed_towards_debris(self, state, action):
         action_list = list(action)
         pointing = 0
 

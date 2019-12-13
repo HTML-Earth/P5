@@ -216,9 +216,11 @@ public class RobotAgent : Agent
         ObsDebrisInFront();
         ObsFacingDebris();
 
-        // Check if robot is facing the zone
-        Vector3 robotToDropZone = dropZonePosition - rb.position;
-        float angleToDropZone = Vector3.Angle(robotToDropZone, transform.forward);
+        // Angle to dropzone
+        float angleToDropZone = Vector3.Angle(dropZonePosition, transform.forward);
+        if (transform.rotation.eulerAngles.y > 180) {
+            angleToDropZone = -angleToDropZone;
+        }
         AddVectorObs(angleToDropZone, "angle_to_dropzone");
 
         ObsDebrisToDropZone();
@@ -355,7 +357,8 @@ public class RobotAgent : Agent
         AddVectorObs(debrisIsInFront, "debris_in_front");
     }
 
-    // Check if robot is pointed towards a debris, Returns boolean //TODO Does not take walls into account
+    // Check if robot is pointed towards a debris, Returns boolean 
+    // TODO Does not take walls into account
     void ObsFacingDebris()
     {
         int counter = 0;

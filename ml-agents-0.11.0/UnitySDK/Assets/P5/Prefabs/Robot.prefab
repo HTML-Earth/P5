@@ -4184,7 +4184,7 @@ MonoBehaviour:
   m_Model: {fileID: 0}
   m_InferenceDevice: 0
   m_UseHeuristic: 0
-  m_BehaviorName: RollerBallBrain
+  m_BehaviorName: Robot
 --- !u!114 &2994480333304047144
 MonoBehaviour:
   m_ObjectHideFlags: 0

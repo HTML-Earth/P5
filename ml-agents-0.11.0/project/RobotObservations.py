@@ -85,9 +85,9 @@ class RobotObservations(IntEnum):
     debris_to_dropzone_4 = 78
     debris_to_dropzone_5 = 79
     debris_to_dropzone_6 = 80
-    next_angle_to_debris_1 = 81
-    next_angle_to_debris_2 = 82
-    next_angle_to_debris_3 = 83
-    next_angle_to_debris_4 = 84
-    next_angle_to_debris_5 = 85
-    next_angle_to_debris_6 = 86
+    angle_to_debris_1 = 81
+    angle_to_debris_2 = 82
+    angle_to_debris_3 = 83
+    angle_to_debris_4 = 84
+    angle_to_debris_5 = 85
+    angle_to_debris_6 = 86

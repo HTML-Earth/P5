@@ -30,15 +30,15 @@ class Agent:
                          self.getting_closer_to_dropzone,
                          self.rotation,
                          self.pointed_towards_debris,
-                         # self.angle_to_debris_1,
+                         self.angle_to_debris_1,
                          # self.distance_to_debris_1,
                          # self.debris_to_dropzone_1
                          ]
 
         # Observations
-        self.observations = None
-        self.sensors_front = None
-        self.sensors_behind = None
+        self.observations = [0] * 86
+        self.sensors_front = []
+        self.sensors_behind = []
         # Observation list class(IntEnum)
         self.obs = observation.RobotObservations
 
@@ -106,7 +106,7 @@ class Agent:
         state.append(1) if self.get_obs(self.obs.robot_facing_debris) else state.append(0)
 
         # Angle to debris
-        # state.append(int(self.get_obs(self.obs.angle_robot_debris_1)))
+        state.append(int(self.get_obs(self.obs.angle_robot_debris_1)))
 
         # Distance to debris
         # state.append(int(self.get_obs(self.obs.getting_closer_to_debris_1)))
@@ -292,56 +292,34 @@ class Agent:
         return closer_to_dropzone
 
     def angle_to_debris_1(self, state, action):
-        return self.angle_to_debris(state, action, self.obs.next_angle_to_debris_1)
+        return self.angle_to_debris(state, action, self.obs.angle_to_debris_1)
 
     def angle_to_debris_2(self, state, action):
-        return self.angle_to_debris(state, action, self.obs.next_angle_to_debris_2)
+        return self.angle_to_debris(state, action, self.obs.angle_to_debris_2)
 
     def angle_to_debris_3(self, state, action):
-        return self.angle_to_debris(state, action, self.obs.next_angle_to_debris_3)
+        return self.angle_to_debris(state, action, self.obs.angle_to_debris_3)
 
     def angle_to_debris_4(self, state, action):
-        return self.angle_to_debris(state, action, self.obs.next_angle_to_debris_4)
+        return self.angle_to_debris(state, action, self.obs.angle_to_debris_4)
 
     def angle_to_debris_5(self, state, action):
-        return self.angle_to_debris(state, action, self.obs.next_angle_to_debris_5)
+        return self.angle_to_debris(state, action, self.obs.angle_to_debris_5)
 
     def angle_to_debris_6(self, state, action):
-        return self.angle_to_debris(state, action, self.obs.next_angle_to_debris_6)
+        return self.angle_to_debris(state, action, self.obs.angle_to_debris_6)
 
     def angle_to_debris(self, state, action, observation_index):
         action_list = list(action)
 
-        angle_to_debris = None
+        angle_to_debris = 0
         transform_value = 1 / 360
 
-        if action_list[0] == 1:
-            if action_list[1] == 1:
-                if self.get_obs(observation_index) is not None:
-                    angle_to_debris = self.get_obs(observation_index)
-
-            elif action_list[1] == 0:
-                if self.get_obs(observation_index) is not None:
-                    angle_to_debris = self.get_obs(observation_index)
-
-            elif action_list[1] == -1:
-                if self.get_obs(observation_index) is not None:
-                    angle_to_debris = self.get_obs(observation_index)
-
-        if action_list[0] == -1:
-            if action_list[1] == 1:
-                if self.get_obs(observation_index) is not None:
-                    angle_to_debris = self.get_obs(observation_index)
-
-            elif action_list[1] == 0:
-                if self.get_obs(observation_index) is not None:
-                    angle_to_debris = self.get_obs(observation_index)
-
-            elif action_list[1] == -1:
-                if self.get_obs(observation_index) is not None:
-                    angle_to_debris = self.get_obs(observation_index)
-
-        if action_list[0] == 0:
+        if action_list[1] == 1:
+            angle_to_debris = self.get_obs(observation_index) + self.rotation_constant
+        elif action_list[1] == -1:
+            angle_to_debris = self.get_obs(observation_index) - self.rotation_constant
+        elif action_list[1] == 0:
             angle_to_debris = self.get_obs(observation_index)
 
         return (angle_to_debris + 180) * transform_value

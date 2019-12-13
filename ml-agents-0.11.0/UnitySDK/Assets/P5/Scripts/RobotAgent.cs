@@ -444,26 +444,17 @@ public class RobotAgent : Agent
         int counter = 0;
         foreach (var debris in debrisInfos)
         {
-            // robot's next postiion
-            Vector3 rbNewPosition = rb.position + rb.velocity;
-
-            // robot's new direction poiting forward
-            Vector3 rbNewDirection = transform.forward;
-
-            // new vector from robot's next position to debris
-            Vector3 nextVecToDebris = debris.lastKnownPosition - rbNewPosition;
-
-            // new angle between debris and robot
-            float nextAngle =  Vector2.SignedAngle(rbNewDirection, nextVecToDebris);
+            // Angle between debris and robot
+            float angle_to_debris =  Vector2.SignedAngle(debris.transform.position, transform.forward);
 
             counter++;
             
-            AddVectorObs(nextAngle, "next_angle_to_debris_" + counter);
+            AddVectorObs(angle_to_debris, "angle_to_debris_" + counter);
         }
         // If there are fewer than 6 debris, pad out the observations
         for (int i = 0; i < DebrisCount - debrisInfos.Count; i++)
         {
-            AddVectorObs(Mathf.Infinity, "next_angle_to_debris_" + (i+debrisInfos.Count+1));
+            AddVectorObs(Mathf.Infinity, "angle_to_debris_" + (i+debrisInfos.Count+1));
         }
     }
 

@@ -877,7 +877,7 @@ MonoBehaviour:
     width: 80
     height: 80
     qualityLevel: 1
-    timeScale: 10
+    timeScale: 1
     targetFrameRate: -1
   m_InferenceConfiguration:
     width: 1280
@@ -1212,7 +1212,7 @@ PrefabInstance:
     - target: {fileID: 8510312020121741670, guid: 81f47bcef54978a40a80743e3328700e,
         type: 3}
       propertyPath: m_Name
-      value: RollerAgent
+      value: RobotAgent
       objectReference: {fileID: 0}
     - target: {fileID: 4630239631701515125, guid: 81f47bcef54978a40a80743e3328700e,
         type: 3}

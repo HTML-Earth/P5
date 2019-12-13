@@ -17,9 +17,7 @@ public class RobotAgent : Agent
     RobotVision vision;
     DropZone dropZone;
     DisplayRewards displayRewards;
-    
-    public Transform Target;
-    
+
     [FormerlySerializedAs("debrisDetector")] [SerializeField]
     DebrisDetector debrisInShovel;
 
@@ -177,10 +175,10 @@ public class RobotAgent : Agent
 
         // Distance sensor measurements (11 - 40)
         float[] distances = sensors.GetMeasuredDistances();
-        //for (int dist = 0; dist < distances.Length; dist++)
-        //{
-        //    AddVectorObs(distances[dist]);
-        //}
+        for (int dist = 0; dist < distances.Length; dist++)
+        {
+            AddVectorObs(distances[dist]);
+        }
 
         // Debris positions (41 - 58)
         debrisInfos = vision.UpdateVision();
@@ -194,7 +192,7 @@ public class RobotAgent : Agent
         //ObsPadOutInfinity(3);
 
         // Simulation time (59)
-        AddVectorObs(timeElapsed);
+        //AddVectorObs(timeElapsed);
 
         // features:
 
@@ -373,12 +371,47 @@ public class RobotAgent : Agent
     {
         if (doneHasBeenCalled)
             return;
-        
+
         // Perform actions
-        wheels.SetTorque(vectorAction[0] * 2 - 1);
-        wheels.SetAngle(vectorAction[1] * 2 - 1);
-        
-        shovel.RotateShovel(vectorAction[2] * 2 - 1);
+        //print("vectoraction 0: " + vectorAction[0]);
+        int movement = 0;
+        int wheelAngle = 0;
+        int rotateShovel = 0;
+        //print("movement: " + movement);
+
+        switch ((int)vectorAction[0])
+        { 
+            case 1:
+                movement = -1;
+                break;
+            case 2:
+                movement = 1;
+                break;
+        }
+
+        switch ((int)vectorAction[1])
+        {
+            case 1:
+                wheelAngle = -1;
+                break;
+            case 2:
+                wheelAngle = 1;
+                break;
+        }
+
+        switch ((int)vectorAction[2])
+        {
+            case 1:
+                rotateShovel = -1;
+                break;
+            case 2:
+                rotateShovel = 1;
+                break;
+        }
+
+        wheels.SetTorque(movement);
+        wheels.SetAngle(wheelAngle);
+        shovel.RotateShovel(rotateShovel);
         
         // Store current action vector state for visualization
         actionVector = vectorAction;
@@ -644,7 +677,7 @@ public class RobotAgent : Agent
         previousDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
         
         // Force reset if not using Python
-        if (!academy.IsCommunicatorOn)
+        //if (!academy.IsCommunicatorOn)
             academy.ForceForcedFullReset();
     }
 

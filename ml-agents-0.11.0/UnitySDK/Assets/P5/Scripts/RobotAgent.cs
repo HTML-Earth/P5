@@ -372,13 +372,11 @@ public class RobotAgent : Agent
         if (doneHasBeenCalled)
             return;
 
-        // Perform actions
-        print("vectoraction 0: " + vectorAction[1]);
         int movement = 0;
         int wheelAngle = 0;
         int rotateShovel = 0;
-        //print("movement: " + movement);
 
+        // Case 0: Do nothing for all switches
         switch ((int)vectorAction[0])
         { 
             case 1:
@@ -409,6 +407,7 @@ public class RobotAgent : Agent
                 break;
         }
 
+        // Perform actions
         wheels.SetTorque(movement);
         wheels.SetAngle(wheelAngle);
         shovel.RotateShovel(rotateShovel);

@@ -13,8 +13,7 @@ public class RobotAgent : Agent
 {
     RobotAcademy academy;
     Rigidbody rb;
-    WheelDrive wheels;
-    ShovelControl shovel;
+    //ShovelControl shovel;
     RobotSensors sensors;
     RobotVision vision;
     DropZone dropZone;
@@ -99,8 +98,7 @@ public class RobotAgent : Agent
     {
         academy = FindObjectOfType<RobotAcademy>();
         rb = GetComponent<Rigidbody>();
-        wheels = GetComponent<WheelDrive>();
-        shovel = GetComponent<ShovelControl>();
+        //shovel = GetComponent<ShovelControl>();
         vision = GetComponent<RobotVision>();
         sensors = GetComponent<RobotSensors>();
         dropZone = FindObjectOfType<DropZone>();
@@ -127,7 +125,7 @@ public class RobotAgent : Agent
         currentDistanceFromZone = Vector3.Distance(transform.position, dropZone.transform.position);
         previousDistanceFromZone = currentDistanceFromZone;
         
-        shovel.ResetRotations();
+        //shovel.ResetRotations();
 
         doneHasBeenCalled = false;
 
@@ -168,7 +166,7 @@ public class RobotAgent : Agent
         AddVectorObs(localVelocity.z, "robot_velocity_z");
         
         // Shovel position
-        AddVectorObs(shovel.GetShovelPos(), "shovel_position");
+        //AddVectorObs(shovel.GetShovelPos(), "shovel_position");
         
         // DropZone position and radius
         Vector3 dropZonePosition = dropZone.transform.position;
@@ -468,10 +466,9 @@ public class RobotAgent : Agent
             return;
         
         // Perform actions
-        wheels.SetTorque(vectorAction[0]);
-        wheels.SetAngle(vectorAction[1]);
+        ControlRobot(Mathf.FloorToInt(vectorAction[0]), Mathf.FloorToInt(vectorAction[1]));
         
-        shovel.RotateShovel(vectorAction[2]);
+        //shovel.RotateShovel(vectorAction[2]);
         
         // Store current action vector state for visualization
         actionVector = vectorAction;
@@ -509,6 +506,19 @@ public class RobotAgent : Agent
             lastHundredAttempts.Add(false);
             Done("Time limit reached");
         }
+    }
+
+    void ControlRobot(int drive, int rotate)
+    {
+        if (drive == 1)
+            rb.MovePosition(rb.position + transform.forward * 0.1f);
+        else if (drive == -1)
+            rb.MovePosition(rb.position - transform.forward * 0.1f);
+        
+        if (rotate == 1)
+            transform.Rotate(transform.up, 2f);
+        else if (rotate == -1)
+            transform.Rotate(transform.up, -2f);
     }
 
     // Reward given for the first time each debris is seen

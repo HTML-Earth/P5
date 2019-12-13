@@ -63,8 +63,8 @@ public class DisplayActions : MonoBehaviour
             left.color  = (actions[1] < -0.9) ? opaque : transparent;
             right.color = (actions[1] > 0.9)  ? opaque : transparent;
             
-            shovelUp.color   = (actions[2] < -0.9)  ? opaque : transparent;
-            shovelDown.color = (actions[2] > 0.9) ? opaque : transparent;
+            //shovelUp.color   = (actions[2] < -0.9)  ? opaque : transparent;
+            //shovelDown.color = (actions[2] > 0.9) ? opaque : transparent;
         }
     }
     

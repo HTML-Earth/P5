@@ -753,8 +753,8 @@ public class RobotAgent : Agent
         currentDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
         previousDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
         
-        // Force reset if not using Python
-        if (!academy.IsCommunicatorOn)
+        // Force reset if not using our Python script
+        if (!academy.IsCommunicatorOn || academy.communicatorPort == RobotAcademy.CommunicatorPort.DefaultTraining)
             academy.ForceForcedFullReset();
     }
 

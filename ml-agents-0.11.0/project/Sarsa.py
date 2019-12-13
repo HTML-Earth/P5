@@ -97,11 +97,6 @@ class SarsaLFA:
                 self.reward_per_episode = 0
                 self.agent.reset_simulation()
 
-        # Delta in relation to episodes
-        plt.subplot(2, 1, 1)
-        plt.plot(x_episode, y_delta)
-        plt.ylabel('y - Delta')
-
         # Reward in relation to episodes
         plt.subplot(2, 1, 2)
         plt.plot(x_episode, y_reward)

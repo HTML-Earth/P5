@@ -48,6 +48,10 @@ public class RobotAgent : Agent
 
     List<string> observationNames = new List<string>();
     bool observationsLogged = false;
+    
+    // Robot control values
+    const float Robot_MovementPerStep = 0.1f; // (meters)
+    const float Robot_RotationPerStep = 2f; // (degrees)
 
     // Positive rewards
     const float Reward_DebrisCameInFront = 0.08f;
@@ -511,14 +515,14 @@ public class RobotAgent : Agent
     void ControlRobot(int drive, int rotate)
     {
         if (drive == 1)
-            rb.MovePosition(rb.position + transform.forward * 0.1f);
+            rb.MovePosition(rb.position + transform.forward * Robot_MovementPerStep);
         else if (drive == -1)
-            rb.MovePosition(rb.position - transform.forward * 0.1f);
+            rb.MovePosition(rb.position - transform.forward * Robot_MovementPerStep);
         
         if (rotate == 1)
-            transform.Rotate(transform.up, 2f);
+            transform.Rotate(transform.up, Robot_RotationPerStep);
         else if (rotate == -1)
-            transform.Rotate(transform.up, -2f);
+            transform.Rotate(transform.up, -Robot_RotationPerStep);
     }
 
     // Reward given for the first time each debris is seen

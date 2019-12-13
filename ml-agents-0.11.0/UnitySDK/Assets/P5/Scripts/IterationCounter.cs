@@ -8,14 +8,16 @@ using UnityEngine.Experimental.PlayerLoop;
 public class IterationCounter : MonoBehaviour
 {
     TextMeshProUGUI text;
-    RobotAcademy robotAcademy;
+
+    [SerializeField]
+    RobotEnvironment environment;
+    
+    [SerializeField]
     RobotAgent robotAgent;
 
     void Awake()
     {
         text = GetComponent<TextMeshProUGUI>();
-        robotAcademy = FindObjectOfType<RobotAcademy>();
-        robotAgent = FindObjectOfType<RobotAgent>();
         text.text = "Episode: 0    Completions: 0";
     }
 
@@ -23,7 +25,7 @@ public class IterationCounter : MonoBehaviour
     void Update()
     {
         int completions = robotAgent.GetTimesWon();
-        int iterations = robotAcademy.GetIterations();
+        int iterations = environment.GetIterations();
         if (iterations > 1)
         {
             text.text = "Episodes: " + iterations + "\t Completions: " + completions;

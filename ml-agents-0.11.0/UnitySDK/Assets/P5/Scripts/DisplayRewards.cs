@@ -8,6 +8,8 @@ public class DisplayRewards : MonoBehaviour
     public TextMeshProUGUI lastRewardText;
 
     public GameObject rewardPopup;
+
+    public bool displayRewards;
     
     TextMeshProUGUI text;
     RobotAgent robotAgent;
@@ -59,6 +61,9 @@ public class DisplayRewards : MonoBehaviour
 
     public void DisplayReward(float rewardValue, string rewardString, Vector3 position)
     {
+        if (!displayRewards)
+            return;
+        
         Color textColor = (rewardValue < 0) ? penaltyColor : rewardColor;
         
         GameObject popupObj = Instantiate(rewardPopup, transform.parent);

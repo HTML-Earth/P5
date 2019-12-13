@@ -19,7 +19,6 @@ public class Debris : MonoBehaviour
 
     void Start()
     {
-        startPosition = transform.position;
         RandomDebris();
     }
 
@@ -54,6 +53,11 @@ public class Debris : MonoBehaviour
         return debrisIndex;
     }
 
+    public void UpdateStartPosition()
+    {
+        startPosition = transform.position;
+    }
+    
     public Vector3 GetStartPosition()
     {
         return startPosition;

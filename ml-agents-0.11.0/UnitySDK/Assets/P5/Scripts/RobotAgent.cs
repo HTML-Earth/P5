@@ -9,7 +9,6 @@ using UnityEngine.Serialization;
 
 public class RobotAgent : Agent
 {
-    RobotAcademy academy;
     Rigidbody rb;
     WheelDrive wheels;
     ShovelControl shovel;
@@ -18,10 +17,13 @@ public class RobotAgent : Agent
     DropZone dropZone;
     DisplayRewards displayRewards;
 
-    [FormerlySerializedAs("debrisDetector")] [SerializeField]
+    [SerializeField]
+    RobotEnvironment environment;
+    
+    [SerializeField]
     DebrisDetector debrisInShovel;
 
-    [FormerlySerializedAs("debrisInfront")] [SerializeField]
+    [SerializeField]
     DebrisDetector debrisInFront;
     
     List<bool> currentDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
@@ -92,13 +94,20 @@ public class RobotAgent : Agent
     
     public override void InitializeAgent()
     {
-        academy = FindObjectOfType<RobotAcademy>();
+        environment.InitializeEnvironment();
+
         rb = GetComponent<Rigidbody>();
+        
         wheels = GetComponent<WheelDrive>();
         shovel = GetComponent<ShovelControl>();
+        
         vision = GetComponent<RobotVision>();
+        vision.InitializeDebrisArray(environment);
+        
         sensors = GetComponent<RobotSensors>();
-        dropZone = FindObjectOfType<DropZone>();
+        
+        dropZone = environment.GetDropZone();
+        
         displayRewards = FindObjectOfType<DisplayRewards>();
         
         startPosition = transform.position;
@@ -110,6 +119,8 @@ public class RobotAgent : Agent
 
     public override void AgentReset()
     {
+        environment.ResetEnvironment();
+        
         debrisInShovel.InitializeDetector();
         debrisInFront.InitializeDetector();
         
@@ -529,8 +540,8 @@ public class RobotAgent : Agent
     void RewardDebrisInOutZone()
     {
         // Check if debris has left/entered the zone
-        List<bool> previousDebrisInZone = academy.GetPreviousDebrisInZone();
-        List<bool> currentDebrisInZone = academy.GetCurrentDebrisInZone();
+        List<bool> previousDebrisInZone = environment.GetPreviousDebrisInZone();
+        List<bool> currentDebrisInZone = environment.GetCurrentDebrisInZone();
 
         for (int i = 0; i < previousDebrisInZone.Count; i++)
         {
@@ -627,7 +638,9 @@ public class RobotAgent : Agent
         
         // Check if robot is out of bounds
         Vector3 robotPosition = transform.position;
-        if (robotPosition.x > 25f || robotPosition.x < -25f || robotPosition.z > 25f || robotPosition.z < -25f || robotPosition.y < -5f)
+        if (robotPosition.x > environment.GetBoundsMaximum().x || robotPosition.x < environment.GetBoundsMinimum().x ||
+            robotPosition.z > environment.GetBoundsMaximum().z || robotPosition.z < environment.GetBoundsMinimum().z ||
+            robotPosition.y < environment.GetBoundsMinimum().y)
             Done("robot is out of bounds");
     }
 
@@ -669,15 +682,9 @@ public class RobotAgent : Agent
         
         timesDone++;
 
-        academy.ResetDebrisInZone();
-        
         // Reset shovel content on restart
         currentDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
         previousDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
-        
-        // Force reset if not using our Python script
-        if (!academy.IsCommunicatorOn || academy.communicatorPort == RobotAcademy.CommunicatorPort.DefaultTraining)
-            academy.ForceForcedFullReset();
     }
 
     // Wrapper function for AddReward that prints the reward/penalty and custom message in console
@@ -701,10 +708,24 @@ public class RobotAgent : Agent
     {
         float[] heuristicValues = new float[4];
 
-        heuristicValues[0] = Input.GetAxis("Vertical");
-        heuristicValues[1] = Input.GetAxis("Horizontal");
+        float throttle = Input.GetAxis("Vertical");
+        float turn = Input.GetAxis("Horizontal");
+        
+        if (throttle > 0.9f)
+            heuristicValues[0] = 2;
+        else if (throttle < -0.9f)
+            heuristicValues[0] = 1;
+        else
+            heuristicValues[0] = 0;
+        
+        if (turn > 0.9f)
+            heuristicValues[1] = 2;
+        else if (turn < -0.9f)
+            heuristicValues[1] = 1;
+        else
+            heuristicValues[1] = 0;
 
-        heuristicValues[2] = (Input.GetKey(KeyCode.Q)) ? 1f : (Input.GetKey(KeyCode.E)) ? -1f : 0f;
+        heuristicValues[2] = (Input.GetKey(KeyCode.Q)) ? 2 : (Input.GetKey(KeyCode.E)) ? 1 : 0;
 
         return heuristicValues;
     }
@@ -761,20 +782,23 @@ public class RobotAgent : Agent
 
 #if UNITY_EDITOR
     // Used to draw debug info on screen
-    void OnDrawGizmos()
-    {
-        if (!EditorApplication.isPlaying)
-            return;
-
-        // Draws rings around the last known debris positions
-        foreach (RobotVision.DebrisInfo debrisInfo in debrisInfos)
-        {
-            Handles.color = debrisInfo.isVisible ? debrisHighlight : debrisHighlightMissing;
-            Handles.DrawWireDisc(debrisInfo.lastKnownPosition, Vector3.up, 0.5f);
-        }
-        
-        Handles.color = Color.red;
-        Handles.DrawLine(transform.position, transform.position + rb.velocity);
-    }
-    #endif
+    //void OnDrawGizmos()
+    //{
+    //    if (!EditorApplication.isPlaying)
+    //        return;
+    //
+    //    if (debrisInfos == null)
+    //        return;
+    //    
+    //    // Draws rings around the last known debris positions
+    //    foreach (RobotVision.DebrisInfo debrisInfo in debrisInfos)
+    //    {
+    //        Handles.color = debrisInfo.isVisible ? debrisHighlight : debrisHighlightMissing;
+    //        Handles.DrawWireDisc(debrisInfo.lastKnownPosition, Vector3.up, 0.5f);
+    //    }
+    //    
+    //    Handles.color = Color.red;
+    //    Handles.DrawLine(transform.position, transform.position + rb.velocity);
+    //}
+#endif
 }

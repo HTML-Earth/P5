@@ -373,7 +373,7 @@ public class RobotAgent : Agent
             return;
 
         // Perform actions
-        //print("vectoraction 0: " + vectorAction[0]);
+        print("vectoraction 0: " + vectorAction[1]);
         int movement = 0;
         int wheelAngle = 0;
         int rotateShovel = 0;

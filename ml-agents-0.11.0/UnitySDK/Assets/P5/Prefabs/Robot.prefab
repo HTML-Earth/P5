@@ -4176,15 +4176,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 77
+    vectorObservationSize: 37
     numStackedVectorObservations: 1
-    vectorActionSize: 04000000
+    vectorActionSize: 030000000300000003000000
     vectorActionDescriptions: []
-    vectorActionSpaceType: 1
+    vectorActionSpaceType: 0
   m_Model: {fileID: 0}
   m_InferenceDevice: 0
   m_UseHeuristic: 0
-  m_BehaviorName: Robot
+  m_BehaviorName: RollerBallBrain
 --- !u!114 &2994480333304047144
 MonoBehaviour:
   m_ObjectHideFlags: 0

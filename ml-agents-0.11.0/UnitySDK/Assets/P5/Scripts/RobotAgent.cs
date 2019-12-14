@@ -16,7 +16,7 @@ public class RobotAgent : Agent
     RobotVision vision;
     DropZone dropZone;
     DisplayRewards displayRewards;
-    public Transform debris;
+    //public Transform debris;
 
     [SerializeField]
     RobotEnvironment environment;
@@ -37,6 +37,9 @@ public class RobotAgent : Agent
 
     Vector3 startPosition;
     Quaternion startRotation;
+    
+    public Transform Debris;
+    public Transform DropZone;
     
     Vector3 rbPosition;
     Vector3 debrisPosition;
@@ -96,7 +99,7 @@ public class RobotAgent : Agent
         startRotation = transform.rotation;
 
         lastCheckedPosition = startPosition;
-        debrisPosition = debris.position - environment.transform.position;
+        //debrisPosition = debris.position - environment.transform.position;
         AgentReset();
     }
 
@@ -144,20 +147,19 @@ public class RobotAgent : Agent
     public override void CollectObservations()
     {
         // Positions
-        rbPosition = transform.position - environment.transform.position;
-        debrisPosition = debris.position - environment.transform.position;
+        //debrisPosition = debris.position - environment.transform.position;
         dropZonePosition = dropZone.transform.position - environment.transform.position;
         
         // Robot position in each environment
-        AddVectorObs(rbPosition);
+        AddVectorObs(this.transform.position - environment.transform.position);
 
         // Robot velocity
         AddVectorObs(rb.velocity.x);
         AddVectorObs(rb.velocity.z);
         
         // Debris and DropZone position in each environment
-        AddVectorObs(debrisPosition);
-        AddVectorObs(dropZonePosition);
+        AddVectorObs(Debris.position - environment.transform.position);
+        AddVectorObs(DropZone.position - environment.transform.position);
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)
@@ -182,8 +184,8 @@ public class RobotAgent : Agent
         CreateListWithSuccessRate();
     
     
-        float distanceToTarget = Vector3.Distance(debris.position,
-            dropZone.transform.position);
+        float distanceToTarget = Vector3.Distance(Debris.position,
+            DropZone.position);
         
         // Reached target
         if (distanceToTarget < 5f)

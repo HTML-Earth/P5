@@ -43,7 +43,7 @@ class SarsaLFA:
         actions = self.agent.actions
 
         if random.random() < self.epsilon:
-            action = (random.randint(-1, 1), random.randint(-1, 1))
+            action = (random.randint(0, 2), random.randint(0, 2))
         else:
             q = [self.lookup_q(state, a) for a in actions]
             max_q = max(q)
@@ -59,7 +59,7 @@ class SarsaLFA:
 
     def train_agent(self):
         state = self.agent.get_state()
-        action = (1, 0)
+        action = (0, 0)
 
         # Variables for x- and y- coordinates
         x_episode = []

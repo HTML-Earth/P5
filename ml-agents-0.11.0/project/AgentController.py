@@ -12,8 +12,8 @@ class Agent:
 
         # Algorithm
         self.actions = [(i, j)
-                        for i in range(-1, 2)
-                        for j in range(-1, 2)]
+                        for i in range(0, 3)
+                        for j in range(0, 3)]
 
         self.throttle_constant = 1.1
         self.reverse_constant = 0.9
@@ -63,7 +63,6 @@ class Agent:
     # Update observations variable with information about the environment without dropzone
     def update_observations(self):
         self.observations = self.env_info[self.default_brain].vector_observations[0]
-
         self.velocity_z = self.get_obs(self.obs.robot_velocity_z)
         #self.sensors_front = [self.get_obs(self.obs.sensor_measurement_1), self.get_obs(self.obs.sensor_measurement_2), self.get_obs(self.obs.sensor_measurement_30)]
         #self.sensors_behind = [-self.get_obs(self.obs.sensor_measurement_16), -self.get_obs(self.obs.sensor_measurement_15), -self.get_obs(self.obs.sensor_measurement_17)]
@@ -382,11 +381,11 @@ class Agent:
         # Transform velocity into a value between 0 and 1
         transform_value = 1 / 10
 
-        if action_list[0] == 1:
+        if action_list[0] == 0:
             return round(self.velocity_z * self.throttle_constant, 1) * transform_value
-        elif action_list[0] == -1:
+        elif action_list[0] == 1:
             return round(self.velocity_z * self.reverse_constant, 1) * transform_value
-        elif action_list[0] == 0:
+        elif action_list[0] == 2:
             return round(self.velocity_z, 1) * transform_value
 
     # Rotation: 0 to 360

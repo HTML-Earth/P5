@@ -166,28 +166,28 @@ public class RobotAgent : Agent
     {
         // Robot position
         Vector3 currentPosition = transform.position;
-        AddVectorObs(currentPosition.x, "robot_position_x");
-        AddVectorObs(currentPosition.z, "robot_position_z");
+        AddVectorObs(currentPosition.x);
+        AddVectorObs(currentPosition.z);
 
         // Robot rotation
-        AddVectorObs(transform.rotation.eulerAngles.y, "robot_rotation");
+        AddVectorObs(transform.rotation.eulerAngles.y);
 
         // Robot velocity
         Vector3 localVelocity = rb.transform.InverseTransformDirection(rb.velocity);
 
-        AddVectorObs(localVelocity.x, "robot_velocity_x");
-        AddVectorObs(localVelocity.z, "robot_velocity_z");
+        AddVectorObs(localVelocity.x);
+        AddVectorObs(localVelocity.z);
         
         // DropZone position and radius
         Vector3 dropZonePosition = dropZone.transform.position;
-        AddVectorObs(dropZonePosition.x, "dropzone_position_x");
-        AddVectorObs(dropZonePosition.z, "dropzone_position_z");
+        AddVectorObs(dropZonePosition.x);
+        AddVectorObs(dropZonePosition.z);
 
         // Distance sensor measurements
         float[] distances = sensors.GetMeasuredDistances();
         for (int dist = 0; dist < distances.Length; dist++)
         {
-            AddVectorObs(distances[dist], "sensor_measurement_" + (dist+1));
+            AddVectorObs(distances[dist]);
         }
 
         // Debris positions (41 - 58)
@@ -232,13 +232,13 @@ public class RobotAgent : Agent
             float distanceToDebris = Vector3.Distance(debrisInfos[debris].lastKnownPosition, rbNewPosition);
             
             
-            AddVectorObs(distanceToDebris, "getting_closer_to_debris_" + (debris+1));
+            AddVectorObs(distanceToDebris);
         }
 
         // If there are fewer than 6 debris, pad out the observations
         for (int i = 0; i < DebrisCount - debrisInfos.Count; i++)
         {
-            AddVectorObs(false, "getting_closer_to_debris_" + (i+debrisInfos.Count+1));
+            AddVectorObs(false);
         }
     }
     
@@ -255,7 +255,7 @@ public class RobotAgent : Agent
             }
         }
 
-        AddVectorObs(debrisIsInShovel, "debris_in_shovel");
+        AddVectorObs(debrisIsInShovel);
     }
     
     // Angle between (Robot forward) and (vector between robot and debris), Returns float
@@ -275,12 +275,12 @@ public class RobotAgent : Agent
             
             // Find angle between robot direction and debris (Signed to indicate which side the debris is closest to)
             float angleToDebris = Vector2.SignedAngle(vec2RobotToDebris, vec2TransformForward);
-            AddVectorObs(angleToDebris, "angle_robot_debris_" + (debris+1));
+            AddVectorObs(angleToDebris);
         }
         // If there are fewer than 6 debris, pad out the observations
         for (int i = 0; i < DebrisCount - debrisInfos.Count; i++)
         {
-            AddVectorObs(360f, "angle_robot_debris_" + (i+debrisInfos.Count+1));
+            AddVectorObs(360f);
         }
     }
     
@@ -296,7 +296,7 @@ public class RobotAgent : Agent
                 debrisIsInFront = true;
             }
         }
-        AddVectorObs(debrisIsInFront, "debris_in_front");
+        AddVectorObs(debrisIsInFront);
     }
 
     // Check if robot is pointed towards a debris, Returns boolean 
@@ -325,7 +325,7 @@ public class RobotAgent : Agent
             }
             counter++;
         }
-        AddVectorObs(pointingTowardDebris, "robot_facing_debris");
+        AddVectorObs(pointingTowardDebris);
     }
     
     // If there are fewer than 6 debris, pad out the observations
@@ -335,7 +335,7 @@ public class RobotAgent : Agent
         {
             for (int j = 0; j < observationAmount; j++)
             {
-                AddVectorObs(observation, observationName);
+                AddVectorObs(observation);
             }
         }
     }
@@ -370,13 +370,13 @@ public class RobotAgent : Agent
                 debrisCloserToDropZone = debrisToDropZone < oldDebrisToDropZone;
             }
             
-            AddVectorObs(debrisCloserToDropZone, "debris_to_dropzone_" + (i+1));
+            AddVectorObs(debrisCloserToDropZone);
         }
         
         // If there are fewer than 6 debris, pad out the observations
         for (int i = 0; i < DebrisCount - debrisInfos.Count; i++)
         {
-            AddVectorObs(Mathf.Infinity, "debris_to_dropzone_" + (i+debrisInfos.Count+1));
+            AddVectorObs(Mathf.Infinity);
         }
     }
     
@@ -391,12 +391,12 @@ public class RobotAgent : Agent
 
             counter++;
             
-            AddVectorObs(angle_to_debris, "angle_to_debris_" + counter);
+            AddVectorObs(angle_to_debris);
         }
         // If there are fewer than 6 debris, pad out the observations
         for (int i = 0; i < DebrisCount - debrisInfos.Count; i++)
         {
-            AddVectorObs(Mathf.Infinity, "angle_to_debris_" + (i+debrisInfos.Count+1));
+            AddVectorObs(Mathf.Infinity);
         }
     }
 
@@ -686,11 +686,6 @@ public class RobotAgent : Agent
         // Reset shovel content on restart
         currentDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
         previousDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
-
-        
-        // Force reset if not using our Python script
-        if (!academy.IsCommunicatorOn || academy.communicatorPort == RobotAcademy.CommunicatorPort.DefaultTraining)
-            academy.ForceForcedFullReset();
     }
 
     // Wrapper function for AddReward that prints the reward/penalty and custom message in console

@@ -11,10 +11,9 @@ class Agent:
         self.default_brain = None
 
         # Algorithm
-        self.actions = [(i, j, k, 0)
+        self.actions = [(i, j)
                         for i in range(-1, 2)
-                        for j in range(-1, 2)
-                        for k in range(-1, 2)]
+                        for j in range(-1, 2)]
 
         self.throttle_constant = 1.1
         self.reverse_constant = 0.9
@@ -28,19 +27,19 @@ class Agent:
         self.robot_shovel_rotation_constant = 10
 
         self.features = [self.feature_1,
-                         self.throttling_into_wall,
-                         self.reversing_into_wall,
-                         self.robot_within_dropzone,
-                         self.getting_closer_to_debris_1,
-                         self.ready_to_pickup_debris,
-                         self.debris_in_shovel,
-                         self.debris_in_front_of_shovel,
-                         self.getting_closer_to_dropzone,
-                         self.velocity,
-                         self.rotation,
-                         self.pointed_towards_debris,
-                         self.arm_rotation,
-                         self.shovel_rotation]
+                         #self.throttling_into_wall,
+                         #self.reversing_into_wall,
+                         #self.robot_within_dropzone,
+                         #self.getting_closer_to_debris_1,
+                         #self.ready_to_pickup_debris,
+                         #self.debris_in_shovel,
+                         #self.debris_in_front_of_shovel,
+                         #self.getting_closer_to_dropzone,
+                         self.velocity]
+                         #self.rotation,
+                         #self.pointed_towards_debris,
+                         #self.arm_rotation,
+                         #self.shovel_rotation]
 
         # Observations
         self.observations = None
@@ -66,15 +65,15 @@ class Agent:
         self.observations = self.env_info[self.default_brain].vector_observations[0]
 
         self.velocity_z = self.get_obs(self.obs.robot_velocity_z)
-        self.sensors_front = [self.get_obs(self.obs.sensor_measurement_1), self.get_obs(self.obs.sensor_measurement_2), self.get_obs(self.obs.sensor_measurement_30)]
-        self.sensors_behind = [-self.get_obs(self.obs.sensor_measurement_16), -self.get_obs(self.obs.sensor_measurement_15), -self.get_obs(self.obs.sensor_measurement_17)]
+        #self.sensors_front = [self.get_obs(self.obs.sensor_measurement_1), self.get_obs(self.obs.sensor_measurement_2), self.get_obs(self.obs.sensor_measurement_30)]
+        #self.sensors_behind = [-self.get_obs(self.obs.sensor_measurement_16), -self.get_obs(self.obs.sensor_measurement_15), -self.get_obs(self.obs.sensor_measurement_17)]
 
     def get_obs(self, index):
         return self.observations[index]
 
     # Action functions
-    def perform_action(self, throttle, angle, arm_rotation, shovel_rotation):
-        action = np.array([throttle, angle, arm_rotation, shovel_rotation])
+    def perform_action(self, throttle, angle):
+        action = np.array([throttle, angle])
         self.env_info = self.env.step({self.default_brain: action})
 
     def get_reward(self):
@@ -93,43 +92,43 @@ class Agent:
         self.update_observations()
 
         # Throttling into wall
-        state.append(1) if self.sensors_front < [self.velocity_z] else state.append(0)
+        #state.append(1) if self.sensors_front < [self.velocity_z] else state.append(0)
 
         # Reversing into wall
-        state.append(1) if self.sensors_behind > [self.velocity_z] else state.append(0)
+        #state.append(1) if self.sensors_behind > [self.velocity_z] else state.append(0)
 
         # Robot within dropZone
-        state.append(1) if self.get_obs(self.obs.robot_in_dropzone) else state.append(0)
+        #state.append(1) if self.get_obs(self.obs.robot_in_dropzone) else state.append(0)
 
         # Getting closer to debris 1
-        state.append(1) if self.get_obs(self.obs.getting_closer_to_debris_1) else state.append(0)
+        #state.append(1) if self.get_obs(self.obs.getting_closer_to_debris_1) else state.append(0)
 
         # Ready to pickup debris
-        state.append(1) if self.get_obs(self.obs.arm_position) == 330 and self.get_obs(self.obs.shovel_position) == 360 - 47 else state.append(0)
+        #state.append(1) if self.get_obs(self.obs.arm_position) == 330 and self.get_obs(self.obs.shovel_position) == 360 - 47 else state.append(0)
 
         # Debris is in shovel
-        state.append(1) if self.get_obs(self.obs.debris_in_shovel) else state.append(0)
+        #state.append(1) if self.get_obs(self.obs.debris_in_shovel) else state.append(0)
 
         # Debris in front of shovel
-        state.append(1) if self.get_obs(self.obs.debris_in_front) else state.append(0)
+        #state.append(1) if self.get_obs(self.obs.debris_in_front) else state.append(0)
 
         # Getting closer to dropzone
-        state.append(1) if 90 < self.get_obs(self.obs.getting_closer_dropzone) < 270 and self.velocity_z > 0 else state.append(0)
+        #state.append(1) if 90 < self.get_obs(self.obs.getting_closer_dropzone) < 270 and self.velocity_z > 0 else state.append(0)
 
         # Velocity
         state.append(round(self.velocity_z, 1))
 
         # Rotation
-        state.append(int(self.get_obs(self.obs.robot_rotation)))
+        #state.append(int(self.get_obs(self.obs.robot_rotation)))
 
         # Pointed towards debris
-        state.append(1) if self.get_obs(self.obs.robot_direction_debris) else state.append(0)
+        #state.append(1) if self.get_obs(self.obs.robot_direction_debris) else state.append(0)
 
         # Arm rotation
-        state.append(int(self.get_obs(self.obs.arm_position)))
+        #state.append(int(self.get_obs(self.obs.arm_position)))
 
         # Shovel rotation
-        state.append(int(self.get_obs(self.obs.shovel_position)))
+        #state.append(int(self.get_obs(self.obs.shovel_position)))
 
         return state
 

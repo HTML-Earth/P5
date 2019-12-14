@@ -100,7 +100,7 @@ public class RobotAgent : Agent
 
         lastCheckedPosition = startPosition;
         //debrisPosition = debris.position - environment.transform.position;
-        AgentReset();
+        //AgentReset();
     }
 
     public override void AgentReset()
@@ -192,7 +192,7 @@ public class RobotAgent : Agent
         if (distanceToTarget < 5f)
         {
             SetReward(1.0f);
-            Done();
+            Done("Debris in zone");
         }
         
         // Reset if time limit is reached
@@ -208,13 +208,15 @@ public class RobotAgent : Agent
     {
         if (other.collider.gameObject.layer == LayerMask.NameToLayer("environment"))
         {
-            Done();
+            Done("Hit wall");
         }
     }
 
     // Wrapper function for Done that prints a custom done message in console
     void Done(string reason)
     {
+        timesDone++;
+        
         doneHasBeenCalled = true;
         
         Debug.Log("Done! reason: " + reason);
@@ -225,8 +227,6 @@ public class RobotAgent : Agent
             
             lastHundredAttempts.RemoveAt(0);
         }
-        
-        timesDone++;
 
         // Reset shovel content on restart
         currentDebrisInShovel = new List<bool>() {false, false, false, false, false, false};

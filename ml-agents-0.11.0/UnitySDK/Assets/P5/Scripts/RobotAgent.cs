@@ -11,18 +11,20 @@ using UnityEngine.Serialization;
 
 public class RobotAgent : Agent
 {
-    RobotAcademy academy;
     Rigidbody rb;
     //ShovelControl shovel;
     RobotSensors sensors;
     RobotVision vision;
     DropZone dropZone;
     DisplayRewards displayRewards;
+
+    [SerializeField]
+    RobotEnvironment environment;
     
-    [FormerlySerializedAs("debrisDetector")] [SerializeField]
+    [SerializeField]
     DebrisDetector debrisInShovel;
 
-    [FormerlySerializedAs("debrisInfront")] [SerializeField]
+    [SerializeField]
     DebrisDetector debrisInFront;
     
     List<bool> currentDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
@@ -100,22 +102,29 @@ public class RobotAgent : Agent
     
     public override void InitializeAgent()
     {
-        academy = FindObjectOfType<RobotAcademy>();
+        environment.InitializeEnvironment();
+
         rb = GetComponent<Rigidbody>();
-        //shovel = GetComponent<ShovelControl>();
         vision = GetComponent<RobotVision>();
+        vision.InitializeDebrisArray(environment);
+        
         sensors = GetComponent<RobotSensors>();
-        dropZone = FindObjectOfType<DropZone>();
+        
+        dropZone = environment.GetDropZone();
+        
         displayRewards = FindObjectOfType<DisplayRewards>();
         
         startPosition = transform.position;
         startRotation = transform.rotation;
 
         lastCheckedPosition = startPosition;
+        AgentReset();
     }
 
     public override void AgentReset()
     {
+        environment.ResetEnvironment();
+        
         debrisInShovel.InitializeDetector();
         debrisInFront.InitializeDetector();
         
@@ -165,6 +174,7 @@ public class RobotAgent : Agent
 
         // Robot velocity
         Vector3 localVelocity = rb.transform.InverseTransformDirection(rb.velocity);
+
         AddVectorObs(localVelocity.x, "robot_velocity_x");
         AddVectorObs(localVelocity.z, "robot_velocity_z");
         
@@ -179,26 +189,36 @@ public class RobotAgent : Agent
         {
             AddVectorObs(distances[dist], "sensor_measurement_" + (dist+1));
         }
-    }
 
-    void AddVectorObs(float observation, string observationName)
-    {
-        AddVectorObs(observation);
-        
-        if (observationsLogged)
-            return;
+        // Debris positions (41 - 58)
+        debrisInfos = vision.UpdateVision();
 
-        observationNames.Add(observationName);
-    }
-    
-    void AddVectorObs(bool observation, string observationName)
-    {
-        AddVectorObs(observation);
-        
-        if (observationsLogged)
-            return;
+        //AddVectorObs(debrisInfos[0].lastKnownPosition.x);
+        //AddVectorObs(debrisInfos[0].lastKnownPosition.z);
+        //}
+        //ObsPadOutInfinity(3);
 
-        observationNames.Add(observationName);
+        // Simulation time (59)
+        //AddVectorObs(timeElapsed);
+
+        // features:
+
+        //Check if robot is within dropZone, Returns boolean (60)
+        //bool isInDropZone = dropZone.IsInZone(transform.position);
+        //AddVectorObs(isInDropZone);
+
+        //ObsGettingCloserToDebris();   // Index 61 -> 66
+        //ObsRobotPickedUpDebris();     // Index 67
+        //bsAngleToDebris();           // Index 68 -> 73
+        //ObsDebrisInFront();           // Index 74
+        //ObsPointedAtDebris();         // Index 75
+
+        // Check if robot is facing the zone (76)
+        Vector3 robotToDropZone = dropZonePosition - rb.position;
+        float angleToDropZone = Vector3.Angle(robotToDropZone, transform.forward);
+        //AddVectorObs(angleToDropZone);
+
+        //DebrisToDropZone();           // Index 77 -> 82
     }
     
     // *Old: Check if robot is getting closer to debris, Returns boolean
@@ -521,8 +541,8 @@ public class RobotAgent : Agent
     void RewardDebrisInOutZone()
     {
         // Check if debris has left/entered the zone
-        List<bool> previousDebrisInZone = academy.GetPreviousDebrisInZone();
-        List<bool> currentDebrisInZone = academy.GetCurrentDebrisInZone();
+        List<bool> previousDebrisInZone = environment.GetPreviousDebrisInZone();
+        List<bool> currentDebrisInZone = environment.GetCurrentDebrisInZone();
 
         for (int i = 0; i < previousDebrisInZone.Count; i++)
         {
@@ -619,7 +639,9 @@ public class RobotAgent : Agent
         
         // Check if robot is out of bounds
         Vector3 robotPosition = transform.position;
-        if (robotPosition.x > 25f || robotPosition.x < -25f || robotPosition.z > 25f || robotPosition.z < -25f || robotPosition.y < -5f)
+        if (robotPosition.x > environment.GetBoundsMaximum().x || robotPosition.x < environment.GetBoundsMinimum().x ||
+            robotPosition.z > environment.GetBoundsMaximum().z || robotPosition.z < environment.GetBoundsMinimum().z ||
+            robotPosition.y < environment.GetBoundsMinimum().y)
             Done("robot is out of bounds");
     }
 
@@ -661,11 +683,10 @@ public class RobotAgent : Agent
         
         timesDone++;
 
-        academy.ResetDebrisInZone();
-        
         // Reset shovel content on restart
         currentDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
         previousDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
+
         
         // Force reset if not using our Python script
         if (!academy.IsCommunicatorOn || academy.communicatorPort == RobotAcademy.CommunicatorPort.DefaultTraining)
@@ -693,10 +714,24 @@ public class RobotAgent : Agent
     {
         float[] heuristicValues = new float[4];
 
-        heuristicValues[0] = Input.GetAxis("Vertical");
-        heuristicValues[1] = Input.GetAxis("Horizontal");
+        float throttle = Input.GetAxis("Vertical");
+        float turn = Input.GetAxis("Horizontal");
+        
+        if (throttle > 0.9f)
+            heuristicValues[0] = 2;
+        else if (throttle < -0.9f)
+            heuristicValues[0] = 1;
+        else
+            heuristicValues[0] = 0;
+        
+        if (turn > 0.9f)
+            heuristicValues[1] = 2;
+        else if (turn < -0.9f)
+            heuristicValues[1] = 1;
+        else
+            heuristicValues[1] = 0;
 
-        heuristicValues[2] = (Input.GetKey(KeyCode.Q)) ? 1f : (Input.GetKey(KeyCode.E)) ? -1f : 0f;
+        heuristicValues[2] = (Input.GetKey(KeyCode.Q)) ? 2 : (Input.GetKey(KeyCode.E)) ? 1 : 0;
 
         return heuristicValues;
     }

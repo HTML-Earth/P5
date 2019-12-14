@@ -164,9 +164,9 @@ public class RobotAgent : Agent
     {
         if (doneHasBeenCalled)
             return;
-
-        float movement = vectorAction[0];
-        float wheelAngle = vectorAction[1];
+        
+        float movement =  ConvertAction((int)vectorAction[0]);
+        float wheelAngle = ConvertAction((int)vectorAction[1]);
 
         // Perform actions
         wheels.SetTorque(movement);
@@ -303,6 +303,22 @@ public class RobotAgent : Agent
     public int GetTimesWon()
     {
         return timesWon;
+    }
+
+    // 0,1,2 --> -1,0,1
+    public int ConvertAction(int action)
+    {
+        switch (action)
+        {
+            case 0:
+                return -1;
+            case 1:
+                return 0;
+            case 2:
+                return 1;
+        }
+
+        return action;
     }
 
 #if UNITY_EDITOR

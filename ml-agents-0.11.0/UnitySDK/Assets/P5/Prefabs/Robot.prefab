@@ -4180,10 +4180,10 @@ MonoBehaviour:
   m_BrainParameters:
     vectorObservationSize: 11
     numStackedVectorObservations: 1
-    vectorActionSize: 02000000
+    vectorActionSize: 0300000003000000
     vectorActionDescriptions: []
-    vectorActionSpaceType: 1
-  m_Model: {fileID: 5022602860645237092, guid: 1e71b7adb62a25246be108eeee9ce4ae, type: 3}
+    vectorActionSpaceType: 0
+  m_Model: {fileID: 0}
   m_InferenceDevice: 0
   m_UseHeuristic: 0
   m_BehaviorName: Robot

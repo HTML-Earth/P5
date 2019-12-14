@@ -250,8 +250,8 @@ public class RobotAgent : Agent
     public override float[] Heuristic()
     {
         var action = new float[2];
-        action[0] = Input.GetAxis("Vertical");
-        action[1] = Input.GetAxis("Horizontal");
+        action[0] = ConvertHeuristic((int)Input.GetAxis("Vertical"));
+        action[1] = ConvertHeuristic((int)Input.GetAxis("Horizontal"));
         return action;
     }
 
@@ -319,6 +319,21 @@ public class RobotAgent : Agent
         }
 
         return action;
+    }
+    
+    public int ConvertHeuristic(int getAxis)
+    {
+        switch (getAxis)
+        {
+            case 0:
+                return 1;
+            case 1:
+                return 2;
+            case -1:
+                return 0;
+        }
+
+        return getAxis;
     }
 
 #if UNITY_EDITOR

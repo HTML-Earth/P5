@@ -210,11 +210,12 @@ public class RobotAgent : Agent
         bool isInDropZone = dropZone.IsInZone(transform.position);
         AddVectorObs(isInDropZone, "robot_in_dropzone");
 
-        ObsGettingCloserToDebris();
+        ObsDistanceToDebris();
         ObsDebrisIsInShovel();
         ObsAngleToDebris();
         ObsDebrisInFront();
         ObsFacingDebris();
+        ObsGettingCloserToDebris();
 
         // Angle to dropzone
         float angleToDropZone = Vector3.Angle(dropZonePosition, transform.forward);
@@ -281,7 +282,7 @@ public class RobotAgent : Agent
     
     // *Old: Check if robot is getting closer to debris, Returns boolean
     // *New: Distance between robot and each debris with a total of 6, returns floats
-    void ObsGettingCloserToDebris()
+    void ObsDistanceToDebris()
     {
         for (int debris = 0; debris < debrisInfos.Count; debris++)
         {
@@ -290,16 +291,34 @@ public class RobotAgent : Agent
             float distanceToDebris = Vector3.Distance(debrisInfos[debris].lastKnownPosition, rbNewPosition);
             
             
-            AddVectorObs(distanceToDebris, "getting_closer_to_debris_" + (debris+1));
+            AddVectorObs(distanceToDebris, "distance_to_debris_" + (debris+1));
         }
 
+        // If there are fewer than 6 debris, pad out the observations
+        for (int i = 0; i < DebrisCount - debrisInfos.Count; i++)
+        {
+            AddVectorObs(Mathf.Infinity, "distance_to_debris_" + (i+debrisInfos.Count+1));
+        }
+    }
+
+    //Check if robot is getting closer to debris, Returns boolean
+    void ObsGettingCloserToDebris()
+    {
+        int debIndex = 1;
+        foreach (var debrisInfo in debrisInfos)
+        {
+            bool gettingCloserToDebris = debrisInfo.distanceFromRobot < debrisInfo.lastDistanceFromRobot;
+            AddVectorObs(gettingCloserToDebris, "getting_closer_to_debris_" + debIndex);
+            debIndex++;
+        }
+        
         // If there are fewer than 6 debris, pad out the observations
         for (int i = 0; i < DebrisCount - debrisInfos.Count; i++)
         {
             AddVectorObs(false, "getting_closer_to_debris_" + (i+debrisInfos.Count+1));
         }
     }
-    
+
     //Check if robot has picked up debris, Returns boolean
     void ObsDebrisIsInShovel()
     {

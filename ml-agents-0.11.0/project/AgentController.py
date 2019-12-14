@@ -109,7 +109,7 @@ class Agent:
         state.append(int(self.get_obs(self.obs.angle_robot_debris_1)))
 
         # Distance to debris
-        # state.append(int(self.get_obs(self.obs.getting_closer_to_debris_1)))
+        # state.append(int(self.get_obs(self.obs.distance_to_debris_1)))
 
         # Debris distance to dropzone
         # state.append(int(self.get_obs(self.obs.debris_to_dropzone_1)))
@@ -146,22 +146,22 @@ class Agent:
         return 1 if self.sensors_behind > [self.robot_length_backwards + constant] else 0
 
     def distance_to_debris_1(self, state, action):
-        return self.distance_to_debris(state, action, self.obs.getting_closer_to_debris_1)
+        return self.distance_to_debris(state, action, self.obs.distance_closer_to_debris_1)
 
     def distance_to_debris_2(self, state, action):
-        return self.distance_to_debris(state, action, self.obs.getting_closer_to_debris_2)
+        return self.distance_to_debris(state, action, self.obs.distance_closer_to_debris_2)
 
     def distance_to_debris_3(self, state, action):
-        return self.distance_to_debris(state, action, self.obs.getting_closer_to_debris_3)
+        return self.distance_to_debris(state, action, self.obs.distance_closer_to_debris_3)
 
     def distance_to_debris_4(self, state, action):
-        return self.distance_to_debris(state, action, self.obs.getting_closer_to_debris_4)
+        return self.distance_to_debris(state, action, self.obs.distance_closer_to_debris_4)
 
     def distance_to_debris_5(self, state, action):
-        return self.distance_to_debris(state, action, self.obs.getting_closer_to_debris_5)
+        return self.distance_to_debris(state, action, self.obs.distance_closer_to_debris_5)
 
     def distance_to_debris_6(self, state, action):
-        return self.distance_to_debris(state, action, self.obs.getting_closer_to_debris_6)
+        return self.distance_to_debris(state, action, self.obs.distance_closer_to_debris_6)
 
     def distance_to_debris(self, state, action, observation_index):
         action_list = list(action)
@@ -204,15 +204,16 @@ class Agent:
         # Move directly towards debris
         if action_list[0] == 1:
             if action_list[1] == 1:
-                if -angle_range < angle_to_debris + self.rotation_constant < angle_range:
+                if -angle_range < (angle_to_debris + self.rotation_constant) < angle_range:
                     getting_closer = 1
             elif action_list[1] == -1:
-                if -angle_range < angle_to_debris - self.rotation_constant < angle_range:
+                if -angle_range < (angle_to_debris - self.rotation_constant) < angle_range:
                     getting_closer = 1
             elif action_list[1] == 0:
                 if -angle_range < angle_to_debris < angle_range:
                     getting_closer = 1
 
+        print(getting_closer)
         return getting_closer
 
     # TODO Check if it reverses towards debris

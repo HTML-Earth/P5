@@ -4161,12 +4161,10 @@ MonoBehaviour:
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 5
+  debris: {fileID: 0}
   environment: {fileID: 0}
   debrisInShovel: {fileID: 5361192715005589940}
   debrisInFront: {fileID: 7381684728525038586}
-  Debris: {fileID: 0}
-  DropZone: {fileID: 0}
-  EnvironmentColorTest: {fileID: 0}
 --- !u!114 &1779018748840171066
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4182,9 +4180,9 @@ MonoBehaviour:
   m_BrainParameters:
     vectorObservationSize: 11
     numStackedVectorObservations: 1
-    vectorActionSize: 020000000200000002000000
+    vectorActionSize: 02000000
     vectorActionDescriptions: []
-    vectorActionSpaceType: 0
+    vectorActionSpaceType: 1
   m_Model: {fileID: 5022602860645237092, guid: 1e71b7adb62a25246be108eeee9ce4ae, type: 3}
   m_InferenceDevice: 0
   m_UseHeuristic: 0

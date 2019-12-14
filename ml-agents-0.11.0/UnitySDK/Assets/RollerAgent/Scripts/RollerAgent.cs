@@ -47,6 +47,7 @@ public class RollerAgent : Agent
         // Actions, size = 2
         Vector3 controlSignal = Vector3.zero;
         controlSignal.x = vectorAction[0];
+		print("vector action 0: " + vectorAction[0]);
         controlSignal.z = vectorAction[1];
         rBody.AddForce(controlSignal * speed);
         

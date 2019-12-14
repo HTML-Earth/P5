@@ -720,24 +720,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6768497055058356372, guid: 81f47bcef54978a40a80743e3328700e,
         type: 3}
-      propertyPath: environment
-      value: 
-      objectReference: {fileID: 4768328491435083123}
-    - target: {fileID: 6768497055058356372, guid: 81f47bcef54978a40a80743e3328700e,
-        type: 3}
-      propertyPath: Debris
+      propertyPath: debris
       value: 
       objectReference: {fileID: 7565263557139287998}
     - target: {fileID: 6768497055058356372, guid: 81f47bcef54978a40a80743e3328700e,
         type: 3}
-      propertyPath: DropZone
+      propertyPath: environment
       value: 
-      objectReference: {fileID: 5385228051982505044}
-    - target: {fileID: 6768497055058356372, guid: 81f47bcef54978a40a80743e3328700e,
-        type: 3}
-      propertyPath: EnvironmentColorTest
-      value: 
-      objectReference: {fileID: 5385228052072325227}
+      objectReference: {fileID: 4768328491435083123}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 81f47bcef54978a40a80743e3328700e, type: 3}
 --- !u!4 &5417289550663670457 stripped

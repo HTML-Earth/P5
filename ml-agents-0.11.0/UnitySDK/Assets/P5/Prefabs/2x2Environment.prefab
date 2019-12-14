@@ -739,6 +739,11 @@ PrefabInstance:
       propertyPath: EnvironmentColorTest
       value: 
       objectReference: {fileID: 5385228052072325227}
+    - target: {fileID: 6768497055058356372, guid: 81f47bcef54978a40a80743e3328700e,
+        type: 3}
+      propertyPath: debris
+      value: 
+      objectReference: {fileID: 5385228051864736104}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 81f47bcef54978a40a80743e3328700e, type: 3}
 --- !u!4 &5417289550663670457 stripped

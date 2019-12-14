@@ -36,6 +36,10 @@ public class RobotAgent : Agent
 
     Vector3 startPosition;
     Quaternion startRotation;
+
+    public Transform Debris;
+    public Transform DropZone;
+    public Transform EnvironmentColorTest;
     
     const float TimeLimit = 90f;
 
@@ -160,45 +164,46 @@ public class RobotAgent : Agent
 
     public override void CollectObservations()
     {
-        // Robot position (0, 1)
-        Vector3 currentPosition = transform.position;
-        AddVectorObs(currentPosition.x);
-        AddVectorObs(currentPosition.z);
+        // Robot position (0)
+        AddVectorObs(transform.position);
 
-        // Robot rotation (2)
-        AddVectorObs(transform.rotation.eulerAngles.y);
+        // Robot rotation (2) (not important for ml-agents)
+        //AddVectorObs(transform.rotation.eulerAngles.y);
 
         // Robot velocity (3, 4, 5)
-        Vector3 localVelocity = rb.transform.InverseTransformDirection(rb.velocity);
-        AddVectorObs(localVelocity.x);
+        //Vector3 localVelocity = rb.transform.InverseTransformDirection(rb.velocity);
+        AddVectorObs(rb.velocity.x);
         //AddVectorObs(localVelocity.y);
-        AddVectorObs(localVelocity.z);
+        AddVectorObs(rb.velocity.z);
         
+        AddVectorObs(Debris.position);
+        AddVectorObs(DropZone.position);
+
         // Shovel position (6, 7) TODO: remove one of these
         //AddVectorObs(shovel.GetShovelPos());
         //AddVectorObs(shovel.GetShovelPos());
 
         // Drop-Zone Position and radius (8, 9, 10)
-        Vector3 dropZonePosition = dropZone.transform.position;
+        //Vector3 dropZonePosition = dropZone.transform.position;
         //AddVectorObs(dropZonePosition.x);
         //AddVectorObs(dropZonePosition.z);
         //AddVectorObs(dropZone.GetRadius());
 
         // Distance sensor measurements (11 - 40)
-        float[] distances = sensors.GetMeasuredDistances();
+        /*float[] distances = sensors.GetMeasuredDistances();
         for (int dist = 0; dist < distances.Length; dist++)
         {
             AddVectorObs(distances[dist]);
-        }
+        }*/
 
         // Debris positions (41 - 58)
-        debrisInfos = vision.UpdateVision();
+        //debrisInfos = vision.UpdateVision();
 
         //foreach (RobotVision.DebrisInfo debrisInfo in debrisInfos)
         //{
-        AddVectorObs(debrisInfos[0].lastKnownPosition.x);
+        //AddVectorObs(debrisInfos[0].lastKnownPosition.x);
         //   AddVectorObs(debrisInfo.lastKnownPosition.y);
-        AddVectorObs(debrisInfos[0].lastKnownPosition.z);
+        //AddVectorObs(debrisInfos[0].lastKnownPosition.z);
         //}
         //ObsPadOutInfinity(3);
 
@@ -218,8 +223,8 @@ public class RobotAgent : Agent
         //ObsPointedAtDebris();         // Index 75
 
         // Check if robot is facing the zone (76)
-        Vector3 robotToDropZone = dropZonePosition - rb.position;
-        float angleToDropZone = Vector3.Angle(robotToDropZone, transform.forward);
+        //Vector3 robotToDropZone = dropZonePosition - rb.position;
+        //float angleToDropZone = Vector3.Angle(robotToDropZone, transform.forward);
         //AddVectorObs(angleToDropZone);
 
         //DebrisToDropZone();           // Index 77 -> 82
@@ -383,11 +388,11 @@ public class RobotAgent : Agent
         if (doneHasBeenCalled)
             return;
 
-        int movement = 0;
-        int wheelAngle = 0;
-        int rotateShovel = 0;
+        float movement = vectorAction[0];
+        float wheelAngle = vectorAction[1];
+        //int rotateShovel = 0;
 
-        // Case 0: Do nothing for all switches
+        /* Case 0: Do nothing for all switches
         switch ((int)vectorAction[0])
         { 
             case 1:
@@ -416,12 +421,12 @@ public class RobotAgent : Agent
             case 2:
                 rotateShovel = 1;
                 break;
-        }
+        }*/
 
         // Perform actions
         wheels.SetTorque(movement);
         wheels.SetAngle(wheelAngle);
-        shovel.RotateShovel(rotateShovel);
+        //shovel.RotateShovel(rotateShovel);
         
         // Store current action vector state for visualization
         actionVector = vectorAction;
@@ -433,24 +438,34 @@ public class RobotAgent : Agent
         CreateListWithSuccessRate();
 
         // Give rewards or penalties
-        RewardDebrisInShovel();
-        RewardDebrisCameInFront();
-        RewardDebrisInOutZone();
-        RewardMoveTowardsDebris();
-        RewardMoveTowardsZoneWithDebris();
-        RewardLocateDebris();
-        PenaltyTime();
-        PenaltyForHittingWalls();
+        //RewardDebrisInShovel();
+        //RewardDebrisCameInFront();
+        //RewardDebrisInOutZone();
+        //RewardMoveTowardsDebris();
+        //RewardMoveTowardsZoneWithDebris();
+        //RewardLocateDebris();
+        float distanceToTarget = Vector3.Distance(Debris.transform.position,
+            DropZone.position);
+        
+        // Reached target
+        if (distanceToTarget < 5f)
+        {
+            SetReward(1.0f);
+            Done();
+        }
+        
+        //PenaltyTime();
+        //PenaltyForHittingWalls();
 
         // Check if goal is met and simulation is done
-        IsGoalMet();
+        //IsGoalMet();
 
         // Make sure robot in inside area and upright
-        RobotUpright();
+        //RobotUpright();
 
         // if the check bool is true, update last checked position
-        if (checkedPositionThisStep)
-            lastCheckedPosition = transform.position;
+        //if (checkedPositionThisStep)
+            //lastCheckedPosition = transform.position;
         
         // Reset if time limit is reached
         if (timeElapsed > TimeLimit)
@@ -662,7 +677,9 @@ public class RobotAgent : Agent
     {
         if (other.collider.gameObject.layer == LayerMask.NameToLayer("environment"))
         {
-            wallRammingPenalties.Enqueue(1);
+            //var EnvironmentColorTestRenderer = EnvironmentColorTest.GetComponent<Renderer>();
+            //EnvironmentColorTestRenderer.material.SetColor("_Color", Color.red);
+            Done();
         }
     }
 
@@ -706,7 +723,11 @@ public class RobotAgent : Agent
     // Used to control the agent manually
     public override float[] Heuristic()
     {
-        float[] heuristicValues = new float[4];
+        var action = new float[2];
+        action[0] = Input.GetAxis("Vertical");
+        action[1] = Input.GetAxis("Horizontal");
+        return action;
+        /*float[] heuristicValues = new float[4];
 
         float throttle = Input.GetAxis("Vertical");
         float turn = Input.GetAxis("Horizontal");
@@ -727,7 +748,7 @@ public class RobotAgent : Agent
 
         heuristicValues[2] = (Input.GetKey(KeyCode.Q)) ? 2 : (Input.GetKey(KeyCode.E)) ? 1 : 0;
 
-        return heuristicValues;
+        return heuristicValues;*/
     }
     //Keep track of success rate every 100 attempts
 

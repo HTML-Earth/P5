@@ -4164,6 +4164,9 @@ MonoBehaviour:
   environment: {fileID: 0}
   debrisInShovel: {fileID: 5361192715005589940}
   debrisInFront: {fileID: 7381684728525038586}
+  Debris: {fileID: 0}
+  DropZone: {fileID: 0}
+  EnvironmentColorTest: {fileID: 0}
 --- !u!114 &1779018748840171066
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4177,7 +4180,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 37
+    vectorObservationSize: 11
     numStackedVectorObservations: 1
     vectorActionSize: 020000000200000002000000
     vectorActionDescriptions: []

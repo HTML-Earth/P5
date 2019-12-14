@@ -645,6 +645,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useRandomEnvironment: 0
+  boundsMinimumX: -25
+  boundsMaximumX: 25
+  boundsMinimumY: -20
+  boundsMaximumY: 100
+  boundsMinimumZ: -25
+  boundsMaximumZ: 25
 --- !u!1001 &824156864710132172
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -717,6 +723,21 @@ PrefabInstance:
       propertyPath: environment
       value: 
       objectReference: {fileID: 4768328491435083123}
+    - target: {fileID: 6768497055058356372, guid: 81f47bcef54978a40a80743e3328700e,
+        type: 3}
+      propertyPath: Debris
+      value: 
+      objectReference: {fileID: 7565263557139287998}
+    - target: {fileID: 6768497055058356372, guid: 81f47bcef54978a40a80743e3328700e,
+        type: 3}
+      propertyPath: DropZone
+      value: 
+      objectReference: {fileID: 5385228051982505044}
+    - target: {fileID: 6768497055058356372, guid: 81f47bcef54978a40a80743e3328700e,
+        type: 3}
+      propertyPath: EnvironmentColorTest
+      value: 
+      objectReference: {fileID: 5385228052072325227}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 81f47bcef54978a40a80743e3328700e, type: 3}
 --- !u!4 &5417289550663670457 stripped

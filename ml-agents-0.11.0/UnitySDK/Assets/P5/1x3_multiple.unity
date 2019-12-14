@@ -471,7 +471,7 @@ MonoBehaviour:
     width: 80
     height: 80
     qualityLevel: 1
-    timeScale: 20
+    timeScale: 1
     targetFrameRate: -1
   m_InferenceConfiguration:
     width: 1280
@@ -561,6 +561,11 @@ PrefabInstance:
     - target: {fileID: 5262132193960399867, guid: ae3d0289a5066694db5ceb8877d1cc96,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1432046193967339510, guid: ae3d0289a5066694db5ceb8877d1cc96,
+        type: 3}
+      propertyPath: m_UseHeuristic
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -1158,6 +1163,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1432046193967339510, guid: ae3d0289a5066694db5ceb8877d1cc96,
+        type: 3}
+      propertyPath: m_BrainParameters.vectorObservationSize
+      value: 11
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ae3d0289a5066694db5ceb8877d1cc96, type: 3}

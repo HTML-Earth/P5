@@ -4185,7 +4185,7 @@ MonoBehaviour:
     vectorActionSize: 020000000200000002000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
-  m_Model: {fileID: 0}
+  m_Model: {fileID: 5022602860645237092, guid: 1e71b7adb62a25246be108eeee9ce4ae, type: 3}
   m_InferenceDevice: 0
   m_UseHeuristic: 0
   m_BehaviorName: Robot

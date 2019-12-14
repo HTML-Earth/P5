@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using MLAgents;
 using UnityEditor;
@@ -478,14 +475,14 @@ public class RobotAgent : Agent
         CreateListWithSuccessRate();
 
         // Give rewards or penalties
-        RewardDebrisInShovel();
-        RewardDebrisCameInFront();
-        RewardDebrisInOutZone();
+        //RewardDebrisInShovel();
+        //RewardDebrisCameInFront();
+        //RewardDebrisInOutZone();
         RewardMoveTowardsDebris();
-        RewardMoveTowardsZoneWithDebris();
+        //RewardMoveTowardsZoneWithDebris();
         RewardLocateDebris();
         PenaltyTime();
-        PenaltyForHittingWalls();
+        //PenaltyForHittingWalls();
 
         // Check if goal is met and simulation is done
         IsGoalMet();
@@ -527,7 +524,7 @@ public class RobotAgent : Agent
         {
             if (debrisInfos[debrisNum].isVisible && !listIsDebrisLocated[debrisNum])
             {
-                AddReward(Reward_DebrisFound, "Debris was located", debrisInfos[debrisNum].transform.position);
+                //AddReward(Reward_DebrisFound, "Debris was located", debrisInfos[debrisNum].transform.position);
                 listIsDebrisLocated[debrisNum] = true;
             }
         }
@@ -704,14 +701,20 @@ public class RobotAgent : Agent
     void IsGoalMet()
     {
         // Check if goal is met
-        if (dropZone.IsAllDebrisInZone())
+        foreach (var debris in debrisInFront.GetDebrisInArea())
         {
-            AddReward(Reward_AllDebrisEnteredZone, "all debris in zone", dropZone.transform.position);
-            Done("goal reached (all debris in zone)");
-            
-            lastHundredAttempts.Add(true);
-            timesWon++;
+            if (debris)
+            {
+                AddReward(Reward_AllDebrisEnteredZone, "Got to debris");
+                Done("goal reached (Got to debris)");
+                lastHundredAttempts.Add(true);
+                timesWon++;
+            }
         }
+        //if (dropZone.IsAllDebrisInZone())
+        //{
+            //AddReward(Reward_AllDebrisEnteredZone, "all debris in zone", dropZone.transform.position);
+            //}
     }
 
     void OnCollisionEnter(Collision other)

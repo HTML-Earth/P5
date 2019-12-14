@@ -24,13 +24,13 @@ class Agent:
         self.rotation_constant = 2 * 5
 
         self.features = [self.feature_1,
-                         self.throttling_into_wall,
-                         self.reversing_into_wall,
+                         #self.throttling_into_wall,
+                         #self.reversing_into_wall,
                          self.getting_closer_to_debris_1,
-                         self.getting_closer_to_dropzone,
-                         self.rotation,
+                         #self.getting_closer_to_dropzone,
+                         #self.rotation,
                          self.pointed_towards_debris,
-                         self.angle_to_debris_1,
+                         #self.angle_to_debris_1,
                          # self.distance_to_debris_1,
                          # self.debris_to_dropzone_1
                          ]
@@ -88,25 +88,36 @@ class Agent:
         self.update_observations()
 
         # Throttling into wall
-        state.append(1) if self.sensors_front < [self.robot_length_forward] else state.append(0)
+        #state.append(1) if self.sensors_front < [self.robot_length_forward] else state.append(0)
 
         # Reversing into wall
-        state.append(1) if self.sensors_behind > [-self.robot_length_backwards] else state.append(0)
+        #state.append(1) if self.sensors_behind > [-self.robot_length_backwards] else state.append(0)
 
         # Getting closer to debris 1
-        state.append(1) if self.get_obs(self.obs.getting_closer_to_debris_1) else state.append(0)
+        getting_closer = 0
+        angle_range = 30
+
+        if -angle_range < self.get_obs(self.obs.angle_robot_debris_1) < angle_range and self.get_obs(self.obs.robot_velocity_z) > 0:
+            getting_closer = 1
+        #elif (self.get_obs(self.obs.getting_closer_to_debris_1) + self.rotation_constant) < -angle_range:
+        #    getting_closer = 1
+        #elif -angle_range < self.get_obs(self.obs.getting_closer_to_debris_1) < angle_range:
+        #    getting_closer = 1
+        #print(getting_closer)
+        state.append(getting_closer)
+        #state.append(1) if self.get_obs(self.obs.getting_closer_to_debris_1) else state.append(0)
 
         # Getting closer to dropzone
-        state.append(1) if self.get_obs(self.obs.robot_facing_debris) else state.append(0)
+        #state.append(1) if self.get_obs(self.obs.robot_facing_debris) else state.append(0)
 
         # Rotation
-        state.append(int(self.get_obs(self.obs.robot_rotation)))
+        #state.append(int(self.get_obs(self.obs.robot_rotation)))
 
         # Pointed towards debris
         state.append(1) if self.get_obs(self.obs.robot_facing_debris) else state.append(0)
 
         # Angle to debris
-        state.append(int(self.get_obs(self.obs.angle_robot_debris_1)))
+        #state.append(int(self.get_obs(self.obs.angle_robot_debris_1)))
 
         # Distance to debris
         # state.append(int(self.get_obs(self.obs.getting_closer_to_debris_1)))
@@ -132,6 +143,7 @@ class Agent:
             constant = -self.thrust_constant
 
         return 1 if self.sensors_front < [self.robot_length_forward + constant] else 0
+
 
     def reversing_into_wall(self, state, action):
         action_list = list(action)
@@ -195,7 +207,7 @@ class Agent:
     def getting_closer_to_debris(self, state, action, obs_num):
         action_list = list(action)
         # Angle on each side of the robot's forward vector
-        angle_range = 45  # TODO: Figure out the exact value
+        angle_range = 30  # TODO: Figure out the exact value
         angle_to_debris = self.get_obs(obs_num)
 
         getting_closer = 0
@@ -204,10 +216,10 @@ class Agent:
         # Move directly towards debris
         if action_list[0] == 1:
             if action_list[1] == 1:
-                if -angle_range < angle_to_debris + self.rotation_constant < angle_range:
+                if (angle_to_debris - self.rotation_constant) > angle_range:
                     getting_closer = 1
             elif action_list[1] == -1:
-                if -angle_range < angle_to_debris - self.rotation_constant < angle_range:
+                if (angle_to_debris + self.rotation_constant) < -angle_range:
                     getting_closer = 1
             elif action_list[1] == 0:
                 if -angle_range < angle_to_debris < angle_range:

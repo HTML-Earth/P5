@@ -66,7 +66,7 @@ class SarsaLFA:
         y_delta = []
         y_reward = []
 
-        while self.episode <= 100:
+        while self.episode <= 500:
             self.agent.perform_action(*action)
 
             new_state = self.agent.get_state()

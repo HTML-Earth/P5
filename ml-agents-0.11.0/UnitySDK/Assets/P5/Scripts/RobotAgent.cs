@@ -105,6 +105,7 @@ public class RobotAgent : Agent
 
     public override void AgentReset()
     {
+        // TODO: Counts episodes up, Method is called when agent is done and when python calls for the simulation to be reset, also since this is called in InitializeAgent() it starts at not 0
         environment.ResetEnvironment();
         
         debrisInShovel.InitializeDetector();

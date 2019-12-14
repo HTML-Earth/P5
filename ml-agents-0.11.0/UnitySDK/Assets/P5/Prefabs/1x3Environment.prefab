@@ -743,11 +743,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5262132193960399867}
     m_Modifications:
-    - target: {fileID: 2468284302557912825, guid: 13b35aaaa7542034aa23a0ddb4bdff98,
-        type: 3}
-      propertyPath: m_Name
-      value: Debris
-      objectReference: {fileID: 0}
     - target: {fileID: 2468284302557912829, guid: 13b35aaaa7542034aa23a0ddb4bdff98,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -803,6 +798,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2468284302557912825, guid: 13b35aaaa7542034aa23a0ddb4bdff98,
+        type: 3}
+      propertyPath: m_Name
+      value: Debris
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 13b35aaaa7542034aa23a0ddb4bdff98, type: 3}
 --- !u!4 &7565263557139287998 stripped
@@ -818,11 +818,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5385228051982505044}
     m_Modifications:
-    - target: {fileID: -927199367670048503, guid: 2613d117bff3af3439f76a742e2f5663,
-        type: 3}
-      propertyPath: m_Name
-      value: circle_area
-      objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 2613d117bff3af3439f76a742e2f5663,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -893,11 +888,16 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: 2613d117bff3af3439f76a742e2f5663,
+        type: 3}
+      propertyPath: m_Name
+      value: circle_area
+      objectReference: {fileID: 0}
     - target: {fileID: -1504981713932161579, guid: 2613d117bff3af3439f76a742e2f5663,
         type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 08eb1fed0373b834a9cb9ba606b7d8eb, type: 2}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: -1504981713932161579, guid: 2613d117bff3af3439f76a742e2f5663,
         type: 3}
       propertyPath: m_ReceiveShadows
@@ -905,9 +905,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -1504981713932161579, guid: 2613d117bff3af3439f76a742e2f5663,
         type: 3}
-      propertyPath: m_CastShadows
-      value: 0
-      objectReference: {fileID: 0}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 08eb1fed0373b834a9cb9ba606b7d8eb, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2613d117bff3af3439f76a742e2f5663, type: 3}
 --- !u!4 &1136763833520237881 stripped

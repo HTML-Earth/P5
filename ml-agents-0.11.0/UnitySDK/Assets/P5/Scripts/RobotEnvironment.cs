@@ -27,6 +27,8 @@ public class RobotEnvironment : MonoBehaviour
     public float boundsMinimumZ = -25f;
     public float boundsMaximumZ = 25f;
 
+    public bool randomizeDropZonePosition;
+
     public void InitializeEnvironment()
     {
         // Initialize variables
@@ -82,6 +84,13 @@ public class RobotEnvironment : MonoBehaviour
 
         // Update DropZone's debris list
         dropZone.SetDebrisList(debrisInEnvironment);
+
+        if (randomizeDropZonePosition)
+        {
+            float xPos = Random.Range(boundsMinimumX, boundsMaximumX);
+            float zPos = Random.Range(boundsMinimumZ, boundsMaximumZ);
+            dropZone.transform.position = new Vector3(xPos, -0.24f, zPos);
+        }
         
         // Initialize debrisInZone values
         foreach (Debris debris in debrisInEnvironment)

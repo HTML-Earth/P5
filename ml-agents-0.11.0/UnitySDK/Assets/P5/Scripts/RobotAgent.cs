@@ -9,6 +9,12 @@ using UnityEngine.Serialization;
 
 public class RobotAgent : Agent
 {
+    public enum RobotGoal
+    {
+        AllDebrisInDropZone,
+        RobotInDropZone
+    };
+    
     Rigidbody rb;
     WheelDrive wheels;
     ShovelControl shovel;
@@ -17,7 +23,14 @@ public class RobotAgent : Agent
     DropZone dropZone;
     DisplayRewards displayRewards;
     //public Transform debris;
+    
+    [Header("Goal")]
+    public RobotGoal goal;
 
+    [Header("Robot")]
+    public bool useSimplePhysics;
+
+    [Header("References")]
     [SerializeField]
     RobotEnvironment environment;
     
@@ -37,14 +50,12 @@ public class RobotAgent : Agent
 
     Vector3 startPosition;
     Quaternion startRotation;
-    
-    public Transform Debris;
-    public Transform DropZone;
+
+    public Transform debris;
     
     Vector3 rbPosition;
     Vector3 debrisPosition;
     Vector3 dropZonePosition;
-    
     
     const float TimeLimit = 90f;
 
@@ -59,6 +70,8 @@ public class RobotAgent : Agent
     // Variables used to check for rewards
     List<bool> listIsDebrisLocated;
     Queue<float> wallRammingPenalties;
+
+    float highestDotProduct;
 
     List<RobotVision.DebrisInfo> debrisInfos;
 
@@ -84,6 +97,16 @@ public class RobotAgent : Agent
         rb = GetComponent<Rigidbody>();
         
         wheels = GetComponent<WheelDrive>();
+        if (useSimplePhysics)
+        {
+            Destroy(wheels);
+            WheelCollider[] wheelColliders = FindObjectsOfType<WheelCollider>();
+            foreach (WheelCollider wheelCollider in wheelColliders)
+            {
+                Destroy(wheelCollider);
+            }
+        }
+                
         shovel = GetComponent<ShovelControl>();
         
         vision = GetComponent<RobotVision>();
@@ -123,6 +146,8 @@ public class RobotAgent : Agent
         
         shovel.ResetRotations();
 
+        highestDotProduct = 0.4f;
+
         doneHasBeenCalled = false;
 
         timeElapsed = 0;
@@ -148,8 +173,12 @@ public class RobotAgent : Agent
     public override void CollectObservations()
     {
         // Positions
-        //debrisPosition = debris.position - environment.transform.position;
-        dropZonePosition = dropZone.transform.position - environment.transform.position;
+        if (debris != null)
+            debrisPosition = transform.InverseTransformPoint(debris.position);
+        else
+            debrisPosition = Vector3.zero;
+        
+        dropZonePosition = transform.InverseTransformPoint(dropZone.transform.position);
         
         // Robot position in each environment
         AddVectorObs(this.transform.position - environment.transform.position);
@@ -159,22 +188,26 @@ public class RobotAgent : Agent
         AddVectorObs(rb.velocity.z);
         
         // Debris and DropZone position in each environment
-        AddVectorObs(Debris.position - environment.transform.position);
-        AddVectorObs(DropZone.position - environment.transform.position);
+        AddVectorObs(debrisPosition);
+        AddVectorObs(dropZonePosition);
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
         if (doneHasBeenCalled)
             return;
-        
-        float movement =  ConvertAction((int)vectorAction[0]);
-        float wheelAngle = ConvertAction((int)vectorAction[1]);
+
+        int action = (int)vectorAction[0];
 
         // Perform actions
-        wheels.SetTorque(movement);
-        wheels.SetAngle(wheelAngle);
-    
+        if (useSimplePhysics)
+            ControlRobot(GetThrottleFromAction(action), GetAngleFromAction(action));
+        else
+        {
+            wheels.SetTorque(GetThrottleFromAction(action));
+            wheels.SetAngle(GetAngleFromAction(action));
+        }
+        
         // Store current action vector state for visualization
         actionVector = vectorAction;
         
@@ -183,16 +216,49 @@ public class RobotAgent : Agent
         
         //Evaluation Methods:
         CreateListWithSuccessRate();
-    
-    
-        float distanceToTarget = Vector3.Distance(Debris.position,
-            DropZone.position);
-        
-        // Reached target
-        if (distanceToTarget < 5f)
+
+        if (debris != null)
         {
-            SetReward(1.0f);
-            Done("Debris in zone");
+            Vector3 robotToDebris = debris.position - transform.position;
+
+            float fwdDotDebris = Vector3.Dot(transform.forward, robotToDebris.normalized);
+
+            if (fwdDotDebris > highestDotProduct)
+            {
+                highestDotProduct = fwdDotDebris;
+                AddReward(0.01f);
+            }
+        }
+
+        switch (goal)
+        {
+            case RobotGoal.AllDebrisInDropZone:
+            {
+                float debrisDistanceToDropZone = Vector3.Distance(debris.position,dropZone.transform.position);
+        
+                // Reached target
+                if (debrisDistanceToDropZone < 5f)
+                {
+                    SetReward(1.0f);
+                    Done("Debris in zone");
+                }
+
+                break;
+            }
+
+            case RobotGoal.RobotInDropZone:
+            {
+                float robotDistanceToDropZone = Vector3.Distance(transform.position,dropZone.transform.position);
+        
+                // Reached target
+                if (robotDistanceToDropZone < 5f)
+                {
+                    SetReward(1.0f);
+                    Done("Robot in zone");
+                }
+                
+                break;
+            }
         }
         
         // Reset if time limit is reached
@@ -208,6 +274,7 @@ public class RobotAgent : Agent
     {
         if (other.collider.gameObject.layer == LayerMask.NameToLayer("environment"))
         {
+            AddReward(-1.0f);
             Done("Hit wall");
         }
     }
@@ -248,13 +315,40 @@ public class RobotAgent : Agent
         
         AddReward(reward);
     }
+    
+    // Simple robot physics
+    void ControlRobot(int drive, int rotate)
+    {
+        if (drive == 1)
+            rb.MovePosition(rb.position + transform.forward * 0.1f);
+        else if (drive == -1)
+            rb.MovePosition(rb.position - transform.forward * 0.1f);
+        
+        if (rotate == 1)
+            transform.Rotate(transform.up, 2f);
+        else if (rotate == -1)
+            transform.Rotate(transform.up, -2f);
+    }
 
     // Used to control the agent manually
     public override float[] Heuristic()
     {
-        var action = new float[2];
-        action[0] = ConvertHeuristic((int)Input.GetAxis("Vertical"));
-        action[1] = ConvertHeuristic((int)Input.GetAxis("Horizontal"));
+        var action = new float[1];
+
+        int vert = (int) Input.GetAxis("Vertical");
+        int horiz = (int) Input.GetAxis("Horizontal");
+
+        if (vert == 1)
+            action[0] = 1;
+        else if (vert == -1)
+            action[0] = 3;
+        else if (horiz == 1)
+            action[0] = 4;
+        else if (horiz == -1)
+            action[0] = 2;
+        else
+            action[0] = 0;
+        
         return action;
     }
 
@@ -308,6 +402,32 @@ public class RobotAgent : Agent
         return timesWon;
     }
 
+    public int GetThrottleFromAction(int action)
+    {
+        switch (action)
+        {
+            case 1:
+                return 1;
+            case 3:
+                return -1;
+        }
+
+        return 0;
+    }
+    
+    public int GetAngleFromAction(int action)
+    {
+        switch (action)
+        {
+            case 2:
+                return -1;
+            case 4:
+                return 1;
+        }
+
+        return 0;
+    }
+    
     // 0,1,2 --> -1,0,1
     public int ConvertAction(int action)
     {

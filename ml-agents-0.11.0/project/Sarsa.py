@@ -6,7 +6,7 @@ class SarsaLFA:
     # Q-function
     q_function = {}
 
-    def Sarsa(self, features, discount, step_size):
+    def Sarsa(self, features, discount, step_size, epsilon):
         # Weights
         weights = []
 

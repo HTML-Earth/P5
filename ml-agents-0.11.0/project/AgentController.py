@@ -376,37 +376,136 @@ class Agent:
         return closer_to_dropzone
 
     def angle_to_debris_1(self, state, action):
-        return self.angle_to_debris(state, action, self.obs.angle_to_debris_1)
+        debris_1 = [self.obs.debris_1_position_x, self.obs.debris_1_position_z]
+        return self.angle_to_debris(state, action, debris_1)
 
     def angle_to_debris_2(self, state, action):
-        return self.angle_to_debris(state, action, self.obs.angle_to_debris_2)
+        debris_2 = [self.obs.debris_2_position_x, self.obs.debris_2_position_z]
+        return self.angle_to_debris(state, action, debris_2)
 
     def angle_to_debris_3(self, state, action):
-        return self.angle_to_debris(state, action, self.obs.angle_to_debris_3)
+        debris_3 = [self.obs.debris_3_position_x, self.obs.debris_3_position_z]
+        return self.angle_to_debris(state, action, debris_3)
 
     def angle_to_debris_4(self, state, action):
-        return self.angle_to_debris(state, action, self.obs.angle_to_debris_4)
+        debris_4 = [self.obs.debris_4_position_x, self.obs.debris_4_position_z]
+        return self.angle_to_debris(state, action, debris_4)
 
     def angle_to_debris_5(self, state, action):
-        return self.angle_to_debris(state, action, self.obs.angle_to_debris_5)
+        debris_5 = [self.obs.debris_5_position_x, self.obs.debris_5_position_z]
+        return self.angle_to_debris(state, action, debris_5)
 
     def angle_to_debris_6(self, state, action):
-        return self.angle_to_debris(state, action, self.obs.angle_to_debris_6)
+        debris_6 = [self.obs.debris_6_position_x, self.obs.debris_6_position_z]
+        return self.angle_to_debris(state, action, debris_6)
 
-    def angle_to_debris(self, state, action, observation_index):
+    def angle_to_debris(self, state, action, debrisNumber):
         action_list = list(action)
-
-        angle_to_debris = 0
         transform_value = 1 / 360
+        robotPosition = [self.obs.robot_position_x, self.obs.robot_position_z]
+        angle_to_debris = 0
 
         if action_list[1] == 1:
-            angle_to_debris = self.get_obs(observation_index) + self.rotation_constant
-        elif action_list[1] == -1:
-            angle_to_debris = self.get_obs(observation_index) - self.rotation_constant
-        elif action_list[1] == 0:
-            angle_to_debris = self.get_obs(observation_index)
+            if action_list[0] == 1:  # forward + right
+                Angle = -self.rotation_constant
+                angle_to_debris = self.robotAngle_New(robotPosition, debrisNumber, 1, Angle)
 
-        return (angle_to_debris + 180) * transform_value
+            if action_list[0] == 0:  # forward + straight
+                Angle = 0
+                angle_to_debris = self.robotAngle_New(robotPosition, debrisNumber, 1, Angle)
+
+            if action_list[0] == -1:  # forward + left
+                Angle = self.rotation_constant
+                angle_to_debris = self.robotAngle_New(robotPosition, debrisNumber, 1, Angle)
+
+        if action_list[1] == -1:
+            if action_list[0] == 1:  # backward + right
+                Angle = self.rotation_constant
+                angle_to_debris = self.robotAngle_New(robotPosition, debrisNumber, -1, Angle)
+
+            if action_list[0] == 0:  # backward + straight
+                Angle = 0
+                angle_to_debris = self.robotAngle_New(robotPosition, debrisNumber, -1, Angle)
+
+            if action_list[0] == -1:  # backward + left
+                Angle = -self.rotation_constant
+                angle_to_debris = self.robotAngle_New(robotPosition, debrisNumber, -1, Angle)
+
+        if action_list[1] == 0:
+            if action_list[0] == 1:  # right
+                Angle = -self.rotation_constant
+                angle_to_debris = self.robotAngle_New(robotPosition, debrisNumber, 0, Angle)
+
+            if action_list[0] == 0:  # not moving
+                Angle = 0
+                angle_to_debris = self.robotAngle_New(robotPosition, debrisNumber, 0, Angle)
+
+            if action_list[0] == -1:  # left
+                Angle = self.rotation_constant
+                angle_to_debris = self.robotAngle_New(robotPosition, debrisNumber, 0, Angle)
+
+        return angle_to_debris * transform_value
+
+
+    def robotAngle_New(self, robotPosition, debrisNumber, throttle, angle):
+        robotPosition_new = []
+
+        # find the vector straight from the robot based on thrust
+        for i in range(len(robotPosition)):
+            if throttle == 1:
+                robotPosition[i] += self.thrust_constant
+                robotPosition_new.append(robotPosition[i])
+            elif throttle == -1:
+                robotPosition[i] -= self.thrust_constant
+                robotPosition_new.append(robotPosition[i])
+            elif throttle == 0:
+                robotPosition_new.append(robotPosition[i])
+
+        # find robot's new position by predicting
+        robotPosition_new = self.robotPostion_new(robotPosition_new, angle)
+
+        # find vector from robot's predicted position to a certain debris
+        debrisVector = []
+        for i in range(len(robotPosition_new)):
+            result = debrisNumber[i] - robotPosition_new[i]
+            debrisVector.append(result)
+
+        # find the vector pointing forward from the robot's new position
+        robotVector = []
+        for i in range(len(robotPosition_new)):
+            if throttle == 1:
+                result = robotPosition_new[i] + self.thrust_constant
+                robotVector.append(result)
+            elif throttle == -1:
+                result = robotPosition_new[i] + self.thrust_constant
+                robotVector.append(result)
+            elif throttle == 0:
+                result = robotPosition_new[i] + self.thrust_constant
+                robotVector.append(result)
+                continue
+
+        for i in range(len(robotVector)):
+            robotVector[i] = robotVector[i] - robotPosition_new[i]
+
+        # find angle from robot pointing forward to vector from robot to debris
+        distanceVecotr = []
+        for i in range(len(robotPosition_new)):
+            result = debrisNumber[i] - robotPosition_new[i]
+            distanceVecotr.append(result)
+
+        # find angle between 'robotVector' and 'distanceVector'
+        robotRotation_new = self.angle(robotVector, distanceVecotr)
+
+        return robotRotation_new
+
+    def dotproduct(self, v1, v2):  # find dot product of two vectors
+        return sum((a * b) for a, b in zip(v1, v2))
+
+    def length(self, v):  # find the length of a vector
+        return math.sqrt(self.dotproduct(v, v))
+
+    def angle(self, v1, v2):  # find the angle between two vectors
+        return math.degrees(math.acos(self.dotproduct(v1, v2) / (self.length(v1) * self.length(v2))))
 
     # Rotation: 0 to 360
     def rotation(self, state, action):

@@ -22,6 +22,10 @@ default:
         extrinsic:
             strength: 1.0
             gamma: 0.99
+            
+            
+Robot:
+    max_steps: 10.0e4
 
 FoodCollector:
     normalize: false

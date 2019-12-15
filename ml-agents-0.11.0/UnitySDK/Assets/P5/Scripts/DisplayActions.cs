@@ -54,27 +54,23 @@ public class DisplayActions : MonoBehaviour
 
     void DisplayActionsGraphical()
     {
-        float[] actions = robotAgent.GetActionVector();
+        if (robotAgent.GetActionVector() == null)
+            return;
         
-        if (actions != null)
-        {
-            
-            int throttle = robotAgent.ConvertAction((int)actions[0]);
-            int turn = robotAgent.ConvertAction((int)actions[1]);
+        int action = (int)robotAgent.GetActionVector()[0];
 
-            down.color    = (throttle == -1)  ? opaque : transparent;
-            up.color  = (throttle == 1) ? opaque : transparent;
-            right.color  = (turn == 1) ? opaque : transparent;
-            left.color = (turn == -1)  ? opaque : transparent;
+        down.color    = (action == 3)  ? opaque : transparent;
+        up.color  = (action == 1) ? opaque : transparent;
+        right.color  = (action == 4) ? opaque : transparent;
+        left.color = (action == 2)  ? opaque : transparent;
 
-            if (actions.Length > 2)
-            {
-                int shov = robotAgent.ConvertAction((int) actions[2]);
-                
-                shovelUp.color   = (shov == 1)  ? opaque : transparent;
-                shovelDown.color = (shov == 2) ? opaque : transparent;
-            }            
-        }
+        //if (actions.Length > 2)
+        //{
+        //    int shov = robotAgent.ConvertAction((int) actions[2]);
+        //    
+        //    shovelUp.color   = (shov == 1)  ? opaque : transparent;
+        //    shovelDown.color = (shov == 2) ? opaque : transparent;
+        //}
     }
     
     void DisplayActionsText()

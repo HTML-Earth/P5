@@ -1,3 +1,4 @@
+import math
 import numpy as np
 import RobotObservations as observation
 from mlagents.envs.environment import UnityEnvironment
@@ -31,7 +32,7 @@ class Agent:
                          self.rotation,
                          self.pointed_towards_debris,
                          self.angle_to_debris_1,
-                         # self.distance_to_debris_1,
+                         self.distance_to_debris_1,
                          # self.debris_to_dropzone_1
                          ]
 
@@ -109,7 +110,7 @@ class Agent:
         state.append(int(self.get_obs(self.obs.angle_robot_debris_1)))
 
         # Distance to debris
-        # state.append(int(self.get_obs(self.obs.distance_to_debris_1)))
+        state.append(int(self.get_obs(self.obs.getting_closer_to_debris_1)))
 
         # Debris distance to dropzone
         # state.append(int(self.get_obs(self.obs.debris_to_dropzone_1)))
@@ -146,30 +147,112 @@ class Agent:
         return 1 if self.sensors_behind > [self.robot_length_backwards + constant] else 0
 
     def distance_to_debris_1(self, state, action):
-        return self.distance_to_debris(state, action, self.obs.distance_closer_to_debris_1)
+        debrisPosition_1 = [self.obs.debris_1_position_x, self.obs.debris_1_position_z]
+        return self.distance_to_debris(state, action, debrisPosition_1)
 
     def distance_to_debris_2(self, state, action):
-        return self.distance_to_debris(state, action, self.obs.distance_closer_to_debris_2)
+        debrisPosition_2 = [self.obs.debris_2_position_x, self.obs.debris_2_position_y]
+        return self.distance_to_debris(state, action, debrisPosition_2)
 
     def distance_to_debris_3(self, state, action):
-        return self.distance_to_debris(state, action, self.obs.distance_closer_to_debris_3)
+        debrisPosition_3 = [self.obs.debris_3_position_x, self.obs.debris_3_position_z]
+        return self.distance_to_debris(state, action, debrisPosition_3)
 
     def distance_to_debris_4(self, state, action):
-        return self.distance_to_debris(state, action, self.obs.distance_closer_to_debris_4)
+        debrisPosition_4 = [self.obs.debris_4_position_x, self.obs.debris_4_position_z]
+        return self.distance_to_debris(state, action, debrisPosition_4)
 
     def distance_to_debris_5(self, state, action):
-        return self.distance_to_debris(state, action, self.obs.distance_closer_to_debris_5)
+        debrisPosition_5 = [self.obs.debris_5_position_x, self.obs.debris_5_position_z]
+        return self.distance_to_debris(state, action, debrisPosition_5)
 
     def distance_to_debris_6(self, state, action):
-        return self.distance_to_debris(state, action, self.obs.distance_closer_to_debris_6)
+        debrisPosition_6 = [self.obs.debris_6_position_x, self.obs.debris_6_position_z]
+        return self.distance_to_debris(state, action, debrisPosition_6)
 
-    def distance_to_debris(self, state, action, observation_index):
+    def distance_to_debris(self, state, action, debrisNumber):
         action_list = list(action)
+        robotPosition = [self.obs.robot_position_x, self.obs.robot_position_z]
         distance = 0
+
+        if action_list[0] == 1:
+            if action_list[1] == 1:  # forward + right
+                Angle = -self.rotation_constant
+                distance = self.distance_solver(robotPosition, debrisNumber, 1, Angle)
+
+            elif action_list[1] == 0:  # forward + straight
+                Angle = 0
+                distance = self.distance_solver(robotPosition, debrisNumber, 1, Angle)
+
+            elif action_list[1] == -1:  # forward + left
+                Angle = self.rotation_constant
+                distance = self.distance_solver(robotPosition, debrisNumber, 1, Angle)
+
+        if action_list[0] == -1:
+            if action_list[1] == 1:  # backward + right
+                Angle = self.rotation_constant
+                distance = self.distance_solver(robotPosition, debrisNumber, -1, Angle)
+
+            elif action_list[1] == 0:  # backward + straight
+                Angle = 0
+                distance = self.distance_solver(robotPosition, debrisNumber, -1, Angle)
+
+            elif action_list[1] == -1:  # backward + left
+                Angle = -self.rotation_constant
+                distance = self.distance_solver(robotPosition, debrisNumber, -1, Angle)
+
+        if action_list[0] == 0:
+            if action_list[1] == 0:
+                Angle = 0
+                distance = self.distance_solver(robotPosition, debrisNumber, 0, Angle)
 
         transform_value = 1 / 20
 
         return distance * transform_value
+
+
+    def distance_solver(self, robotPosition, debrisNumber, throttle, angle):
+        robotPosition_new = []
+        # find robot's position based on current rotation
+        for i in range(len(robotPosition)):
+            if throttle == 1:  # if moving forwards, add constant
+                robotPosition[i] += self.thrust_constant
+                robotPosition_new.append(robotPosition[i])
+            elif throttle == -1:  # if moving backwards, subtract constant
+                robotPosition[i] -= self.thrust_constant
+                robotPosition_new.append(robotPosition[i])
+            elif throttle == 0:  # if not moving save robot's current position as new position
+                robotPosition_new.append(robotPosition[i])
+
+        # find robot's new position based on its' previous position
+        if angle != 0:
+            robotPosition_new = self.robotPostion_new(robotPosition_new, angle)
+
+        distance_vector = []
+        # find vector from robot to debris
+        for i in range(len(robotPosition_new)):
+            result = debrisNumber[i] - robotPosition_new[i]
+            distance_vector.append(result)
+
+        result = 0
+        # find distance between robot and debris
+        for i in distance_vector:
+            result += i * i
+        distance = math.sqrt(result)
+
+        return distance
+
+    def robotPostion_new(self, robotPosition, angle):
+        robotPosition_new = []
+
+        # as robotPosition[x , z] we use specific index to determine the x and z-coordinate
+        rbPos_X = robotPosition[0] * math.cos(math.radians(angle)) - robotPosition[1] * math.sin(math.radians(angle))
+        rbPos_Z = robotPosition[0] * math.sin(math.radians(angle)) + robotPosition[1] * math.cos(math.radians(angle))
+
+        robotPosition_new.append(rbPos_X)
+        robotPosition_new.append(rbPos_Z)
+
+        return robotPosition_new
 
     # Getting closer to debris number 1 (2-6 following)
     def getting_closer_to_debris_1(self, state, action):

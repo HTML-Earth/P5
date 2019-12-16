@@ -1,42 +1,36 @@
 import random
+from AgentController import Agent
 
 
 class SarsaLFA:
 
-    # Q-function
-    q_function = {}
+    def __init__(self):
+        self.agent = Agent()
+        self.agent.setup_connection_with_unity()
 
-    def Sarsa(self, features, discount, step_size, epsilon):
+        # Q-function
+        self.q_function = {}
+        self.weights = []
+
+    def sarsa(self, discount, step_size, epsilon):
         # Weights
-        weights = []
 
-        for i in range(0, len(features)):
-            weights.append(random.random())
+        for i in range(0, len(self.agent.features)):
+            self.weights.append(random.random())
 
-        state = self.get_state()
+        state = self.agent.get_state()
         action = 0
 
         while True:
-            self.perform_action(action)
-            reward = self.get_reward()
-            new_state = self.get_state()
+            self.agent.perform_action(action)
+            reward = self.agent.get_reward()
+            new_state = self.agent.get_state()
             new_action = self.choose_action(state, epsilon)
             delta = reward + discount * self.lookup_q(new_state, new_action) - self.lookup_q(state, action)
-            for i in range(len(features)):
-                weights[i] = weights[i] + step_size * delta * features[i](state, action)
+            for i in range(len(self.agent.features)):
+                self.weights[i] = self.weights[i] + step_size * delta * self.agent.features[i](state, action)
             state = new_state
             action = new_action
-
-
-
-    def get_state(self):
-        return state
-
-    def perform_action(self, action):
-        pass
-
-    def get_reward(self):
-        return reward
 
     def choose_action(self, state, epsilon):
         actions = [0, 1, 2, 3, 4]
@@ -57,10 +51,15 @@ class SarsaLFA:
 
         return action
 
-
-
     def lookup_q(self, state, action):
         return self.q_function.get((tuple(state), action), 0.0)
 
+    # TODO: Try this instead of lookup_q
+    def get_q_value(self, state, action, features):
+        total_q_value = 0
 
+        for i in range(0, len(self.weights)):
+            total_q_value += self.weights[i] * features[i](state, action)
 
+        self.q_function[(tuple(state), action)] = total_q_value
+        return total_q_value

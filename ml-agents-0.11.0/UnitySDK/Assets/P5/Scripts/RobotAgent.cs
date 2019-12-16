@@ -185,8 +185,8 @@ public class RobotAgent : Agent
 
         // Robot velocity
         AddVectorObs(rb.velocity.x);
-        AddVectorObs(rb.velocity.z);
-        
+        AddVectorObs(rb.velocity.normalized.z);
+
         // Debris and DropZone position in each environment
         AddVectorObs(debrisPosition);
         AddVectorObs(dropZonePosition);

@@ -14,7 +14,7 @@ public class RobotAcademy : Academy
 
     RobotEnvironment[] robotEnvironments;
 
-    [Header("Discombobulated settings")]
+    [Header("Settings")]
     public CommunicatorPort communicatorPort = CommunicatorPort.OurPythonScript;
     
     public override void InitializeCommunicator()

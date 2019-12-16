@@ -17,6 +17,7 @@ public class RobotAgent : Agent
         RobotInDropZone
     };
     
+    // References that are fetched by the script
     Rigidbody rb;
     ShovelControl shovel;
     RobotSensors sensors;
@@ -24,11 +25,9 @@ public class RobotAgent : Agent
     WheelDrive wheels;
     DropZone dropZone;
     DisplayRewards displayRewards;
-    //public Transform debris;
     
-    [Header("Goal")]
-    public RobotGoal goal;
-
+    // Settings and references set in the editor
+    
     [Header("Robot")]
     public bool useSimplePhysics;
     public bool limitedObservations;
@@ -43,82 +42,93 @@ public class RobotAgent : Agent
     [SerializeField]
     DebrisDetector debrisInFront;
     
+    [Header("Goal")]
+    public RobotGoal goal;
+    public float timeLimit = 90f;
+    public bool resetOnHitWall = true;
+    
+    // Rewards and Penalties (set to 0 in inspector to disable)
+    
+    [Header("Rewards")]
+    public float rewardGoalCompleted               = 0f;
+    
+    public float rewardDebrisEnteredFront          = 0f;
+    public float rewardDebrisEnteredShovel         = 0f;
+    public float rewardDebrisEnteredZone           = 0f;
+ 
+    public float rewardDebrisFound                 = 0f;
+    public float rewardFacingDebris                = 0f;
+    
+    public float rewardMoveTowardsDebris           = 0f;
+    public float rewardMoveTowardsZoneWithDebris   = 0f;
+    
+    [Header("Penalties (should be negative values)")]
+    public float penaltyDebrisLeftFront            = -0f;
+    public float penaltyDebrisLeftShovel           = -0f;
+    public float penaltyDebrisLeftZone             = -0f;
+    public float penaltyMoveAwayFromZoneWithDebris = -0f;
+    
+    public float penaltyRobotHittingWall           = -0f;
+    
+    public float penaltyTimePassed                 = -0f;
+
+    [Header("Debug")]
+    public bool displayGizmos = false;
+    
+    // Training
+    float timeElapsed;
+    int timesWon = 0;
+    int timesDone = 0;
+    
+    bool doneHasBeenCalled = false;
+    bool isAddedToSuccessRateList = false;
+    
+    const int DebrisCount = 6;
+    
+    // Robot control values
+    const float Robot_MovementPerStep = 0.1f; // (meters)
+    const float Robot_RotationPerStep = 2f;   // (degrees)
+
+    // Reset values
+    Vector3 startPosition;
+    Quaternion startRotation;
+
+    Vector3 rbPosition;
+    Vector3 debrisPosition;
+    Vector3 dropZonePosition;
+    
+    // Observations
+    List<string> observationNames = new List<string>();
+    bool observationsLogged = false;
+
+    // Current state of action vector
+    float[] actionVector;
+    
+    // Variables used to check for rewards
+    List<RobotVision.DebrisInfo> debrisInfos;
+    
+    List<bool> listIsDebrisLocated;
+    
     List<bool> currentDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
     List<bool> previousDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
     
     List<bool> currentDebrisInFront = new List<bool>() {false, false, false, false, false, false};
     List<bool> previousDebrisInFront = new List<bool>() {false, false, false, false, false, false};
-
-    List<bool> lastHundredAttempts = new List<bool>();
-
-    Vector3 startPosition;
-    Quaternion startRotation;
-
-    public Transform debris;
     
-    Vector3 rbPosition;
-    Vector3 debrisPosition;
-    Vector3 dropZonePosition;
-    
-    const float TimeLimit = 90f;
-
-    bool doneHasBeenCalled = false;
-    
-    float timeElapsed;
-    int timesWon = 0;
-    int timesDone = 0;
-    
-    bool isAddedToSuccessRateList = false;
-
-    List<string> observationNames = new List<string>();
-    bool observationsLogged = false;
-    
-    // Robot control values
-    const float Robot_MovementPerStep = 0.1f; // (meters)
-    const float Robot_RotationPerStep = 2f; // (degrees)
-
-    // Positive rewards
-    const float Reward_DebrisCameInFront = 0.08f;
-    const float Reward_DebrisEnteredShovel = 0.2f;
-    const float Reward_DebrisEnteredZone = 0.4f;
-    const float Reward_AllDebrisEnteredZone = 1f;
-    const float Reward_DebrisFound = 0.1f;
- 
-    const float Reward_MoveTowardsDebris = 0.01f;
-    const float Reward_MoveTowardsZoneWithDebris = 0.2f;
- 
-    // Negative rewards
-    const float Penalty_DebrisLeftInFront = -0.16f;
-    const float Penalty_DebrisLeftShovel = -0.4f;
-    const float Penalty_DebrisLeftZone = -1f;
-    const float Penalty_MoveAwayFromZoneWithDebris = -0.2f;
- 
-    const float Penalty_RobotRammingWall = -0.5f;
- 
-    const float Penalty_Time = -0.01f;
-    
-    // Variables used to check for rewards
-    List<bool> listIsDebrisLocated;
     Queue<float> wallRammingPenalties;
 
-    float highestDotProduct;
-
-    List<RobotVision.DebrisInfo> debrisInfos;
-
     const float MinimumDistanceBeforeCheck = 0.5f;
-    Vector3 lastCheckedPosition;
     bool checkedPositionThisStep;
+    Vector3 lastCheckedPosition;
     
     float previousDistanceFromZone;
     float currentDistanceFromZone;
-
-    const int DebrisCount = 6;
-
+    
+    float highestDotProduct;
+    
+    // Gizmo colors
     readonly Color debrisHighlight = new Color(0,1,1);
     readonly Color debrisHighlightMissing = new Color(1,0,0);
-
-    // Current state of action vector
-    float[] actionVector;
 
     public override void InitializeAgent()
     {
@@ -239,33 +249,31 @@ public class RobotAgent : Agent
         {
             AddVectorObs(distances[dist], "sensor_measurement_" + (dist+1));
         }
-
+        
+        // Debris positions
+        debrisInfos = vision.UpdateVision();
+        
         if (limitedObservations)
         {
             // Debris Position
             debrisPosition = Vector3.zero;
-            if (debris != null)
-                debrisPosition = transform.InverseTransformPoint(debris.position);
+            if (debrisInfos != null && debrisInfos[0].transform != null)
+                debrisPosition = transform.InverseTransformPoint(debrisInfos[0].transform.position);
         
             AddVectorObs(debrisPosition.x, "debris_position_x");
             AddVectorObs(debrisPosition.z, "debris_position_z");
         }
         else
         {
-            // Debris positions
-            debrisInfos = vision.UpdateVision();
-            
             for (int debris = 0; debris < debrisInfos.Count; debris++)
             {
                 AddVectorObs(debrisInfos[debris].lastKnownPosition.x, "debris_" + (debris+1) + "_position_x");
-                //AddVectorObs(debrisInfos[debris].lastKnownPosition.y, "debris_" + (debris+1) + "_position_y");
                 AddVectorObs(debrisInfos[debris].lastKnownPosition.z, "debris_" + (debris+1) + "_position_z");
             }
             
             for (int i = 0; i < DebrisCount - debrisInfos.Count; i++)
             {
                 AddVectorObs(0f, "debris_" + (i+debrisInfos.Count+1) + "_position_x");
-                //AddVectorObs(Mathf.Infinity, "debris_" + (i+debrisInfos.Count+1) + "_position_y");
                 AddVectorObs(0f, "debris_" + (i+debrisInfos.Count+1) + "_position_z");
             }
 
@@ -347,7 +355,7 @@ public class RobotAgent : Agent
 
         observationNames.Add(observationName);
     }
-    
+
     // *Old: Check if robot is getting closer to debris, Returns boolean
     // *New: Distance between robot and each debris with a total of 6, returns floats
     void ObsDistanceToDebris()
@@ -377,7 +385,7 @@ public class RobotAgent : Agent
             return;
 
         int debIndex = 1;
-        foreach (var debrisInfo in debrisInfos)
+        foreach (RobotVision.DebrisInfo debrisInfo in debrisInfos)
         {
             bool gettingCloserToDebris = debrisInfo.distanceFromRobot < debrisInfo.lastDistanceFromRobot;
             AddVectorObs(gettingCloserToDebris, "getting_closer_to_debris_" + debIndex);
@@ -394,9 +402,8 @@ public class RobotAgent : Agent
     //Check if robot has picked up debris, Returns boolean
     void ObsDebrisIsInShovel()
     {
-        List<bool> debrisInShovelList = debrisInShovel.GetDebrisInArea();
         bool debrisIsInShovel = false;
-        foreach (var value in debrisInShovelList)
+        foreach (bool value in currentDebrisInShovel)
         {
             if (value)
             {
@@ -477,18 +484,6 @@ public class RobotAgent : Agent
         AddVectorObs(pointingTowardDebris, "robot_facing_debris");
     }
     
-    // If there are fewer than 6 debris, pad out the observations
-    void PadOutDebrisObs(int observationAmount, float observation, string observationName)
-    {
-        for (int i = 0; i < DebrisCount - debrisInfos.Count; i++)
-        {
-            for (int j = 0; j < observationAmount; j++)
-            {
-                AddVectorObs(observation, observationName);
-            }
-        }
-    }
-    
     // distance from each debris to DropZone (total of 6)
     void ObsDebrisToDropZone()
     {
@@ -565,41 +560,31 @@ public class RobotAgent : Agent
             wheels.SetAngle(GetAngleFromAction(action));
         }
         
-        //shovel.RotateShovel(vectorAction[2]);
-        
         // Store current action vector state for visualization
         actionVector = vectorAction;
         
         // if robot has moved enough to do a distance check, set checked bool to true
         checkedPositionThisStep = Vector3.Distance(lastCheckedPosition, transform.position) > MinimumDistanceBeforeCheck;
         
-        //Evaluation Methods:
-        CreateListWithSuccessRate();
-
-        if (debris != null)
-        {
-            Vector3 robotToDebris = debris.position - transform.position;
-            
-            float fwdDotDebris = Vector3.Dot(transform.forward, robotToDebris.normalized);
-
-            if (fwdDotDebris > highestDotProduct)
-            {
-                highestDotProduct = fwdDotDebris;
-                AddReward(0.01f);
-            }
-        }
-
+        
         switch (goal)
         {
             case RobotGoal.AllDebrisInDropZone:
             {
-                float debrisDistanceToDropZone = Vector3.Distance(debris.position,dropZone.transform.position);
+                // Check for debris related rewards
+                RewardFacingDebris();
+                RewardLocateDebris();
+                RewardDebrisInFront();
+                RewardDebrisInShovel();
+                RewardDebrisInOutZone();
+                
+                float debrisDistanceToDropZone = Vector3.Distance(debrisInfos[0].transform.position,dropZone.transform.position);
         
                 // Reached target
                 if (debrisDistanceToDropZone < 5f)
                 {
                     timesWon++;
-                    SetReward(1.0f);
+                    AddReward(rewardGoalCompleted, "goal completed");
                     Done("Debris in zone");
                 }
 
@@ -613,7 +598,7 @@ public class RobotAgent : Agent
                 // Reached target
                 if (robotDistanceToDropZone < 5f)
                 {
-                    SetReward(1.0f);
+                    AddReward(rewardGoalCompleted, "goal completed");
                     Done("Robot in zone");
                 }
                 
@@ -622,26 +607,114 @@ public class RobotAgent : Agent
         }
         
         // Reset if time limit is reached
-        if (timeElapsed > TimeLimit)
+        if (timeElapsed > timeLimit)
         {
             timeElapsed = 0;
-            lastHundredAttempts.Add(false);
             Done("Time limit reached");
         }
     }
     
-    
-
     // Reward given for the first time each debris is seen
     void RewardLocateDebris()
     {
+        if (!(rewardDebrisFound > 0))
+            return;
+        
         // Check for each debris if it is visible and has not been seen before
         for (int debrisNum = 0; debrisNum < debrisInfos.Count; debrisNum++)
         {
             if (debrisInfos[debrisNum].isVisible && !listIsDebrisLocated[debrisNum])
             {
-                AddReward(Reward_DebrisFound, "Debris was located", debrisInfos[debrisNum].transform.position);
+                AddReward(rewardDebrisFound, "Debris was located");//, debrisInfos[debrisNum].transform.position);
                 listIsDebrisLocated[debrisNum] = true;
+            }
+        }
+    }
+
+    void RewardFacingDebris()
+    {
+        if (!(rewardFacingDebris > 0))
+            return;
+        
+        if (debrisInfos[0].transform != null)
+        {
+            Vector3 robotToDebris = debrisInfos[0].transform.position - transform.position;
+            
+            float fwdDotDebris = Vector3.Dot(transform.forward, robotToDebris.normalized);
+
+            if (fwdDotDebris > highestDotProduct)
+            {
+                highestDotProduct = fwdDotDebris;
+                AddReward(rewardFacingDebris, "facing debris");
+            }
+        }
+    }
+    
+    // Check if debris has entered or left front
+    void RewardDebrisInFront()
+    {
+        currentDebrisInFront = debrisInFront.GetDebrisInArea();
+        
+        for (int i = 0; i < currentDebrisInFront.Count; i++)
+        {
+            if (rewardDebrisEnteredFront > 0 &&
+                currentDebrisInFront[i] && !previousDebrisInFront[i])
+            {
+                AddReward(rewardDebrisEnteredFront, "debris came in front");//, debrisInfos[i].transform.position);
+                previousDebrisInFront[i] = true;
+            }
+            
+            if (penaltyDebrisLeftFront > 0 &&
+                previousDebrisInFront[i] && !currentDebrisInFront[i] && debrisInShovel && !dropZone.IsInZone(debrisInfos[i].transform.position))
+            {
+                AddReward(penaltyDebrisLeftFront, "debris left in front");//, debrisInfos[i].transform.position);
+                previousDebrisInFront[i] = false;
+            }
+        }
+    }
+
+    // Check if debris has entered or left shovel
+    void RewardDebrisInShovel()
+    {
+        currentDebrisInShovel = debrisInShovel.GetDebrisInArea();
+
+        for (int i = 0; i < currentDebrisInShovel.Count; i++)
+        {
+            if (rewardDebrisEnteredShovel > 0 &&
+                currentDebrisInShovel[i] && !previousDebrisInShovel[i])
+            {
+                AddReward(rewardDebrisEnteredShovel, "debris entered shovel");//, debrisInfos[i].transform.position);
+                previousDebrisInShovel[i] = true;
+            }
+            
+            if (penaltyDebrisLeftShovel < 0 && 
+                previousDebrisInShovel[i] && !currentDebrisInShovel[i] &&
+                !dropZone.IsInZone(debrisInfos[i].transform.position))
+            {
+                AddReward(penaltyDebrisLeftShovel, "debris left shovel outside DropZone");//, debrisInfos[i].transform.position);
+                previousDebrisInShovel[i] = false;
+            }
+        }
+    }
+    
+    // Check if debris has entered or left the DropZone
+    void RewardDebrisInOutZone()
+    {
+        // Check if debris has left/entered the zone
+        List<bool> previousDebrisInZone = environment.GetPreviousDebrisInZone();
+        List<bool> currentDebrisInZone = environment.GetCurrentDebrisInZone();
+
+        for (int i = 0; i < previousDebrisInZone.Count; i++)
+        {
+            if (previousDebrisInZone[i])
+            {
+                if (penaltyDebrisLeftZone < 0 && !currentDebrisInZone[i])
+                    AddReward(penaltyDebrisLeftZone, "debris left zone");//, debrisInfos[i].transform.position);
+            }
+            else
+            {
+                if (rewardDebrisEnteredZone > 0 && currentDebrisInZone[i])
+                    AddReward(rewardDebrisEnteredZone, "debris entered zone");//, debrisInfos[i].transform.position);
             }
         }
     }
@@ -650,25 +723,26 @@ public class RobotAgent : Agent
     {
         if (other.collider.gameObject.layer == LayerMask.NameToLayer("environment"))
         {
-            AddReward(-1.0f);
-            Done("Hit wall");
+            if (penaltyRobotHittingWall < 0)
+                AddReward(penaltyRobotHittingWall, "hit wall");
+            
+            if (resetOnHitWall)
+                Done("Hit wall");
         }
     }
 
     // Wrapper function for Done that prints a custom done message in console
     void Done(string reason)
     {
+        if (doneHasBeenCalled)
+            return;
+        
         timesDone++;
         
         doneHasBeenCalled = true;
         
         Debug.Log("Done! reason: " + reason);
         Done();
-
-        if (lastHundredAttempts.Count >= 100)
-        {
-            lastHundredAttempts.RemoveAt(0);
-        }
 
         // Reset shovel content on restart
         currentDebrisInShovel = new List<bool>() {false, false, false, false, false, false};
@@ -731,56 +805,27 @@ public class RobotAgent : Agent
         return action;
     }
 
-    //Keep track of success rate every 100 attempts
-    public void CreateListWithSuccessRate()
+    public float[] GetActionVector()
     {
-        List<float> successRateList = new List<float>();
-        float successfullAttempts = 0.0f;
-        float successRate;
-
-
-        if (timesDone % 5 == 0 && timesDone > 0)
-        {
-            foreach (var attempt in lastHundredAttempts)
-            {
-                if (attempt == true)
-                {
-                    successfullAttempts++;
-                }
-            
-            }
-
-            successRate = successfullAttempts / 5;
-            {
-                if (!isAddedToSuccessRateList)
-                {
-                    isAddedToSuccessRateList = true;
-                    successRateList.Add(successRate);
-                }
-            }
-        }
+        return actionVector;
     }
 
     public float GetElapsedTime()
     {
         return timeElapsed;
     }
-
-    public float[] GetActionVector()
+    
+    public int GetTimesDone()
     {
-        return actionVector;
+        return timesDone;
     }
-
-    public List<bool> GetLastHundredAttemptsList()
-    {
-        return lastHundredAttempts;
-    }
-
+    
     public int GetTimesWon()
     {
         return timesWon;
     }
 
+    // Translates action value into -1 (reverse), +1 (forward) or 0 (no throttle)
     public int GetThrottleFromAction(int action)
     {
         switch (action)
@@ -794,6 +839,7 @@ public class RobotAgent : Agent
         return 0;
     }
     
+    // Translates action value into -1 (left), +1 (right) or 0 (no turning)
     public int GetAngleFromAction(int action)
     {
         switch (action)
@@ -807,56 +853,28 @@ public class RobotAgent : Agent
         return 0;
     }
     
-    // 0,1,2 --> -1,0,1
-    public int ConvertAction(int action)
-    {
-        switch (action)
-        {
-            case 0:
-                return -1;
-            case 1:
-                return 0;
-            case 2:
-                return 1;
-        }
-
-        return action;
-    }
-    
-    public int ConvertHeuristic(int getAxis)
-    {
-        switch (getAxis)
-        {
-            case 0:
-                return 1;
-            case 1:
-                return 2;
-            case -1:
-                return 0;
-        }
-
-        return getAxis;
-    }
-
 #if UNITY_EDITOR
     // Used to draw debug info on screen
-    //void OnDrawGizmos()
-    //{
-    //    if (!EditorApplication.isPlaying)
-    //        return;
-    //
-    //    if (debrisInfos == null)
-    //        return;
-    //    
-    //    // Draws rings around the last known debris positions
-    //    foreach (RobotVision.DebrisInfo debrisInfo in debrisInfos)
-    //    {
-    //        Handles.color = debrisInfo.isVisible ? debrisHighlight : debrisHighlightMissing;
-    //        Handles.DrawWireDisc(debrisInfo.lastKnownPosition, Vector3.up, 0.5f);
-    //    }
-    //    
-    //    Handles.color = Color.red;
-    //    Handles.DrawLine(transform.position, transform.position + rb.velocity);
-    //}
+    void OnDrawGizmos()
+    {
+        if (!EditorApplication.isPlaying)
+            return;
+    
+        if (!displayGizmos)
+            return;
+        
+        if (debrisInfos == null)
+            return;
+        
+        // Draws rings around the last known debris positions
+        foreach (RobotVision.DebrisInfo debrisInfo in debrisInfos)
+        {
+            Handles.color = debrisInfo.isVisible ? debrisHighlight : debrisHighlightMissing;
+            Handles.DrawWireDisc(debrisInfo.lastKnownPosition, Vector3.up, 0.5f);
+        }
+        
+        Handles.color = Color.red;
+        Handles.DrawLine(transform.position, transform.position + rb.velocity);
+    }
 #endif
 }

@@ -1902,12 +1902,28 @@ MonoBehaviour:
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 5
-  goal: 0
   useSimplePhysics: 0
+  limitedObservations: 0
   environment: {fileID: 0}
   debrisInShovel: {fileID: 5361192715005589940}
   debrisInFront: {fileID: 7381684728525038586}
-  debris: {fileID: 0}
+  goal: 0
+  timeLimit: 90
+  rewardGoalCompleted: 1
+  rewardDebrisEnteredFront: 0
+  rewardDebrisEnteredShovel: 0
+  rewardDebrisEnteredZone: 0
+  rewardDebrisFound: 0
+  rewardFacingDebris: 0
+  rewardMoveTowardsDebris: 0
+  rewardMoveTowardsZoneWithDebris: 0
+  penaltyDebrisLeftFront: 0
+  penaltyDebrisLeftShovel: 0
+  penaltyDebrisLeftZone: 0
+  penaltyMoveAwayFromZoneWithDebris: 0
+  penaltyRobotHittingWall: -1
+  penaltyTimePassed: 0
+  displayGizmos: 0
 --- !u!114 &1779018748840171066
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2114,11 +2130,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4743365922881444138}
     m_Modifications:
-    - target: {fileID: 1485128242001459055, guid: 0dd7ca1744867704e9378ba0ae381f14,
-        type: 3}
-      propertyPath: m_Name
-      value: Wheel
-      objectReference: {fileID: 0}
     - target: {fileID: 1680789286611106511, guid: 0dd7ca1744867704e9378ba0ae381f14,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2174,6 +2185,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1485128242001459055, guid: 0dd7ca1744867704e9378ba0ae381f14,
+        type: 3}
+      propertyPath: m_Name
+      value: Wheel
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0dd7ca1744867704e9378ba0ae381f14, type: 3}
 --- !u!4 &1157141235570755108 stripped
@@ -2189,11 +2205,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4743365921448770213}
     m_Modifications:
-    - target: {fileID: 1485128242001459055, guid: 0dd7ca1744867704e9378ba0ae381f14,
-        type: 3}
-      propertyPath: m_Name
-      value: Wheel
-      objectReference: {fileID: 0}
     - target: {fileID: 1680789286611106511, guid: 0dd7ca1744867704e9378ba0ae381f14,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2248,6 +2259,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1485128242001459055, guid: 0dd7ca1744867704e9378ba0ae381f14,
+        type: 3}
+      propertyPath: m_Name
+      value: Wheel
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0dd7ca1744867704e9378ba0ae381f14, type: 3}
@@ -2362,11 +2378,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4743365923223935314}
     m_Modifications:
-    - target: {fileID: 1485128242001459055, guid: 0dd7ca1744867704e9378ba0ae381f14,
-        type: 3}
-      propertyPath: m_Name
-      value: Wheel
-      objectReference: {fileID: 0}
     - target: {fileID: 1680789286611106511, guid: 0dd7ca1744867704e9378ba0ae381f14,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2421,6 +2432,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1485128242001459055, guid: 0dd7ca1744867704e9378ba0ae381f14,
+        type: 3}
+      propertyPath: m_Name
+      value: Wheel
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0dd7ca1744867704e9378ba0ae381f14, type: 3}
@@ -2437,11 +2453,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4743365922462476676}
     m_Modifications:
-    - target: {fileID: 1485128242001459055, guid: 0dd7ca1744867704e9378ba0ae381f14,
-        type: 3}
-      propertyPath: m_Name
-      value: Wheel
-      objectReference: {fileID: 0}
     - target: {fileID: 1680789286611106511, guid: 0dd7ca1744867704e9378ba0ae381f14,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2497,6 +2508,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1485128242001459055, guid: 0dd7ca1744867704e9378ba0ae381f14,
+        type: 3}
+      propertyPath: m_Name
+      value: Wheel
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0dd7ca1744867704e9378ba0ae381f14, type: 3}
 --- !u!4 &6620866456860798099 stripped
@@ -2512,11 +2528,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4743365922242820763}
     m_Modifications:
-    - target: {fileID: 1485128242001459055, guid: 0dd7ca1744867704e9378ba0ae381f14,
-        type: 3}
-      propertyPath: m_Name
-      value: Wheel
-      objectReference: {fileID: 0}
     - target: {fileID: 1680789286611106511, guid: 0dd7ca1744867704e9378ba0ae381f14,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2571,6 +2582,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1485128242001459055, guid: 0dd7ca1744867704e9378ba0ae381f14,
+        type: 3}
+      propertyPath: m_Name
+      value: Wheel
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0dd7ca1744867704e9378ba0ae381f14, type: 3}
@@ -2587,11 +2603,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4743365922474834782}
     m_Modifications:
-    - target: {fileID: 1485128242001459055, guid: 0dd7ca1744867704e9378ba0ae381f14,
-        type: 3}
-      propertyPath: m_Name
-      value: Wheel
-      objectReference: {fileID: 0}
     - target: {fileID: 1680789286611106511, guid: 0dd7ca1744867704e9378ba0ae381f14,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2646,6 +2657,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1485128242001459055, guid: 0dd7ca1744867704e9378ba0ae381f14,
+        type: 3}
+      propertyPath: m_Name
+      value: Wheel
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0dd7ca1744867704e9378ba0ae381f14, type: 3}

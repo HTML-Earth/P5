@@ -18,21 +18,13 @@ public class IterationCounter : MonoBehaviour
     void Awake()
     {
         text = GetComponent<TextMeshProUGUI>();
-        text.text = "Episode: 0    Completions: 0";
     }
 
-    // Update is called once per frame
     void Update()
     {
         int completions = robotAgent.GetTimesWon();
         int iterations = environment.GetIterations();
-        if (iterations > 1)
-        {
-            text.text = "Episodes: " + iterations + "\t Completions: " + completions;
-        }
-        else
-        {
-            text.text = "Episode: " + iterations + "\t Completions: " + completions;
-        }
+        
+        text.text = "Current episode: " + iterations + "\nCompletions: " + completions + " / " + (iterations-1);
     }
 }

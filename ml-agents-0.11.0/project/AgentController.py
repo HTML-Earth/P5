@@ -57,6 +57,8 @@ class Agent:
     def update_observations(self):
         self.observations = self.env_info[self.default_brain].vector_observations[0]
         self.velocity_z = self.get_obs(self.obs.robot_velocity_z)
+        #self.sensors_front = [self.get_obs(self.obs.sensor_measurement_1), self.get_obs(self.obs.sensor_measurement_2), self.get_obs(self.obs.sensor_measurement_30)]
+        #self.sensors_behind = [-self.get_obs(self.obs.sensor_measurement_16), -self.get_obs(self.obs.sensor_measurement_15), -self.get_obs(self.obs.sensor_measurement_17)]
 
         self.sensors_front = [self.get_obs(self.obs.sensor_measurement_1),
                               self.get_obs(self.obs.sensor_measurement_2),

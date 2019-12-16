@@ -118,7 +118,7 @@ public class RobotAgent : Agent
 
     // Current state of action vector
     float[] actionVector;
-    
+
     public override void InitializeAgent()
     {
         environment.InitializeEnvironment();
@@ -207,7 +207,8 @@ public class RobotAgent : Agent
         else
             debrisPosition = Vector3.zero;
         
-        
+        // Robot position in each environment
+        AddVectorObs(this.transform.position - environment.transform.position);
 
         // Robot position
         Vector3 currentPosition = transform.position - environment.transform.position;
@@ -225,6 +226,10 @@ public class RobotAgent : Agent
         // Shovel position
         AddVectorObs(shovel.GetShovelPos(), "shovel_position");
         
+        // Comment out these observations if using PPO
+        AddVectorObs(timesWon, "times_won");
+        AddVectorObs(timeElapsed, "time_elapsed");
+
         // DropZone position and radius
         dropZonePosition = transform.InverseTransformPoint(dropZone.transform.position);
         AddVectorObs(dropZonePosition.x, "dropzone_position_x");
@@ -570,6 +575,7 @@ public class RobotAgent : Agent
             if (fwdDotDebris > highestDotProduct)
             {
                 highestDotProduct = fwdDotDebris;
+                timesWon++;
                 AddReward(0.01f);
             }
         }
@@ -651,7 +657,6 @@ public class RobotAgent : Agent
 
         if (lastHundredAttempts.Count >= 100)
         {
-            
             lastHundredAttempts.RemoveAt(0);
         }
 

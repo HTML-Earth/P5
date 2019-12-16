@@ -2,6 +2,7 @@ import random
 from File_manager import TrainingFileManager
 from AgentController import Agent
 import matplotlib.pyplot as plt
+import RobotObservations as observation
 
 
 class SarsaLFA:
@@ -26,6 +27,9 @@ class SarsaLFA:
         self.reward_per_episode = 0
 
         self.episode = 1
+
+        # Observation list class(IntEnum)
+        self.obs = observation.RobotObservations
 
     def lookup_q(self, state, action):
         return self.q_function.get((tuple(state), action), 0.0)
@@ -66,37 +70,55 @@ class SarsaLFA:
         y_delta = []
         y_reward = []
 
-        while self.episode <= 100:
-            self.agent.perform_action(action)
+        times_done = 0
 
-            new_state = self.agent.get_state()
-            reward = self.agent.get_reward()
-            new_action = self.choose_action(state)
+        for i in range(0, 6):
+            while self.episode <= 1000:
+                time_elapsed = self.agent.get_obs(self.obs.time_elapsed)
 
-            # Calculate data point for linear regression
-            delta = reward + self.gamma * self.get_q_value(new_state, new_action) - self.get_q_value(state, action)
+                self.agent.perform_action(action)
 
-            # Update weights
-            for i in range(0, len(self.weights)):
-                self.weights[i] = self.weights[i] + self.eta * delta * self.agent.features[i](state, action)
+                new_state = self.agent.get_state()
+                reward = self.agent.get_reward()
+                new_action = self.choose_action(state)
 
-            state = new_state
-            action = new_action
+                # Calculate data point for linear regression
+                delta = reward + self.gamma * self.get_q_value(new_state, new_action) - self.get_q_value(state, action)
 
-            self.reward_per_episode += reward
+                # Update weights
+                for i in range(0, len(self.weights)):
+                    self.weights[i] = self.weights[i] + self.eta * delta * self.agent.features[i](state, action)
 
-            if self.agent.is_done():
-                # Save x- and y- values
-                x_episode.append(self.episode)
-                y_delta.append(delta)
-                y_reward.append(self.reward_per_episode)
+                state = new_state
+                action = new_action
 
-                self.training_file_manager.save_episode_rewards(self.episode, self.reward_per_episode)
+                self.reward_per_episode += reward
 
-                self.episode += 1
-                self.reward_per_episode = 0
-                #TODO: I think this may cause some conflict with AgentReset where we also reset the environment
-                #self.agent.reset_simulation()
+                if self.agent.is_done():
+                    goal_state = 0
+                    completion_time = 0
+
+                    if self.agent.get_obs(self.obs.times_won) > times_done:
+                        times_done = self.agent.get_obs(self.obs.times_won)
+                        goal_state = 1
+                        completion_time = time_elapsed
+
+                    # Save x- and y- values
+                    x_episode.append(self.episode)
+                    y_delta.append(delta)
+                    y_reward.append(self.reward_per_episode)
+
+                    self.training_file_manager.save_episode_rewards(self.episode, self.reward_per_episode,
+                                                                    goal_state, completion_time)
+
+                    self.episode += 1
+                    self.reward_per_episode = 0
+                    # TODO: I think this may cause some conflict with AgentReset where we also reset the environment
+
+        # Delta in relation to episodes
+        plt.subplot(2, 1, 1)
+        plt.plot(x_episode, y_delta)
+        plt.ylabel('y - Delta')
 
         # Reward in relation to episodes
         plt.plot(x_episode, y_reward)

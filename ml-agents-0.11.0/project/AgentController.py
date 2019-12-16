@@ -181,36 +181,25 @@ class Agent:
         robotPosition = [self.obs.robot_position_x, self.obs.robot_position_z]
         distance = 0
 
-        if action == 1:
-            if action == 1:  # forward + right
-                Angle = -self.rotation_constant
-                distance = self.distance_solver(robotPosition, debrisNumber, 1, Angle)
+        if action == 0:  # standing still
+            Angle = 0
+            distance = self.distance_solver(robotPosition, debrisNumber, 0, Angle)
 
-            elif action == 0:  # forward + straight
-                Angle = 0
-                distance = self.distance_solver(robotPosition, debrisNumber, 1, Angle)
+        if action == 1:  # forward
+            Angle = 0
+            distance = self.distance_solver(robotPosition, debrisNumber, 1, Angle)
 
-            elif action == -1:  # forward + left
-                Angle = self.rotation_constant
-                distance = self.distance_solver(robotPosition, debrisNumber, 1, Angle)
+        if action == 2:  # left while not throttling
+            Angle = self.rotation_constant
+            distance = self.distance_solver(robotPosition, debrisNumber, 0, Angle)
 
-        if action == -1:
-            if action == 1:  # backward + right
-                Angle = self.rotation_constant
-                distance = self.distance_solver(robotPosition, debrisNumber, -1, Angle)
+        if action == 3:  # backward
+            Angle = 0
+            distance = self.distance_solver(robotPosition, debrisNumber, -1, Angle)
 
-            elif action == 0:  # backward + straight
-                Angle = 0
-                distance = self.distance_solver(robotPosition, debrisNumber, -1, Angle)
-
-            elif action == -1:  # backward + left
-                Angle = -self.rotation_constant
-                distance = self.distance_solver(robotPosition, debrisNumber, -1, Angle)
-
-        if action == 0:
-            if action == 0:
-                Angle = 0
-                distance = self.distance_solver(robotPosition, debrisNumber, 0, Angle)
+        if action == 4:  # right while not throttling
+            Angle = -self.rotation_constant
+            distance = self.distance_solver(robotPosition, debrisNumber, 0, Angle)
 
         transform_value = 1 / 20
 
@@ -410,44 +399,25 @@ class Agent:
         robotPosition = [self.obs.robot_position_x, self.obs.robot_position_z]
         angle_to_debris = 0
 
-        if action == 1:
-            if action == 1:  # forward + right
-                Angle = -self.rotation_constant
-                angle_to_debris = self.robotAngle_New(robotPosition, debrisNumber, 1, Angle)
+        if action == 0:  # standing still
+            Angle = 0
+            angle_to_debris = self.robotAngle_New(robotPosition, debrisNumber, 0, Angle)
 
-            if action == 0:  # forward + straight
-                Angle = 0
-                angle_to_debris = self.robotAngle_New(robotPosition, debrisNumber, 1, Angle)
+        if action == 1:  # forward straight
+            Angle = 0
+            angle_to_debris = self.robotAngle_New(robotPosition, debrisNumber, 1, Angle)
 
-            if action == -1:  # forward + left
-                Angle = self.rotation_constant
-                angle_to_debris = self.robotAngle_New(robotPosition, debrisNumber, 1, Angle)
+        if action == 2:  # left with no throttling
+            Angle = self.rotation_constant
+            angle_to_debris = self.robotAngle_New(robotPosition, debrisNumber, 0, Angle)
 
-        if action == -1:
-            if action == 1:  # backward + right
-                Angle = self.rotation_constant
-                angle_to_debris = self.robotAngle_New(robotPosition, debrisNumber, -1, Angle)
+        if action == 3:  # backward straight
+            Angle = 0
+            angle_to_debris = self.robotAngle_New(robotPosition, debrisNumber, -1, Angle)
 
-            if action == 0:  # backward + straight
-                Angle = 0
-                angle_to_debris = self.robotAngle_New(robotPosition, debrisNumber, -1, Angle)
-
-            if action == -1:  # backward + left
-                Angle = -self.rotation_constant
-                angle_to_debris = self.robotAngle_New(robotPosition, debrisNumber, -1, Angle)
-
-        if action == 0:
-            if action == 1:  # right
-                Angle = -self.rotation_constant
-                angle_to_debris = self.robotAngle_New(robotPosition, debrisNumber, 0, Angle)
-
-            if action == 0:  # not moving
-                Angle = 0
-                angle_to_debris = self.robotAngle_New(robotPosition, debrisNumber, 0, Angle)
-
-            if action == -1:  # left
-                Angle = self.rotation_constant
-                angle_to_debris = self.robotAngle_New(robotPosition, debrisNumber, 0, Angle)
+        if action == 4:  # right with no throttling
+            Angle = -self.rotation_constant
+            angle_to_debris = self.robotAngle_New(robotPosition, debrisNumber, 0, Angle)
 
         return angle_to_debris * transform_value
 

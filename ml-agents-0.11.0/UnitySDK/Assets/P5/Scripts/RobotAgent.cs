@@ -249,53 +249,52 @@ public class RobotAgent : Agent
         
             AddVectorObs(debrisPosition.x, "debris_position_x");
             AddVectorObs(debrisPosition.z, "debris_position_z");
+        }
+        else
+        {
+            // Debris positions
+            debrisInfos = vision.UpdateVision();
             
-            return;
+            for (int debris = 0; debris < debrisInfos.Count; debris++)
+            {
+                AddVectorObs(debrisInfos[debris].lastKnownPosition.x, "debris_" + (debris+1) + "_position_x");
+                //AddVectorObs(debrisInfos[debris].lastKnownPosition.y, "debris_" + (debris+1) + "_position_y");
+                AddVectorObs(debrisInfos[debris].lastKnownPosition.z, "debris_" + (debris+1) + "_position_z");
+            }
+            
+            for (int i = 0; i < DebrisCount - debrisInfos.Count; i++)
+            {
+                AddVectorObs(0f, "debris_" + (i+debrisInfos.Count+1) + "_position_x");
+                //AddVectorObs(Mathf.Infinity, "debris_" + (i+debrisInfos.Count+1) + "_position_y");
+                AddVectorObs(0f, "debris_" + (i+debrisInfos.Count+1) + "_position_z");
+            }
+
+            // Simulation time
+            AddVectorObs(timeElapsed, "simulation_time");
+
+            // Features:
+
+            //Check if robot is within dropZone, Returns boolean
+            bool isInDropZone = dropZone.IsInZone(transform.position);
+            AddVectorObs(isInDropZone, "robot_in_dropzone");
+
+            ObsDistanceToDebris();
+            ObsDebrisIsInShovel();
+            ObsAngleToDebris();
+            ObsDebrisInFront();
+            ObsFacingDebris();
+            ObsGettingCloserToDebris();
+
+            // Angle to dropzone
+            float angleToDropZone = Vector3.Angle(dropZonePosition, transform.forward);
+            if (transform.rotation.eulerAngles.y > 180) {
+                angleToDropZone = -angleToDropZone;
+            }
+            AddVectorObs(angleToDropZone, "angle_to_dropzone");
+
+            ObsDebrisToDropZone();
+            ObsNextAngleToDebris();
         }
-        
-        // Debris positions
-        debrisInfos = vision.UpdateVision();
-        
-        for (int debris = 0; debris < debrisInfos.Count; debris++)
-        {
-            AddVectorObs(debrisInfos[debris].lastKnownPosition.x, "debris_" + (debris+1) + "_position_x");
-            //AddVectorObs(debrisInfos[debris].lastKnownPosition.y, "debris_" + (debris+1) + "_position_y");
-            AddVectorObs(debrisInfos[debris].lastKnownPosition.z, "debris_" + (debris+1) + "_position_z");
-        }
-        
-        for (int i = 0; i < DebrisCount - debrisInfos.Count; i++)
-        {
-            AddVectorObs(0f, "debris_" + (i+debrisInfos.Count+1) + "_position_x");
-            //AddVectorObs(Mathf.Infinity, "debris_" + (i+debrisInfos.Count+1) + "_position_y");
-            AddVectorObs(0f, "debris_" + (i+debrisInfos.Count+1) + "_position_z");
-        }
-
-        // Simulation time
-        AddVectorObs(timeElapsed, "simulation_time");
-
-        // Features:
-
-        //Check if robot is within dropZone, Returns boolean
-        bool isInDropZone = dropZone.IsInZone(transform.position);
-        AddVectorObs(isInDropZone, "robot_in_dropzone");
-
-        ObsDistanceToDebris();
-        ObsDebrisIsInShovel();
-        ObsAngleToDebris();
-        ObsDebrisInFront();
-        ObsFacingDebris();
-        ObsGettingCloserToDebris();
-
-        // Angle to dropzone
-        float angleToDropZone = Vector3.Angle(dropZonePosition, transform.forward);
-        if (transform.rotation.eulerAngles.y > 180) {
-            angleToDropZone = -angleToDropZone;
-        }
-        AddVectorObs(angleToDropZone, "angle_to_dropzone");
-
-        ObsDebrisToDropZone();
-        ObsNextAngleToDebris();
-
 
 #if UNITY_EDITOR
         // AUTO GENERATE RobotObservations.py

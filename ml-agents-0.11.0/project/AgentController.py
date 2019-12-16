@@ -291,7 +291,6 @@ class Agent:
                 if -angle_range < angle_to_debris < angle_range:
                     getting_closer = 1
 
-        print(getting_closer)
         return getting_closer
 
     # TODO Check if it reverses towards debris

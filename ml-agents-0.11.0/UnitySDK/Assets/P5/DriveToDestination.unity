@@ -261,7 +261,7 @@ MonoBehaviour:
     width: 80
     height: 80
     qualityLevel: 1
-    timeScale: 100
+    timeScale: 20
     targetFrameRate: -1
   m_InferenceConfiguration:
     width: 1280
@@ -444,32 +444,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4768328491435083123, guid: af68f6d900e8d5a49be3dadc51ec7406,
-        type: 3}
-      propertyPath: randomizeDropZonePosition
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5417289550663670457, guid: af68f6d900e8d5a49be3dadc51ec7406,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6233393619948579160, guid: af68f6d900e8d5a49be3dadc51ec7406,
-        type: 3}
-      propertyPath: goal
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6233393619948579160, guid: af68f6d900e8d5a49be3dadc51ec7406,
-        type: 3}
-      propertyPath: useSimplePhysics
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1432046193967339510, guid: af68f6d900e8d5a49be3dadc51ec7406,
-        type: 3}
-      propertyPath: m_Model
-      value: 
-      objectReference: {fileID: 5022602860645237092, guid: a0976caa9536ea247890475a8e1bfee6,
-        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: af68f6d900e8d5a49be3dadc51ec7406, type: 3}
 --- !u!1 &1958463722

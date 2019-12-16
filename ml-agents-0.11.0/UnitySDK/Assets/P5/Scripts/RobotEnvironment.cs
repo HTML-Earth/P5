@@ -89,7 +89,7 @@ public class RobotEnvironment : MonoBehaviour
         {
             float xPos = Random.Range(boundsMinimumX, boundsMaximumX);
             float zPos = Random.Range(boundsMinimumZ, boundsMaximumZ);
-            dropZone.transform.position = new Vector3(xPos, -0.24f, zPos);
+            dropZone.transform.position = new Vector3(transform.position.x + xPos, -0.24f, transform.position.z + zPos);
         }
         
         // Initialize debrisInZone values

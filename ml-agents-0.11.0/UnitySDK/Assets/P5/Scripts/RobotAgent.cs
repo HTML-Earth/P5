@@ -93,7 +93,7 @@ public class RobotAgent : Agent
     Vector3 startPosition;
     Quaternion startRotation;
 
-    Vector3 rbPosition;
+    // Positions relative to robot
     Vector3 debrisPosition;
     Vector3 dropZonePosition;
     
@@ -115,8 +115,6 @@ public class RobotAgent : Agent
     List<bool> currentDebrisInFront = new List<bool>() {false, false, false, false, false, false};
     List<bool> previousDebrisInFront = new List<bool>() {false, false, false, false, false, false};
     
-    Queue<float> wallRammingPenalties;
-
     const float MinimumDistanceBeforeCheck = 0.5f;
     bool checkedPositionThisStep;
     Vector3 lastCheckedPosition;
@@ -179,8 +177,6 @@ public class RobotAgent : Agent
         // Hard initialized to 6*false, one for each debris
         listIsDebrisLocated = new List<bool>() {false, false, false, false, false, false};
         
-        wallRammingPenalties = new Queue<float>();
-
         lastCheckedPosition = transform.position;
 
         currentDistanceFromZone = Vector3.Distance(transform.position, dropZone.transform.position);
@@ -257,7 +253,7 @@ public class RobotAgent : Agent
         {
             // Debris Position
             debrisPosition = Vector3.zero;
-            if (debrisInfos != null && debrisInfos[0].transform != null)
+            if (debrisInfos != null && debrisInfos.Count > 0 && debrisInfos[0].transform != null)
                 debrisPosition = transform.InverseTransformPoint(debrisInfos[0].transform.position);
         
             AddVectorObs(debrisPosition.x, "debris_position_x");
@@ -306,7 +302,7 @@ public class RobotAgent : Agent
 
 #if UNITY_EDITOR
         // AUTO GENERATE RobotObservations.py
-        if (!observationsLogged)
+        if (!observationsLogged && !limitedObservations)
         {
             DirectoryInfo mlAgentsRootDir = new DirectoryInfo(Application.dataPath).Parent.Parent;
 
@@ -598,6 +594,7 @@ public class RobotAgent : Agent
                 // Reached target
                 if (robotDistanceToDropZone < 5f)
                 {
+                    timesWon++;
                     AddReward(rewardGoalCompleted, "goal completed");
                     Done("Robot in zone");
                 }

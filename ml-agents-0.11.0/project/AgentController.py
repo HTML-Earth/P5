@@ -7,14 +7,13 @@ from mlagents.envs.environment import UnityEnvironment
 class Agent:
 
     def __init__(self):
+        # Unity variables
         self.env = None
         self.env_info = None
         self.default_brain = None
 
-        # Algorithm
-        self.actions = [(i, j)
-                        for i in range(-1, 2)
-                        for j in range(-1, 2)]
+        # Actions (Nothing, forward, turn left, reverse, turn right)
+        self.actions = [0, 1, 2, 3, 4]
 
         # Robot constants
         self.robot_length_forward = 2.4
@@ -57,6 +56,9 @@ class Agent:
     # Update observations variable with information about the environment without dropzone
     def update_observations(self):
         self.observations = self.env_info[self.default_brain].vector_observations[0]
+        self.velocity_z = self.get_obs(self.obs.robot_velocity_z)
+        #self.sensors_front = [self.get_obs(self.obs.sensor_measurement_1), self.get_obs(self.obs.sensor_measurement_2), self.get_obs(self.obs.sensor_measurement_30)]
+        #self.sensors_behind = [-self.get_obs(self.obs.sensor_measurement_16), -self.get_obs(self.obs.sensor_measurement_15), -self.get_obs(self.obs.sensor_measurement_17)]
 
         self.sensors_front = [self.get_obs(self.obs.sensor_measurement_1),
                               self.get_obs(self.obs.sensor_measurement_2),
@@ -68,9 +70,7 @@ class Agent:
     def get_obs(self, index):
         return self.observations[index]
 
-    # Action functions
-    def perform_action(self, thrust, rotate):
-        action = np.array([thrust, rotate])
+    def perform_action(self, action):
         self.env_info = self.env.step({self.default_brain: action})
 
     def get_reward(self):
@@ -94,14 +94,26 @@ class Agent:
         # Reversing into wall
         state.append(1) if self.sensors_behind > [-self.robot_length_backwards] else state.append(0)
 
+        # Robot within dropZone
+        state.append(1) if self.get_obs(self.obs.robot_in_dropzone) else state.append(0)
+
         # Getting closer to debris 1
-        state.append(1) if self.get_obs(self.obs.getting_closer_to_debris_1) else state.append(0)
+        #state.append(1) if self.get_obs(self.obs.getting_closer_to_debris_1) else state.append(0)
+
+        # Ready to pickup debris
+        state.append(1) if self.get_obs(self.obs.shovel_position) == 330 else state.append(0)
+
+        # Debris is in shovel
+        state.append(1) if self.get_obs(self.obs.debris_in_shovel) else state.append(0)
+
+        # Debris in front of shovel
+        state.append(1) if self.get_obs(self.obs.debris_in_front) else state.append(0)
 
         # Getting closer to dropzone
         state.append(1) if self.get_obs(self.obs.robot_facing_debris) else state.append(0)
 
         # Rotation
-        state.append(int(self.get_obs(self.obs.robot_rotation)))
+        #state.append(int(self.get_obs(self.obs.robot_rotation)))
 
         # Pointed towards debris
         state.append(1) if self.get_obs(self.obs.robot_facing_debris) else state.append(0)
@@ -122,26 +134,21 @@ class Agent:
         return 1
 
     def throttling_into_wall(self, state, action):
-        # Convert to list because tuples returns an error when indexing
-        action_list = list(action)
-
         constant = 1
 
-        if action_list[0] == 1:
+        if action == 1:
             constant = self.thrust_constant
-        elif action_list[0] == -1:
+        elif action == -1:
             constant = -self.thrust_constant
 
         return 1 if self.sensors_front < [self.robot_length_forward + constant] else 0
 
     def reversing_into_wall(self, state, action):
-        action_list = list(action)
-
         constant = 1
 
-        if action_list[0] == -1:
+        if action == -1:
             constant = -self.thrust_constant
-        elif action_list[0] == 1:
+        elif action == 1:
             constant = self.thrust_constant
 
         return 1 if self.sensors_behind > [self.robot_length_backwards + constant] else 0
@@ -171,38 +178,37 @@ class Agent:
         return self.distance_to_debris(state, action, debrisPosition_6)
 
     def distance_to_debris(self, state, action, debrisNumber):
-        action_list = list(action)
         robotPosition = [self.obs.robot_position_x, self.obs.robot_position_z]
         distance = 0
 
-        if action_list[0] == 1:
-            if action_list[1] == 1:  # forward + right
+        if action == 1:
+            if action == 1:  # forward + right
                 Angle = -self.rotation_constant
                 distance = self.distance_solver(robotPosition, debrisNumber, 1, Angle)
 
-            elif action_list[1] == 0:  # forward + straight
+            elif action == 0:  # forward + straight
                 Angle = 0
                 distance = self.distance_solver(robotPosition, debrisNumber, 1, Angle)
 
-            elif action_list[1] == -1:  # forward + left
+            elif action == -1:  # forward + left
                 Angle = self.rotation_constant
                 distance = self.distance_solver(robotPosition, debrisNumber, 1, Angle)
 
-        if action_list[0] == -1:
-            if action_list[1] == 1:  # backward + right
+        if action == -1:
+            if action == 1:  # backward + right
                 Angle = self.rotation_constant
                 distance = self.distance_solver(robotPosition, debrisNumber, -1, Angle)
 
-            elif action_list[1] == 0:  # backward + straight
+            elif action == 0:  # backward + straight
                 Angle = 0
                 distance = self.distance_solver(robotPosition, debrisNumber, -1, Angle)
 
-            elif action_list[1] == -1:  # backward + left
+            elif action == -1:  # backward + left
                 Angle = -self.rotation_constant
                 distance = self.distance_solver(robotPosition, debrisNumber, -1, Angle)
 
-        if action_list[0] == 0:
-            if action_list[1] == 0:
+        if action == 0:
+            if action == 0:
                 Angle = 0
                 distance = self.distance_solver(robotPosition, debrisNumber, 0, Angle)
 
@@ -276,7 +282,7 @@ class Agent:
 
     # TODO Check if it reverses towards debris
     def getting_closer_to_debris(self, state, action, obs_num):
-        action_list = list(action)
+        action_list = action
         # Angle on each side of the robot's forward vector
         angle_range = 45  # TODO: Figure out the exact value
         angle_to_debris = self.get_obs(obs_num)
@@ -285,14 +291,14 @@ class Agent:
 
         # steer 1 = more negative, steer -1 = more positive
         # Move directly towards debris
-        if action_list[0] == 1:
-            if action_list[1] == 1:
+        if action == 1:
+            if action == 1:
                 if -angle_range < (angle_to_debris + self.rotation_constant) < angle_range:
                     getting_closer = 1
-            elif action_list[1] == -1:
+            elif action == -1:
                 if -angle_range < (angle_to_debris - self.rotation_constant) < angle_range:
                     getting_closer = 1
-            elif action_list[1] == 0:
+            elif action == 0:
                 if -angle_range < angle_to_debris < angle_range:
                     getting_closer = 1
 
@@ -301,18 +307,18 @@ class Agent:
 
     # TODO Check if it reverses towards debris
     def getting_closer_to_dropzone(self, state, action):
-        action_list = list(action)
+        action_list = action
         angle_to_dropzone = self.get_obs(self.obs.angle_to_dropzone)
         getting_closer_to_dropzone = 0
 
-        if action_list[0] == 1:
-            if action_list[1] == 0:
+        if action == 1:
+            if action == 0:
                 if -45 < angle_to_dropzone < 45:
                     getting_closer_to_dropzone = 1
-            elif action_list[1] == 1:
+            elif action == 1:
                 if -45 < angle_to_dropzone + self.rotation_constant < 45:
                     getting_closer_to_dropzone = 1
-            elif action_list[1] == -1:
+            elif action == -1:
                 if -45 < angle_to_dropzone - self.rotation_constant < 45:
                     getting_closer_to_dropzone = 1
 
@@ -337,39 +343,39 @@ class Agent:
         return self.debris_to_dropzone(state, action, self.obs.debris_to_dropzone_6)
 
     def debris_to_dropzone(self, state, action, observation_index):
-        action_list = list(action)
+        action_list = action
         closer_to_dropzone = 0  # the domain is either 1 or 0 (boolean-alike)
 
-        if action_list[0] == 1:
-            if action_list[1] == 1:
+        if action == 1:
+            if action == 1:
                 if self.get_obs(observation_index) is 1:
                     closer_to_dropzone = self.get_obs(observation_index)
-            elif action_list[1] == 0:
+            elif action == 0:
                 if self.get_obs(observation_index) is 1:
                     closer_to_dropzone = self.get_obs(observation_index)
-            elif action_list[1] == -1:
-                if self.get_obs(observation_index) is 1:
-                    closer_to_dropzone = self.get_obs(observation_index)
-
-        if action_list[0] == 0:
-            if action_list[1] == 1:
-                if self.get_obs(observation_index) is 1:
-                    closer_to_dropzone = self.get_obs(observation_index)
-            elif action_list[1] == 0:
-                if self.get_obs(observation_index) is 1:
-                    closer_to_dropzone = self.get_obs(observation_index)
-            elif action_list[1] == -1:
+            elif action == -1:
                 if self.get_obs(observation_index) is 1:
                     closer_to_dropzone = self.get_obs(observation_index)
 
-        if action_list[0] == -1:
-            if action_list[1] == 1:
+        if action == 0:
+            if action == 1:
                 if self.get_obs(observation_index) is 1:
                     closer_to_dropzone = self.get_obs(observation_index)
-            elif action_list[1] == 0:
+            elif action == 0:
                 if self.get_obs(observation_index) is 1:
                     closer_to_dropzone = self.get_obs(observation_index)
-            elif action_list[1] == -1:
+            elif action == -1:
+                if self.get_obs(observation_index) is 1:
+                    closer_to_dropzone = self.get_obs(observation_index)
+
+        if action == -1:
+            if action == 1:
+                if self.get_obs(observation_index) is 1:
+                    closer_to_dropzone = self.get_obs(observation_index)
+            elif action == 0:
+                if self.get_obs(observation_index) is 1:
+                    closer_to_dropzone = self.get_obs(observation_index)
+            elif action == -1:
                 if self.get_obs(observation_index) is 1:
                     closer_to_dropzone = self.get_obs(observation_index)
 
@@ -400,47 +406,46 @@ class Agent:
         return self.angle_to_debris(state, action, debris_6)
 
     def angle_to_debris(self, state, action, debrisNumber):
-        action_list = list(action)
         transform_value = 1 / 360
         robotPosition = [self.obs.robot_position_x, self.obs.robot_position_z]
         angle_to_debris = 0
 
-        if action_list[1] == 1:
-            if action_list[0] == 1:  # forward + right
+        if action == 1:
+            if action == 1:  # forward + right
                 Angle = -self.rotation_constant
                 angle_to_debris = self.robotAngle_New(robotPosition, debrisNumber, 1, Angle)
 
-            if action_list[0] == 0:  # forward + straight
+            if action == 0:  # forward + straight
                 Angle = 0
                 angle_to_debris = self.robotAngle_New(robotPosition, debrisNumber, 1, Angle)
 
-            if action_list[0] == -1:  # forward + left
+            if action == -1:  # forward + left
                 Angle = self.rotation_constant
                 angle_to_debris = self.robotAngle_New(robotPosition, debrisNumber, 1, Angle)
 
-        if action_list[1] == -1:
-            if action_list[0] == 1:  # backward + right
+        if action == -1:
+            if action == 1:  # backward + right
                 Angle = self.rotation_constant
                 angle_to_debris = self.robotAngle_New(robotPosition, debrisNumber, -1, Angle)
 
-            if action_list[0] == 0:  # backward + straight
+            if action == 0:  # backward + straight
                 Angle = 0
                 angle_to_debris = self.robotAngle_New(robotPosition, debrisNumber, -1, Angle)
 
-            if action_list[0] == -1:  # backward + left
+            if action == -1:  # backward + left
                 Angle = -self.rotation_constant
                 angle_to_debris = self.robotAngle_New(robotPosition, debrisNumber, -1, Angle)
 
-        if action_list[1] == 0:
-            if action_list[0] == 1:  # right
+        if action == 0:
+            if action == 1:  # right
                 Angle = -self.rotation_constant
                 angle_to_debris = self.robotAngle_New(robotPosition, debrisNumber, 0, Angle)
 
-            if action_list[0] == 0:  # not moving
+            if action == 0:  # not moving
                 Angle = 0
                 angle_to_debris = self.robotAngle_New(robotPosition, debrisNumber, 0, Angle)
 
-            if action_list[0] == -1:  # left
+            if action == -1:  # left
                 Angle = self.rotation_constant
                 angle_to_debris = self.robotAngle_New(robotPosition, debrisNumber, 0, Angle)
 
@@ -509,16 +514,15 @@ class Agent:
 
     # Rotation: 0 to 360
     def rotation(self, state, action):
-        action_list = list(action)
         rotation = self.get_obs(self.obs.robot_rotation)
         new_rotation = 0
 
         # Transform rotation into a value between 0 and 1
         transform_value = 1 / 360
         
-        if action_list[1] == 0:
+        if action == 0:
             return int(rotation) * transform_value
-        elif action_list[1] == 1:
+        elif action == 1:
             total_rotation = rotation + self.rotation_constant
 
             # Check if new rotation is above 360 and return value beyond 0 instead
@@ -526,7 +530,7 @@ class Agent:
                 new_rotation = int(total_rotation - 360)
             else:
                 new_rotation = int(total_rotation)
-        elif action_list[1] == -1:
+        elif action == -1:
             total_rotation = rotation - self.rotation_constant
 
             # Check if new rotation is below zero and return value behind 360 instead
@@ -539,16 +543,15 @@ class Agent:
 
     # Pointing / Turning towards debris base on angle
     def pointed_towards_debris(self, state, action):
-        action_list = list(action)
         pointing = 0
 
-        if action_list[1] == 1:
+        if action == 1:
             if self.get_obs(self.obs.angle_robot_debris_1) + self.rotation_constant < 0:
                 pointing = 1
-        elif action_list[1] == -1:
+        elif action == -1:
             if self.get_obs(self.obs.angle_robot_debris_1) - self.rotation_constant > 0:
                 pointing = 1
-        elif action_list[1] == 0:
+        elif action == 0:
             if self.get_obs(self.obs.robot_facing_debris):
                 pointing = 1
 

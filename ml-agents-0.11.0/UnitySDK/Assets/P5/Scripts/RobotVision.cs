@@ -21,21 +21,18 @@ public class RobotVision : MonoBehaviour
 
     public float visionAngle = 120f;
 
-    RobotAcademy academy;
+    RobotEnvironment environment;
 
     List<DebrisInfo> debrisInfos;
     
     Color fovColor = new Color(0,1,1, 0.5f);
 
-    void Awake()
+    public void InitializeDebrisArray(RobotEnvironment env)
     {
-        academy = FindObjectOfType<RobotAcademy>();
-    }
-
-    public void InitializeDebrisArray()
-    {
+        environment = env;
+        
         // Get list of debris Transforms
-        List<Debris> debrisList = academy.GetDebris();
+        List<Debris> debrisList = environment.GetDebris();
 
         // Initialize list of DebrisInfos
         debrisInfos = new List<DebrisInfo>();
@@ -59,12 +56,12 @@ public class RobotVision : MonoBehaviour
     public List<DebrisInfo> UpdateVision()
     {
         if (debrisInfos == null)
-            InitializeDebrisArray();
+            return new List<DebrisInfo>();
         
         if (debrisInfos.Count > 0 && debrisInfos[0].transform == null)
-            InitializeDebrisArray();
+            return new List<DebrisInfo>();
         
-        Vector3 currentSensorPosition = sensorPosition.position;
+        Vector3 currentSensorPosition = transform.InverseTransformPoint(sensorPosition.position);
         
         // For every debris -> check if it is visible
         for (int i = 0; i < debrisInfos.Count; i++)
@@ -73,7 +70,7 @@ public class RobotVision : MonoBehaviour
             DebrisInfo currentDebrisInfo = debrisInfos[i];
             
             // Current debris-position
-            Vector3 currentDebrisPosition = currentDebrisInfo.transform.position;
+            Vector3 currentDebrisPosition = transform.InverseTransformPoint(currentDebrisInfo.transform.position);
 
             // Vector from Sensor-position to current Debris-position
             Vector3 directionToDebris = currentDebrisPosition - currentSensorPosition;
@@ -82,7 +79,7 @@ public class RobotVision : MonoBehaviour
             currentDebrisInfo.lastDistanceFromRobot = currentDebrisInfo.distanceFromRobot;
             
             // Debris distance from robot
-            currentDebrisInfo.distanceFromRobot = Vector3.Distance(currentDebrisPosition, transform.position);
+            currentDebrisInfo.distanceFromRobot = currentDebrisPosition.magnitude;
 
             // If debris is within vision cone
             if (DirectionIsWithinVision(directionToDebris))

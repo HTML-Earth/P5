@@ -293,7 +293,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1799447205
 Transform:
   m_ObjectHideFlags: 0
@@ -647,7 +647,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8081996880353395668
 Transform:
   m_ObjectHideFlags: 0
@@ -1518,7 +1518,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7338688044512440702
 Transform:
   m_ObjectHideFlags: 0
@@ -1646,7 +1646,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &76471803323237019
 Transform:
   m_ObjectHideFlags: 0
@@ -1831,6 +1831,9 @@ GameObject:
   - component: {fileID: 1779018748840171066}
   - component: {fileID: 2994480333304047144}
   - component: {fileID: 6848147493840469469}
+  - component: {fileID: 4760080979069426587}
+  - component: {fileID: -8282650055485106243}
+  - component: {fileID: -1693469073759072303}
   m_Layer: 0
   m_Name: Robot
   m_TagString: Untagged
@@ -1899,8 +1902,12 @@ MonoBehaviour:
     resetOnDone: 1
     onDemandDecision: 0
     numberOfActionsBetweenDecisions: 5
-  debrisInShovel: {fileID: 7532232180227463311}
+  goal: 0
+  useSimplePhysics: 0
+  environment: {fileID: 0}
+  debrisInShovel: {fileID: 5361192715005589940}
   debrisInFront: {fileID: 7381684728525038586}
+  debris: {fileID: 0}
 --- !u!114 &1779018748840171066
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1914,11 +1921,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 93
+    vectorObservationSize: 92
     numStackedVectorObservations: 1
-    vectorActionSize: 03000000
+    vectorActionSize: 05000000
     vectorActionDescriptions: []
-    vectorActionSpaceType: 1
+    vectorActionSpaceType: 0
   m_Model: {fileID: 0}
   m_InferenceDevice: 0
   m_UseHeuristic: 0
@@ -1958,6 +1965,56 @@ MonoBehaviour:
     m_Bits: 16384
   sensorPosition: {fileID: 5624098504110841232}
   visionAngle: 120
+--- !u!114 &4760080979069426587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8510312020121741670}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 530033d3e6be1194984dce0f77c3bc13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shovel: {fileID: 2405924958219048433}
+  rotationSpeed: 50
+--- !u!114 &-8282650055485106243
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8510312020121741670}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36ed7128051760b42bc56c15e5a6657d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxAngle: 45
+  maxTorque: 300
+  brakeTorque: 30000
+  wheelShape: {fileID: 0}
+  criticalSpeed: 5
+  stepsBelow: 5
+  stepsAbove: 1
+  driveType: 2
+--- !u!114 &-1693469073759072303
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8510312020121741670}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61682be5314d0440b9e67529196ac1a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  naturalFrequency: 10
+  dampingRatio: 0.8
+  forceShift: 0.03
+  setSuspensionDistance: 1
 --- !u!1 &8680496834178660713
 GameObject:
   m_ObjectHideFlags: 0
@@ -2215,7 +2272,7 @@ PrefabInstance:
     - target: {fileID: 2412278411689203969, guid: 6bd0d343c0be26243a54ebd07ed8e1af,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4125221552322649102, guid: 6bd0d343c0be26243a54ebd07ed8e1af,
         type: 3}
@@ -2274,9 +2331,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6bd0d343c0be26243a54ebd07ed8e1af, type: 3}
+--- !u!114 &5361192715005589940 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6002809612987283049, guid: 6bd0d343c0be26243a54ebd07ed8e1af,
+    type: 3}
+  m_PrefabInstance: {fileID: 1812852607601463261}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6d60034b306ebd40bff636960b787ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &2312370750822274003 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4125221552322649102, guid: 6bd0d343c0be26243a54ebd07ed8e1af,
+    type: 3}
+  m_PrefabInstance: {fileID: 1812852607601463261}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &2405924958219048433 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4056366503381785132, guid: 6bd0d343c0be26243a54ebd07ed8e1af,
     type: 3}
   m_PrefabInstance: {fileID: 1812852607601463261}
   m_PrefabAsset: {fileID: 0}

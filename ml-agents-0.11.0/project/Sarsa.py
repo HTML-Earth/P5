@@ -72,47 +72,48 @@ class SarsaLFA:
 
         times_done = 0
 
-        while self.episode <= 1000:
-            time_elapsed = self.agent.get_obs(self.obs.time_elapsed)
+        for i in range(0, 6):
+            while self.episode <= 1000:
+                time_elapsed = self.agent.get_obs(self.obs.time_elapsed)
 
-            self.agent.perform_action(*action)
+                self.agent.perform_action(*action)
 
-            new_state = self.agent.get_state()
-            reward = self.agent.get_reward()
-            new_action = self.choose_action(state)
+                new_state = self.agent.get_state()
+                reward = self.agent.get_reward()
+                new_action = self.choose_action(state)
 
-            # Calculate data point for linear regression
-            delta = reward + self.gamma * self.get_q_value(new_state, new_action) - self.get_q_value(state, action)
+                # Calculate data point for linear regression
+                delta = reward + self.gamma * self.get_q_value(new_state, new_action) - self.get_q_value(state, action)
 
-            # Update weights
-            for i in range(0, len(self.weights)):
-                self.weights[i] = self.weights[i] + self.eta * delta * self.agent.features[i](state, action)
+                # Update weights
+                for i in range(0, len(self.weights)):
+                    self.weights[i] = self.weights[i] + self.eta * delta * self.agent.features[i](state, action)
 
-            state = new_state
-            action = new_action
+                state = new_state
+                action = new_action
 
-            self.reward_per_episode += reward
+                self.reward_per_episode += reward
 
-            if self.agent.is_done():
-                goal_state = 0
-                completion_time = 0
+                if self.agent.is_done():
+                    goal_state = 0
+                    completion_time = 0
 
-                if self.agent.get_obs(self.obs.times_won) > times_done:
-                    times_done = self.agent.get_obs(self.obs.times_won)
-                    goal_state = 1
-                    completion_time = time_elapsed
+                    if self.agent.get_obs(self.obs.times_won) > times_done:
+                        times_done = self.agent.get_obs(self.obs.times_won)
+                        goal_state = 1
+                        completion_time = time_elapsed
 
-                # Save x- and y- values
-                x_episode.append(self.episode)
-                y_delta.append(delta)
-                y_reward.append(self.reward_per_episode)
+                    # Save x- and y- values
+                    x_episode.append(self.episode)
+                    y_delta.append(delta)
+                    y_reward.append(self.reward_per_episode)
 
-                self.training_file_manager.save_episode_rewards(self.episode, self.reward_per_episode,
-                                                                goal_state, completion_time)
+                    self.training_file_manager.save_episode_rewards(self.episode, self.reward_per_episode,
+                                                                    goal_state, completion_time)
 
-                self.episode += 1
-                self.reward_per_episode = 0
-                # TODO: I think this may cause some conflict with AgentReset where we also reset the environment
+                    self.episode += 1
+                    self.reward_per_episode = 0
+                    # TODO: I think this may cause some conflict with AgentReset where we also reset the environment
 
         # Delta in relation to episodes
         plt.subplot(2, 1, 1)

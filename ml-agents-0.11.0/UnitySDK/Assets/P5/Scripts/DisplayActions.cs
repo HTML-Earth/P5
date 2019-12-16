@@ -16,6 +16,8 @@ public class DisplayActions : MonoBehaviour
     Image left;
     Image right;
     
+    Image zero;
+    
     Image armUp;
     Image armDown;
     
@@ -38,10 +40,15 @@ public class DisplayActions : MonoBehaviour
             left = transform.Find("left").GetComponent<Image>();
             right = transform.Find("right").GetComponent<Image>();
             
+            zero = transform.Find("zero").GetComponent<Image>();
+            
             shovelUp = transform.Find("shovel_up").GetComponent<Image>();
             shovelDown = transform.Find("shovel_down").GetComponent<Image>();
         }
         robotAgent = FindObjectOfType<RobotAgent>();
+        
+        shovelUp.color   = transparent;
+        shovelDown.color = transparent;
     }
 
     void FixedUpdate()
@@ -59,10 +66,11 @@ public class DisplayActions : MonoBehaviour
         
         int action = (int)robotAgent.GetActionVector()[0];
 
-        down.color    = (action == 3)  ? opaque : transparent;
+        zero.color  = (action == 0) ? opaque : transparent;
         up.color  = (action == 1) ? opaque : transparent;
-        right.color  = (action == 4) ? opaque : transparent;
         left.color = (action == 2)  ? opaque : transparent;
+        down.color    = (action == 3)  ? opaque : transparent;
+        right.color  = (action == 4) ? opaque : transparent;
 
         //if (actions.Length > 2)
         //{

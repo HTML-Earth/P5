@@ -1,4 +1,3 @@
-from AgentController import Agent
 from Sarsa import SarsaLFA
 import sys
 
@@ -14,9 +13,10 @@ if __name__ == '__main__':
         if sys.argv[1] == "-n":
             training_mode = 1
 
-            # Build scene
-            if not sys.argv[2] is None:
-                build_scene = sys.argv[2]
+            if len(sys.argv) > 2:
+                # Build scene
+                if not sys.argv[2] is None:
+                    build_scene = sys.argv[2]
 
         # Continue training
         elif sys.argv[1] == "-c":
@@ -37,7 +37,6 @@ if __name__ == '__main__':
                 training_file_name = sys.argv[2]
             else:
                 raise Exception("Missing training-file or build scene argument.")
-                
 
         elif sys.argv[1] == "-help":
             print("{:35s} Sets mode to 'training mode'. \n"

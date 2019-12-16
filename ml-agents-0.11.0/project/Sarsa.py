@@ -43,7 +43,7 @@ class SarsaLFA:
         actions = self.agent.actions
 
         if random.random() < self.epsilon:
-            action = (random.randint(0, 2), random.randint(0, 2))
+            action = (random.randint(0, 4))
         else:
             q = [self.lookup_q(state, a) for a in actions]
             max_q = max(q)
@@ -59,7 +59,7 @@ class SarsaLFA:
 
     def train_agent(self):
         state = self.agent.get_state()
-        action = (0, 0)
+        action = 0
 
         # Variables for x- and y- coordinates
         x_episode = []
@@ -67,7 +67,7 @@ class SarsaLFA:
         y_reward = []
 
         while self.episode <= 100:
-            self.agent.perform_action(*action)
+            self.agent.perform_action(action)
 
             new_state = self.agent.get_state()
             reward = self.agent.get_reward()
@@ -98,13 +98,7 @@ class SarsaLFA:
                 #TODO: I think this may cause some conflict with AgentReset where we also reset the environment
                 #self.agent.reset_simulation()
 
-        # Delta in relation to episodes
-        plt.subplot(2, 1, 1)
-        plt.plot(x_episode, y_delta)
-        plt.ylabel('y - Delta')
-
         # Reward in relation to episodes
-        plt.subplot(2, 1, 2)
         plt.plot(x_episode, y_reward)
         plt.ylabel('y - Reward')
         plt.xlabel('x - Episode')
@@ -123,7 +117,7 @@ class SarsaLFA:
         self.training_file_manager.create_training_file()
 
         for i in range(0, len(self.agent.features)):
-            self.weights.append(random.random())
+            self.weights.append(random.randint(-3, 3))
 
         self.train_agent()
 

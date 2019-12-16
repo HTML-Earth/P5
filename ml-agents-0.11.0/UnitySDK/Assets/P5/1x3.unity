@@ -271,7 +271,7 @@ MonoBehaviour:
     targetFrameRate: 60
   resetParameters:
     m_ResetParameters: []
-  communicatorPort: 5004
+  communicatorPort: 5005
 --- !u!4 &1363006577
 Transform:
   m_ObjectHideFlags: 0
@@ -450,6 +450,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4058492822996506332, guid: 81f47bcef54978a40a80743e3328700e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1779018748840171066, guid: 81f47bcef54978a40a80743e3328700e,
+        type: 3}
+      propertyPath: m_BrainParameters.vectorActionSize.Array.data[0]
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 6638875791461395323, guid: ae3d0289a5066694db5ceb8877d1cc96,
         type: 3}
       propertyPath: m_Name

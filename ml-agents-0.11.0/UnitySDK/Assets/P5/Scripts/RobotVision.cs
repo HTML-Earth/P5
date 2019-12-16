@@ -61,7 +61,7 @@ public class RobotVision : MonoBehaviour
         if (debrisInfos.Count > 0 && debrisInfos[0].transform == null)
             return new List<DebrisInfo>();
         
-        Vector3 currentSensorPosition = sensorPosition.position;
+        Vector3 currentSensorPosition = transform.InverseTransformPoint(sensorPosition.position);
         
         // For every debris -> check if it is visible
         for (int i = 0; i < debrisInfos.Count; i++)
@@ -70,7 +70,7 @@ public class RobotVision : MonoBehaviour
             DebrisInfo currentDebrisInfo = debrisInfos[i];
             
             // Current debris-position
-            Vector3 currentDebrisPosition = currentDebrisInfo.transform.position;
+            Vector3 currentDebrisPosition = transform.InverseTransformPoint(currentDebrisInfo.transform.position);
 
             // Vector from Sensor-position to current Debris-position
             Vector3 directionToDebris = currentDebrisPosition - currentSensorPosition;
@@ -79,7 +79,7 @@ public class RobotVision : MonoBehaviour
             currentDebrisInfo.lastDistanceFromRobot = currentDebrisInfo.distanceFromRobot;
             
             // Debris distance from robot
-            currentDebrisInfo.distanceFromRobot = Vector3.Distance(currentDebrisPosition, transform.position);
+            currentDebrisInfo.distanceFromRobot = currentDebrisPosition.magnitude;
 
             // If debris is within vision cone
             if (DirectionIsWithinVision(directionToDebris))

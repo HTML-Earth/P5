@@ -184,8 +184,8 @@ public class RobotAgent : Agent
         AddVectorObs(this.transform.position - environment.transform.position);
 
         // Robot velocity
-        AddVectorObs(rb.velocity.x);
-        AddVectorObs(rb.velocity.normalized.z);
+        AddVectorObs(transform.InverseTransformVector(rb.velocity).normalized.x);
+        AddVectorObs(transform.InverseTransformVector(rb.velocity).normalized.z);
 
         // Debris and DropZone position in each environment
         AddVectorObs(debrisPosition);
@@ -217,6 +217,7 @@ public class RobotAgent : Agent
         //Evaluation Methods:
         CreateListWithSuccessRate();
 
+        /*
         if (debris != null)
         {
             Vector3 robotToDebris = debris.position - transform.position;
@@ -229,6 +230,7 @@ public class RobotAgent : Agent
                 AddReward(0.01f);
             }
         }
+        */
 
         switch (goal)
         {

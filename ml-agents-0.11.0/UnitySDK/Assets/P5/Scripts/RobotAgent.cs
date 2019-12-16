@@ -31,6 +31,7 @@ public class RobotAgent : Agent
 
     [Header("Robot")]
     public bool useSimplePhysics;
+    public bool limitedObservations;
 
     [Header("References")]
     [SerializeField]
@@ -134,6 +135,8 @@ public class RobotAgent : Agent
             {
                 Destroy(wheelCollider);
             }
+
+            rb.constraints = RigidbodyConstraints.FreezeRotation;
         }
                 
         shovel = GetComponent<ShovelControl>();
@@ -201,12 +204,6 @@ public class RobotAgent : Agent
 
     public override void CollectObservations()
     {
-        // Positions
-        if (debris != null)
-            debrisPosition = transform.InverseTransformPoint(debris.position);
-        else
-            debrisPosition = Vector3.zero;
-        
         // Robot position in each environment
         AddVectorObs(this.transform.position - environment.transform.position);
 
@@ -235,7 +232,7 @@ public class RobotAgent : Agent
         AddVectorObs(dropZonePosition.x, "dropzone_position_x");
         AddVectorObs(dropZonePosition.z, "dropzone_position_z");
         AddVectorObs(dropZone.GetRadius(), "dropzone_radius");
-
+        
         // Distance sensor measurements
         float[] distances = sensors.GetMeasuredDistances();
         for (int dist = 0; dist < distances.Length; dist++)
@@ -243,6 +240,19 @@ public class RobotAgent : Agent
             AddVectorObs(distances[dist], "sensor_measurement_" + (dist+1));
         }
 
+        if (limitedObservations)
+        {
+            // Debris Position
+            debrisPosition = Vector3.zero;
+            if (debris != null)
+                debrisPosition = transform.InverseTransformPoint(debris.position);
+        
+            AddVectorObs(debrisPosition.x, "debris_position_x");
+            AddVectorObs(debrisPosition.z, "debris_position_z");
+            
+            return;
+        }
+        
         // Debris positions
         debrisInfos = vision.UpdateVision();
         
@@ -252,11 +262,12 @@ public class RobotAgent : Agent
             //AddVectorObs(debrisInfos[debris].lastKnownPosition.y, "debris_" + (debris+1) + "_position_y");
             AddVectorObs(debrisInfos[debris].lastKnownPosition.z, "debris_" + (debris+1) + "_position_z");
         }
+        
         for (int i = 0; i < DebrisCount - debrisInfos.Count; i++)
         {
-            AddVectorObs(Mathf.Infinity, "debris_" + (i+debrisInfos.Count+1) + "_position_x");
+            AddVectorObs(0f, "debris_" + (i+debrisInfos.Count+1) + "_position_x");
             //AddVectorObs(Mathf.Infinity, "debris_" + (i+debrisInfos.Count+1) + "_position_y");
-            AddVectorObs(Mathf.Infinity, "debris_" + (i+debrisInfos.Count+1) + "_position_z");
+            AddVectorObs(0f, "debris_" + (i+debrisInfos.Count+1) + "_position_z");
         }
 
         // Simulation time
@@ -284,8 +295,8 @@ public class RobotAgent : Agent
 
         ObsDebrisToDropZone();
         ObsNextAngleToDebris();
-        
-        
+
+
 #if UNITY_EDITOR
         // AUTO GENERATE RobotObservations.py
         if (!observationsLogged)

@@ -42,7 +42,7 @@ public class RobotVision : MonoBehaviour
         {
             DebrisInfo info = new DebrisInfo();
             info.transform = d.transform;
-            info.lastKnownPosition = Vector3.positiveInfinity;
+            info.lastKnownPosition = Vector3.zero;
             info.isVisible = false;
             info.distanceFromRobot = Vector3.Distance(d.transform.position, transform.position);
             info.lastDistanceFromRobot = info.distanceFromRobot;

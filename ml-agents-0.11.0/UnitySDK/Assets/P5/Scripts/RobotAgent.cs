@@ -575,7 +575,6 @@ public class RobotAgent : Agent
             if (fwdDotDebris > highestDotProduct)
             {
                 highestDotProduct = fwdDotDebris;
-                timesWon++;
                 AddReward(0.01f);
             }
         }
@@ -589,6 +588,7 @@ public class RobotAgent : Agent
                 // Reached target
                 if (debrisDistanceToDropZone < 5f)
                 {
+                    timesWon++;
                     SetReward(1.0f);
                     Done("Debris in zone");
                 }

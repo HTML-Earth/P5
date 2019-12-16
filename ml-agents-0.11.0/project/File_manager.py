@@ -147,10 +147,13 @@ class TrainingFileManager:
             self.path_to_file = os.path.join(self.episode_file_folder, self.episode_file_name)
             self.episode_file = open(self.path_to_file, "x")
 
-        self.episode_file.write("Episode,Reward,Goal-state reached\n")
+        self.episode_file.write("Episode,Reward,Goal-state reached,Completion-time\n")
         self.episode_file.close()
 
-    def save_episode_rewards(self, episode, reward_in_episode, goal_state):
+    def save_episode_rewards(self, episode, reward_in_episode, goal_state, completion_time):
         self.episode_file = open(self.episode_file_folder + self.episode_file_name, "a")
-        self.episode_file.write(str(episode) + "," + str(round(reward_in_episode)) + "," + str(goal_state) + "\n")
+        self.episode_file.write(str(episode) + "," +
+                                str(round(reward_in_episode)) + "," +
+                                str(goal_state) + "," +
+                                str(completion_time) + "\n")
         self.episode_file.close()

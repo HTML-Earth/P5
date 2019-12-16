@@ -173,7 +173,9 @@ public class RobotAgent : Agent
         AddVectorObs((DropZone.position - environment.transform.position).y, "dropzone_position_y");
         AddVectorObs((DropZone.position - environment.transform.position).z, "dropzone_position_z");
 
+        // Comment out these observations if using PPO
         AddVectorObs(timesWon, "times_won");
+        AddVectorObs(timeElapsed, "time_elapsed");
 
 #if UNITY_EDITOR
         // AUTO GENERATE RobotObservations.py

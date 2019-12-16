@@ -16,3 +16,4 @@ class RobotObservations(IntEnum):
     dropzone_position_y = 9
     dropzone_position_z = 10
     times_won = 11
+    time_elapsed = 12

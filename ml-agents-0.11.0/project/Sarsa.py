@@ -73,6 +73,8 @@ class SarsaLFA:
         times_done = 0
 
         while self.episode <= 1000:
+            time_elapsed = self.agent.get_obs(self.obs.time_elapsed)
+
             self.agent.perform_action(*action)
 
             new_state = self.agent.get_state()
@@ -93,17 +95,20 @@ class SarsaLFA:
 
             if self.agent.is_done():
                 goal_state = 0
+                completion_time = 0
 
                 if self.agent.get_obs(self.obs.times_won) > times_done:
                     times_done = self.agent.get_obs(self.obs.times_won)
                     goal_state = 1
+                    completion_time = time_elapsed
 
                 # Save x- and y- values
                 x_episode.append(self.episode)
                 y_delta.append(delta)
                 y_reward.append(self.reward_per_episode)
 
-                self.training_file_manager.save_episode_rewards(self.episode, self.reward_per_episode, goal_state)
+                self.training_file_manager.save_episode_rewards(self.episode, self.reward_per_episode,
+                                                                goal_state, completion_time)
 
                 self.episode += 1
                 self.reward_per_episode = 0

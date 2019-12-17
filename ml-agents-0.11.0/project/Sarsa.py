@@ -113,7 +113,6 @@ class SarsaLFA:
 
                     self.episode += 1
                     self.reward_per_episode = 0
-                    # TODO: I think this may cause some conflict with AgentReset where we also reset the environment
 
         # Delta in relation to episodes
         plt.subplot(2, 1, 1)

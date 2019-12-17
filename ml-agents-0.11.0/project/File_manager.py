@@ -80,15 +80,13 @@ class TrainingFileManager:
             state = [float(i) for i in state]
             state_tuple = tuple(state)
 
-            action = split[1][3:].split(',')
-            action = [float(i) for i in action]
-            action_tuple = tuple(action)
+            action = split[1].split(', ')[1]
 
             reward = state_action_reward_string.split(':')[1]
             reward = float(reward)
 
             # Add Q(s, a) : r
-            q_function[(state_tuple, action_tuple)] = reward
+            q_function[(state_tuple, action)] = reward
 
         self.file.close()
 

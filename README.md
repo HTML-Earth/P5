@@ -1,8 +1,12 @@
-# P5 (Project name TBD)
+# Feature-Based Reinforcement Learning Using Unity
+------
+
 ## Overview
 This is a 5th semester Computer Science project about machine intelligence.
 
 This project was built using [ML-Agents](https://github.com/Unity-Technologies/ml-agents) and [Unity](https://unity.com/).
+
+------
 
 ## Installation
 1. Install [python 3.6.8](https://www.python.org/downloads/release/python-368/)
@@ -27,6 +31,8 @@ To change environment and agent settings or make your own build:
 2. Use it to open the P5/ml-agents-0.11.0/**UnitySDK** folder
 3. Inside Unity, use the Project window to open a scene file in Assets/P5 (preferably **1x3.scene**)
 4. From here you can run the scene or make a new build
+
+------
 
 ## Running
 
@@ -59,7 +65,24 @@ If no build is specified, python will print:
 
 If you then press play and the Unity and Python ports match, they will connect and start training.
 
-## Documentation
+Our SARSA and Unity's PPO use different ports and amounts of observations.
+
+**SARSA configuration**
+
+- On the Academy object, set *Communicator Port* to **Our Python Script**
+- On the Robot object
+  - On the RobotAgent component, **disable** *Limited Observations*
+  - On the Behavior Parameters component, set *Observations* to **92**
+
+**PPO configuration**
+
+- On the Academy object, set *Communicator Port* to **Default Training**
+- On the Robot object
+  - On the RobotAgent component, **enable** *Limited Observations*
+  - On the Behavior Parameters component, set *Observations* to **46**
+
+------
+
 ```
 python Main.py -help
 ```

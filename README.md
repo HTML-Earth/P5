@@ -9,13 +9,13 @@ This project was built using [ML-Agents](https://github.com/Unity-Technologies/m
 
 2. Install the mlagents package:
 
-   ```python
+   ```
    pip install mlagents=0.11.0
    ```
 
 3. Update the setuptools package:
 
-   ```python
+   ```
    pip install -U setuptools
    ```
 
@@ -36,7 +36,7 @@ To run the project using our python implementation of SARSA:
 
 1. Open a terminal and navigate to P5/ml-agents-0.11.0/project/
 
-3. ```python
+3. ```
    python Main.py -n [path to build]
    ```
 
@@ -46,7 +46,7 @@ To run the project using ml-agents' implementation of PPO:
 
 1. Open a terminal and navigate to P5/ml-agents-0.11.0/
 
-2. ```python
+2. ```
    mlagents-learn config.yaml --env=[path to build] --run-id=test --train
    ```
 
@@ -60,10 +60,10 @@ If no build is specified, python will print:
 If you then press play and the Unity and Python ports match, they will connect and start training.
 
 ## Documentation
-```python
+```
 python Main.py -help
 ```
 
-```python
+```
 mlagents-learn with -help
 ```

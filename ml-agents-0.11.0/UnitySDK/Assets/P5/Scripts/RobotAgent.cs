@@ -58,19 +58,14 @@ public class RobotAgent : Agent
  
     public float rewardDebrisFound                 = 0f;
     public float rewardFacingDebris                = 0f;
-    
-    public float rewardMoveTowardsDebris           = 0f;
-    public float rewardMoveTowardsZoneWithDebris   = 0f;
-    
+
     [Header("Penalties (should be negative values)")]
     public float penaltyDebrisLeftFront            = -0f;
     public float penaltyDebrisLeftShovel           = -0f;
     public float penaltyDebrisLeftZone             = -0f;
-    public float penaltyMoveAwayFromZoneWithDebris = -0f;
     
     public float penaltyRobotHittingWall           = -0f;
     
-    public float penaltyTimePassed                 = -0f;
 
     [Header("Debug")]
     public bool displayGizmos = false;
